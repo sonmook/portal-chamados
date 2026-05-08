@@ -1,0 +1,321 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket #{{ chamado.id }} - Portal de TI</title>
+    
+    <link rel="icon" href="{% static 'img/favicon.png' %}" type="image/png">    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        /* Estilização personalizada para o campo de resposta (Comentários) do Django Form */
+        #formulario-comentario textarea {
+            width: 100%;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            min-height: 120px;
+            font-size: 0.95rem;
+        }
+        #formulario-comentario textarea:focus {
+            outline: none;
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+    </style>
+</head>
+<body class="bg-light pb-5">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'lista_chamados' %}">Portal de TI</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'lista_chamados' %}">Chamados</a></li>
+                    
+                    {% if request.user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                        </li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link text-warning fw-bold" href="{% url 'gerenciar_usuarios' %}"><i class="bi bi-people"></i> Gerenciar Usuários</a>
+                        </li>                    
+                    {% endif %}
+                </ul>
+                
+                <div class="navbar-text text-white d-flex align-items-center gap-3">
+                    <span>Bem-vindo, <strong>{{ request.user.username }}</strong></span>
+                    <form method="post" action="{% url 'logout' %}" class="m-0">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-light">Sair</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <div class="mb-4">
+            <a href="{% url 'lista_chamados' %}" class="text-decoration-none text-muted small fw-bold">
+                &larr; VOLTAR PARA A FILA
+            </a>
+        </div>
+
+        <div class="mb-4">
+            {% if not chamado.tecnico %}
+                <div class="alert alert-warning d-flex align-items-center justify-content-between shadow-sm border-warning border-opacity-50">
+                    <div>
+                        <i class="bi bi-exclamation-circle-fill me-2 text-warning-emphasis fs-5"></i>
+                        <strong class="text-dark">Chamado na Fila!</strong> Ninguém está a atuar neste ticket ainda.
+                    </div>
+                    <a href="{% url 'assumir_chamado' chamado.id %}" class="btn btn-success fw-bold shadow-sm">
+                        <i class="bi bi-person-check-fill"></i> Assumir Chamado
+                    </a>
+                </div>
+                
+            {% elif chamado.tecnico == request.user %}
+                <div class="alert alert-success d-flex align-items-center justify-content-between shadow-sm border-success border-opacity-50">
+                    <div>
+                        <i class="bi bi-person-badge-fill me-2 fs-5"></i>
+                        <strong>Você é o responsável</strong> por este chamado.
+                    </div>
+                    <a href="{% url 'devolver_chamado' chamado.id %}" class="btn btn-outline-danger btn-sm fw-bold">
+                        <i class="bi bi-arrow-return-left"></i> Devolver à Fila
+                    </a>
+                </div>
+                
+            {% else %}
+                <div class="alert alert-secondary border d-flex align-items-center shadow-sm">
+                    <i class="bi bi-lock-fill text-danger fs-3 me-3"></i>
+                    <div>
+                        <h6 class="mb-0 text-danger fw-bold">Acesso Bloqueado</h6>
+                        <span class="small text-muted">Este chamado está a ser atendido por <strong>{{ chamado.tecnico.username }}</strong>. Apenas ele pode interagir.</span>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="row g-4">
+            
+            <div class="col-lg-8">
+                
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 45px; height: 45px; font-size: 1.2rem;">
+                                    {{ chamado.solicitante.username|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <h6 class="m-0 fw-bold">{{ chamado.solicitante.get_full_name|default:chamado.solicitante.username }}</h6>
+                                    <span class="text-muted small">Abriu este chamado (Solicitante)</span>
+                                </div>
+                            </div>
+                            <div class="text-end text-muted small">
+                                <i class="bi bi-calendar3"></i> {{ chamado.data_criacao|date:"d/m/Y H:i" }}
+                            </div>
+                        </div>
+                        
+                        <h4 class="fw-bold mt-2">{{ chamado.titulo }}</h4>
+                        <hr class="text-muted">
+                        <div class="text-dark" style="line-height: 1.6;">
+                            {{ chamado.descricao|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mb-3 text-muted text-uppercase small"><i class="bi bi-chat-text"></i> Histórico de Interações</h6>
+
+                <div class="d-flex flex-column gap-3 mb-4">
+                    {% for comentario in comentarios %}
+                        
+                        <div class="card border-0 shadow-sm {% if comentario.autor.is_staff %}bg-primary-subtle border-start border-4 border-primary ms-5{% else %}bg-white border-start border-4 border-secondary me-5{% endif %}">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="fw-bold small d-flex align-items-center gap-2">
+                                        <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem;">
+                                            {{ comentario.autor.username|slice:":1"|upper }}
+                                        </div>
+                                        {{ comentario.autor.username }}
+                                        {% if comentario.autor.is_staff %}
+                                            <span class="badge bg-primary ms-1" style="font-size: 0.65rem;">TI / Suporte</span>
+                                        {% endif %}
+                                    </div>
+                                    <span class="text-muted" style="font-size: 0.75rem;">{{ comentario.data_criacao|date:"d/m/Y H:i" }}</span>
+                                </div>
+                                
+                                <div class="text-dark" style="font-size: 0.95rem;">
+                                    {{ comentario.texto|linebreaks }}
+                                </div>
+                                
+                                {% if comentario.anexo %}
+                                <div class="mt-3 pt-2 border-top">
+                                    <a href="{{ comentario.anexo.url }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-file-earmark-arrow-down"></i> Baixar Anexo
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    {% empty %}
+                        <div class="text-center p-4 bg-white rounded shadow-sm border-0 text-muted small">
+                            Nenhum comentário adicionado ainda. Seja o primeiro a responder.
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% if chamado.status != 'Resolvido' %}
+                    {% if not chamado.tecnico or chamado.tecnico == request.user %}
+                        <div class="card border-0 shadow-sm border-top border-4 border-success">
+                            <div class="card-body p-4" id="formulario-comentario">
+                                <h6 class="fw-bold mb-3"><i class="bi bi-reply-fill"></i> Adicionar Resposta</h6>
+                                
+                                <form method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    {{ form.texto }} 
+                                    
+                                    <div class="mt-3">
+                                        <label class="small text-muted fw-bold mb-1"><i class="bi bi-paperclip"></i> Anexar ficheiro (opcional)</label>
+                                        {{ form.anexo }}
+                                    </div>
+                                    
+                                    <div class="text-end mt-3">
+                                        <button type="submit" class="btn btn-success fw-bold px-4 shadow-sm">
+                                            <i class="bi bi-send-fill me-1"></i> Enviar Resposta
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center p-4 bg-white rounded shadow-sm border text-muted">
+                            <i class="bi bi-shield-lock display-4 opacity-25 mb-3"></i>
+                            <p class="m-0">Apenas o responsável <strong>({{ chamado.tecnico.username }})</strong> pode interagir com este chamado.</p>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-success shadow-sm text-center border-0 p-4">
+                        <i class="bi bi-check-circle-fill fs-1 d-block mb-2"></i>
+                        <h6 class="fw-bold m-0">Este chamado foi resolvido e encerrado.</h6>
+                        <small>Não é possível adicionar novas interações.</small>
+                    </div>
+                {% endif %}
+            </div>    
+
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
+                    <div class="card-header bg-dark text-white py-3 border-0">
+                        <h6 class="m-0 fw-bold"><i class="bi bi-info-circle-fill me-2"></i>Detalhes do Ticket</h6>
+                    </div>
+                    
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item p-3">
+                                <span class="text-muted small d-block text-uppercase fw-bold mb-1">Ticket ID</span>
+                                <span class="fs-5 fw-bold text-primary">#{{ chamado.id }}</span>
+                            </li>
+                            
+                            <li class="list-group-item p-3">
+                                <span class="text-muted small d-block text-uppercase fw-bold mb-1">Status Atual</span>
+                                {% if chamado.status == 'Aberto' %}
+                                    <span class="badge bg-danger fs-6 px-3 py-2 rounded-pill">Aberto</span>
+                                {% elif chamado.status == 'Em Andamento' %}
+                                    <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill">Em Andamento</span>
+                                {% else %}
+                                    <span class="badge bg-success fs-6 px-3 py-2 rounded-pill">Resolvido</span>
+                                {% endif %}
+                            </li>
+
+                            {% if chamado.status == 'Resolvido' and chamado.fechado_por %}
+                            <li class="list-group-item p-3 bg-success-subtle border-success border-opacity-25">
+                                <span class="text-success small d-block text-uppercase fw-bold mb-1"><i class="bi bi-person-check-fill"></i> Resolvido por</span>
+                                <div class="d-flex align-items-center gap-2 mt-1">
+                                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 28px; height: 28px; font-size: 0.8rem;">
+                                        {{ chamado.fechado_por.username|slice:":1"|upper }}
+                                    </div>
+                                    <span class="fw-bold text-dark">{{ chamado.fechado_por.get_full_name|default:chamado.fechado_por.username }}</span>
+                                </div>
+                            </li>
+                            {% endif %}
+                            
+                            <li class="list-group-item p-3">
+                                <span class="text-muted small d-block text-uppercase fw-bold mb-1">Prioridade</span>
+                                {% if chamado.prioridade == 'Crítica' %}
+                                    <span class="text-danger fw-bold"><i class="bi bi-fire"></i> Crítica</span>
+                                {% elif chamado.prioridade == 'Alta' %}
+                                    <span class="text-warning-emphasis fw-bold">Alta</span>
+                                {% else %}
+                                    <span class="fw-bold text-dark">{{ chamado.prioridade }}</span>
+                                {% endif %}
+                            </li>
+                            
+                            <li class="list-group-item p-3">
+                                <span class="text-muted small d-block text-uppercase fw-bold mb-1">Categoria</span>
+                                <span class="fw-bold text-dark">{{ chamado.categoria }}</span>
+                            </li>
+                        </ul>
+                        
+                        {% if chamado.status != 'Resolvido' %}
+                            {% if not chamado.tecnico or chamado.tecnico == request.user %}
+                            <div class="p-3 bg-light border-top text-center">
+                                <button type="button" class="btn btn-outline-success w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#modalResolucao">
+                                    <i class="bi bi-check2-circle"></i> Marcar como Resolvido
+                                </button>
+                            </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalResolucao" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                
+                <div class="modal-header bg-success text-white border-0">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-check-circle-fill me-2"></i>Finalizar Chamado</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <form action="{% url 'fechar_chamado' chamado.id %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted text-uppercase">Como o problema foi resolvido?</label>
+                            <textarea name="resolucao" class="form-control bg-light" rows="4" required placeholder="Descreva o procedimento efetuado..."></textarea>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold small text-muted text-uppercase"><i class="bi bi-paperclip"></i> Anexar Evidência/Print (Opcional)</label>
+                            <input type="file" name="anexo_resolucao" class="form-control form-control-sm">
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer bg-light border-0">
+                        <button type="button" class="btn btn-white border fw-bold" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success fw-bold px-4 shadow-sm">Encerrar Chamado</button>
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

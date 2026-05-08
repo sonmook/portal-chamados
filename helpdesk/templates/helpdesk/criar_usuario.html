@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Usuário - Portal de TI</title>
+    
+    <link rel="icon" href="{% static 'img/favicon.png' %}" type="image/png">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        /* Padronização dos inputs para manter a identidade visual do portal */
+        form input[type="text"], 
+        form input[type="email"], 
+        form input[type="password"] {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            color: #212529;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+        form input:focus {
+            outline: 0;
+            border-color: #0d6efd;
+            background-color: #fff;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        
+        /* Ajustes para o botão de visualização de senha ("olhinho") colar perfeitamente no input */
+        .input-group {
+            display: flex;
+            flex-wrap: nowrap;
+        }
+        .input-group > input {
+            flex: 1 1 auto !important;
+            width: 1% !important;
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+        .input-group > .btn-eye {
+            border-top-right-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+            border: 1px solid #dee2e6;
+            border-left: 0;
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+        .input-group > .btn-eye:hover {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body class="bg-light py-5">
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                
+                <div class="mb-4">
+                    <a href="{% url 'gerenciar_usuarios' %}" class="text-decoration-none text-muted small fw-bold">
+                        &larr; VOLTAR AO GERENCIAMENTO
+                    </a>
+                </div>
+
+                <div class="card shadow border-0">
+                    <div class="card-header bg-dark text-white py-3 d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-person-plus-fill fs-5"></i>
+                        <h5 class="m-0 fw-bold">Cadastrar Novo Colaborador</h5>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <form method="POST">
+                            {% csrf_token %}
+                            
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger p-3 small shadow-sm rounded-3">
+                                    <strong class="d-block mb-1"><i class="bi bi-exclamation-triangle-fill me-1"></i> Atenção:</strong>
+                                    {% for error in form.non_field_errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-uppercase text-muted">Nome de Usuário</label>
+                                    {{ form.username }}
+                                    {% if form.username.errors %}
+                                        <div class="text-danger small mt-1 fw-bold">
+                                            {% for error in form.username.errors %}<i class="bi bi-arrow-return-right"></i> {{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-uppercase text-muted">Primeiro Nome</label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                        <div class="text-danger small mt-1 fw-bold">
+                                            {% for error in form.first_name.errors %}<i class="bi bi-arrow-return-right"></i> {{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-uppercase text-muted">Sobrenome</label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                        <div class="text-danger small mt-1 fw-bold">
+                                            {% for error in form.last_name.errors %}<i class="bi bi-arrow-return-right"></i> {{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-uppercase text-muted">Nível de Acesso <span class="text-danger">*</span></label>
+                                    {{ form.nivel_acesso }}
+                                </div>                               
+
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-uppercase text-muted">E-mail Corporativo</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="text-danger small mt-1 fw-bold">
+                                            {% for error in form.email.errors %}<i class="bi bi-arrow-return-right"></i> {{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <hr class="my-4 text-muted">
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-uppercase text-muted">Senha</label>
+                                    <div class="input-group">
+                                        {{ form.password1 }}
+                                        <button class="btn btn-eye toggle-password" type="button" data-target="id_password1">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                    {% if form.password1.errors %}
+                                        <div class="text-danger small mt-1 fw-bold">
+                                            {% for error in form.password1.errors %}<i class="bi bi-arrow-return-right"></i> {{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-uppercase text-muted">Confirmar Senha</label>
+                                    <div class="input-group">
+                                        {{ form.password2 }}
+                                        <button class="btn btn-eye toggle-password" type="button" data-target="id_password2">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                    {% if form.password2.errors %}
+                                        <div class="text-danger small mt-1 fw-bold">
+                                            {% for error in form.password2.errors %}<i class="bi bi-arrow-return-right"></i> {{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="mt-5">
+                                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">CRIAR CONTA AGORA</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <p class="text-center text-muted mt-4 small">
+                    <i class="bi bi-shield-lock-fill text-success"></i> A senha será encriptada automaticamente pelo sistema.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Adiciona a funcionalidade de alternar a visibilidade da senha a todos os botões 'toggle-password'
+        const toggleButtons = document.querySelectorAll('.toggle-password');
+        
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Identifica o campo de input associado através do atributo 'data-target'
+                const targetId = this.getAttribute('data-target');
+                const inputElement = document.getElementById(targetId);
+                const iconElement = this.querySelector('i');
+                
+                // Alterna entre o tipo 'password' (oculto) e 'text' (visível), atualizando o ícone
+                if (inputElement.type === 'password') {
+                    inputElement.type = 'text';
+                    iconElement.classList.remove('bi-eye');
+                    iconElement.classList.add('bi-eye-slash');
+                } else {
+                    inputElement.type = 'password';
+                    iconElement.classList.remove('bi-eye-slash');
+                    iconElement.classList.add('bi-eye');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
