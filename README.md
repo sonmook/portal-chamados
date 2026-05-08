@@ -13,23 +13,34 @@ Um sistema completo de Helpdesk e Gestão de Tickets de TI desenvolvido em **Pyt
 
 ### 📊 Dashboard e Métricas (Para a Equipe de TI)
 <img width="1142" height="1028" alt="image" src="https://github.com/user-attachments/assets/bdfc3eaa-3276-4d0e-87aa-988e13b3f4de" />
+
 * **Tempo Médio de Resolução (TMR):** Cálculo automático da média de horas levadas para fechar tickets.
 * **Controle de SLA Inteligente:** Prazos (SLA) calculados dinamicamente com base na prioridade do chamado (Crítica, Alta, Normal, Baixa), **pulando finais de semana automaticamente**.
 * **Gráficos em Tempo Real:** Visualização da distribuição de tickets por categoria (Software, Hardware, Rede, etc.) e saúde geral do SLA utilizando Chart.js.
 * **Ranking de Produtividade:** Gamificação amigável mostrando a quantidade de tickets resolvidos por cada membro da equipe.
 
-### 🔒 Autenticação e Segurança
-<img width="1890" height="1022" alt="image" src="https://github.com/user-attachments/assets/cf6507d0-3f90-488c-8214-6eee4cb3dd4f" />
-* **Google SSO (Single Sign-On):** Login com "um clique" utilizando contas corporativas do Google.
-* **Auto-Connect:** Vinculação automática de e-mails do Google com usuários previamente cadastrados manualmente.
-* **Gestão de Níveis de Acesso:** Separação estrita entre `Cliente` (Apenas visualiza e abre chamados), `Técnico de TI` (Acesso ao Dashboard e resolução) e `Administrador` (Gestor de usuários).
-
 ### 🎫 Gestão de Tickets
 <img width="1382" height="948" alt="image" src="https://github.com/user-attachments/assets/394dc5dd-c8a3-4415-b1b0-43df38205087" />
+
 * **Fila de Chamados:** Listagem responsiva com filtros combinados (Busca por texto + Status + Categoria).
 * **Ticket Locking:** Mecanismo de "Assumir Chamado", garantindo que apenas o técnico responsável possa enviar respostas e encerrar o ticket.
 * **Histórico Interativo:** Timeline de comentários estilo "chat" entre o usuário e o técnico, com suporte a anexo de prints/arquivos.
 * **Encerramento Documentado:** Obrigatoriedade de informar a solução do problema ao fechar um ticket, gerando base de conhecimento.
+
+### 👥 Gerenciamento de Usuários (Admin)
+<img width="1150" height="598" alt="image" src="https://github.com/user-attachments/assets/f83ae8e5-5f06-4b2b-ab5c-2dc7c6afd5f2" />
+
+* **Controle de Acessos:** Separação estrita entre `Cliente` (Apenas visualiza e abre chamados), `Técnico de TI` (Acesso ao Dashboard e resolução) e `Administrador` (Gestor de usuários).
+* **Busca Inteligente:** Barra de pesquisa com filtros avançados para encontrar rapidamente colaboradores por nome, e-mail ou username.
+* **Ativação e Bloqueio:** Interface ágil para ativar ou revogar o acesso de funcionários ao sistema com um único clique.
+* **Identificação Automática:** Captura e exibição automática do e-mail corporativo sincronizado com o Google.
+
+### 🔒 Autenticação e Segurança
+<img width="1890" height="1022" alt="image" src="https://github.com/user-attachments/assets/cf6507d0-3f90-488c-8214-6eee4cb3dd4f" />
+
+* **Google SSO (Single Sign-On):** Login com "um clique" utilizando contas corporativas do Google.
+* **Auto-Connect:** Vinculação automática de e-mails do Google com usuários previamente cadastrados manualmente, evitando duplicidade de contas.
+* **Proteção de Rotas:** Bloqueio de acesso não autorizado a páginas administrativas e restrição de visualização de tickets.
 
 ---
 
