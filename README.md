@@ -12,17 +12,20 @@ Um sistema completo de Helpdesk e Gestão de Tickets de TI desenvolvido em **Pyt
 ## ✨ Principais Funcionalidades
 
 ### 📊 Dashboard e Métricas (Para a Equipe de TI)
+<img width="1142" height="1028" alt="image" src="https://github.com/user-attachments/assets/bdfc3eaa-3276-4d0e-87aa-988e13b3f4de" />
 * **Tempo Médio de Resolução (TMR):** Cálculo automático da média de horas levadas para fechar tickets.
 * **Controle de SLA Inteligente:** Prazos (SLA) calculados dinamicamente com base na prioridade do chamado (Crítica, Alta, Normal, Baixa), **pulando finais de semana automaticamente**.
 * **Gráficos em Tempo Real:** Visualização da distribuição de tickets por categoria (Software, Hardware, Rede, etc.) e saúde geral do SLA utilizando Chart.js.
 * **Ranking de Produtividade:** Gamificação amigável mostrando a quantidade de tickets resolvidos por cada membro da equipe.
 
 ### 🔒 Autenticação e Segurança
+<img width="1890" height="1022" alt="image" src="https://github.com/user-attachments/assets/cf6507d0-3f90-488c-8214-6eee4cb3dd4f" />
 * **Google SSO (Single Sign-On):** Login com "um clique" utilizando contas corporativas do Google.
 * **Auto-Connect:** Vinculação automática de e-mails do Google com usuários previamente cadastrados manualmente.
 * **Gestão de Níveis de Acesso:** Separação estrita entre `Cliente` (Apenas visualiza e abre chamados), `Técnico de TI` (Acesso ao Dashboard e resolução) e `Administrador` (Gestor de usuários).
 
 ### 🎫 Gestão de Tickets
+<img width="1382" height="948" alt="image" src="https://github.com/user-attachments/assets/394dc5dd-c8a3-4415-b1b0-43df38205087" />
 * **Fila de Chamados:** Listagem responsiva com filtros combinados (Busca por texto + Status + Categoria).
 * **Ticket Locking:** Mecanismo de "Assumir Chamado", garantindo que apenas o técnico responsável possa enviar respostas e encerrar o ticket.
 * **Histórico Interativo:** Timeline de comentários estilo "chat" entre o usuário e o técnico, com suporte a anexo de prints/arquivos.
