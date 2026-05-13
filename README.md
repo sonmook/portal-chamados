@@ -12,7 +12,7 @@ Um sistema completo de Helpdesk e Gestão de Tickets de TI desenvolvido em **Pyt
 ## ✨ Principais Funcionalidades
 
 ### 📊 Dashboard e Métricas (Para a Equipe de TI)
-<img width="1142" height="1028" alt="image" src="https://github.com/user-attachments/assets/bdfc3eaa-3276-4d0e-87aa-988e13b3f4de" />
+<img width="1360" height="931" alt="Tela_Dashboard" src="https://github.com/user-attachments/assets/a7128337-8fea-40c3-bf59-b6d249db50d4" />
 
 * **Tempo Médio de Resolução (TMR):** Cálculo automático da média de horas levadas para fechar tickets.
 * **Controle de SLA Inteligente:** Prazos (SLA) calculados dinamicamente com base na prioridade do chamado (Crítica, Alta, Normal, Baixa), **pulando finais de semana automaticamente**.
@@ -20,7 +20,7 @@ Um sistema completo de Helpdesk e Gestão de Tickets de TI desenvolvido em **Pyt
 * **Ranking de Produtividade:** Gamificação amigável mostrando a quantidade de tickets resolvidos por cada membro da equipe.
 
 ### 🎫 Gestão de Tickets
-<img width="1382" height="948" alt="image" src="https://github.com/user-attachments/assets/394dc5dd-c8a3-4415-b1b0-43df38205087" />
+<img width="1430" height="435" alt="Tela_Chamados" src="https://github.com/user-attachments/assets/39aaebc6-20fe-4879-9bdd-299101277954" />
 
 * **Fila de Chamados:** Listagem responsiva com filtros combinados (Busca por texto + Status + Categoria).
 * **Ticket Locking:** Mecanismo de "Assumir Chamado", garantindo que apenas o técnico responsável possa enviar respostas e encerrar o ticket.
@@ -28,7 +28,7 @@ Um sistema completo de Helpdesk e Gestão de Tickets de TI desenvolvido em **Pyt
 * **Encerramento Documentado:** Obrigatoriedade de informar a solução do problema ao fechar um ticket, gerando base de conhecimento.
 
 ### 👥 Gerenciamento de Usuários (Admin)
-<img width="1150" height="598" alt="image" src="https://github.com/user-attachments/assets/f83ae8e5-5f06-4b2b-ab5c-2dc7c6afd5f2" />
+<img width="1476" height="692" alt="image" src="https://github.com/user-attachments/assets/18906f85-f551-44cd-8085-fd4a940d3def" />
 
 * **Controle de Acessos:** Separação estrita entre `Cliente` (Apenas visualiza e abre chamados), `Técnico de TI` (Acesso ao Dashboard e resolução) e `Administrador` (Gestor de usuários).
 * **Busca Inteligente:** Barra de pesquisa com filtros avançados para encontrar rapidamente colaboradores por nome, e-mail ou username.
@@ -36,7 +36,7 @@ Um sistema completo de Helpdesk e Gestão de Tickets de TI desenvolvido em **Pyt
 * **Identificação Automática:** Captura e exibição automática do e-mail corporativo sincronizado com o Google.
 
 ### 🔒 Autenticação e Segurança
-<img width="1890" height="1022" alt="image" src="https://github.com/user-attachments/assets/cf6507d0-3f90-488c-8214-6eee4cb3dd4f" />
+<img width="1908" height="935" alt="image" src="https://github.com/user-attachments/assets/981005fc-88a1-4ef7-90ad-167fd414d247" />
 
 * **Google SSO (Single Sign-On):** Login com "um clique" utilizando contas corporativas do Google.
 * **Auto-Connect:** Vinculação automática de e-mails do Google com usuários previamente cadastrados manualmente, evitando duplicidade de contas.
