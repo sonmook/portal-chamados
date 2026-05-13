@@ -27,6 +27,13 @@ Um sistema completo de Helpdesk e Gestão de Tickets de TI desenvolvido em **Pyt
 * **Histórico Interativo:** Timeline de comentários estilo "chat" entre o usuário e o técnico, com suporte a anexo de prints/arquivos.
 * **Encerramento Documentado:** Obrigatoriedade de informar a solução do problema ao fechar um ticket, gerando base de conhecimento.
 
+### 💬 Interação e Resolução de Chamados
+<img width="1505" height="881" alt="Chamado_Resolvido" src="https://github.com/user-attachments/assets/9c45ef59-494d-4ef4-a2b0-dae7b230d6c5" />
+
+* **Histórico Interativo:** Timeline de comentários estilo "chat" entre o usuário solicitante e o técnico responsável.
+* **Barra de Progresso Visual:** Identificação clara e com cores (via Bootstrap) do status atual e do técnico atribuído.
+* **Encerramento Documentado:** Obrigatoriedade de informar a solução do problema ao fechar um ticket. Uma vez resolvido, o chamado é bloqueado para novas interações, garantindo a integridade da base de conhecimento (auditoria).
+
 ### 👥 Gerenciamento de Usuários (Admin)
 <img width="1476" height="692" alt="image" src="https://github.com/user-attachments/assets/18906f85-f551-44cd-8085-fd4a940d3def" />
 
