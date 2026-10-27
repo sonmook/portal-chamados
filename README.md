@@ -67,5 +67,6 @@ Siga o passo a passo abaixo para clonar e rodar a aplicação na sua máquina:
 
 ### 1. Clone o repositório
 ```bash
-git clone [https://github.com/sonmook/portal-chamados.git](https://github.com/sonmook/portal-chamados.git)
+git clone https://github.com/sonmook/portal-chamados.git
 cd portal-chamados
+```
