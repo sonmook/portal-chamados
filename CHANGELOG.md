@@ -1,5 +1,13 @@
 # Histórico de atualizações
 
+## 2026-11-01 — Correção de autoria Git
+
+- Configurada a identidade oficial sonmook (e-mail noreply do GitHub) para novos commits neste repositório.
+- Corrigidos autor e committer dos quatro commits publicados nesta sessão, preservando suas árvores de arquivos e datas.
+- Identificadores anteriores passam a corresponder a: 0afd790 → 39bd724; 3900bda → bbd7aae; f610cd2 → 2fa45df; 50a9c2c → cab0215.
+- Referências aos identificadores anteriores nas entradas históricas foram mantidas como registro da publicação original.
+
+
 ## 2026-11-01 — Preservação de histórico e auditoria
 
 - Exclusão de usuários com vínculos de atendimento/auditoria agora é protegida; desativação preserva os dados.
