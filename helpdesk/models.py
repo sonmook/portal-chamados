@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
+from .validators import validar_anexo
 
 def calcular_prazo_util(data_inicial, horas_prazo):
     """
@@ -53,7 +54,7 @@ class Chamado(models.Model):
     categoria = models.CharField(max_length=30, choices=CATEGORIA_CHOICES, default='Outros')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Aberto')
     prioridade = models.CharField(max_length=20, choices=PRIORIDADE_CHOICES, default='Normal')
-    anexo = models.FileField(upload_to='anexos_chamados/', blank=True, null=True, verbose_name="Anexo (Print do Erro)")
+    anexo = models.FileField(validators=[validar_anexo], upload_to='anexos_chamados/', blank=True, null=True, verbose_name="Anexo (Print do Erro)")
     
     # Rastreamento de Datas e SLA
     data_criacao = models.DateTimeField(auto_now_add=True)
@@ -105,7 +106,7 @@ class Comentario(models.Model):
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
     texto = models.TextField(verbose_name="Mensagem")
     data_criacao = models.DateTimeField(auto_now_add=True)
-    anexo = models.FileField(upload_to='anexos_comentarios/', blank=True, null=True, verbose_name="Anexo")
+    anexo = models.FileField(validators=[validar_anexo], upload_to='anexos_comentarios/', blank=True, null=True, verbose_name="Anexo")
 
     def __str__(self):
         return f"Comentário de {self.autor.username} no chamado #{self.chamado.id}"

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import transaction
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseBadRequest
+from django.http import FileResponse, Http404, HttpResponseBadRequest
 from django.views.decorators.http import require_POST
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
@@ -12,7 +12,7 @@ from django.contrib import messages
 from datetime import timedelta
 
 from .models import Chamado, Comentario
-from .forms import ChamadoForm, ComentarioForm, NovoUsuarioForm, EditarUsuarioForm
+from .forms import ChamadoForm, ComentarioForm, NovoUsuarioForm, EditarUsuarioForm, ResolucaoForm
 
 
 @login_required
@@ -232,14 +232,15 @@ def fechar_chamado(request, id):
     _exigir_responsavel(request.user, chamado)
     if chamado.status in FINALIZADOS:
         raise PermissionDenied
-    texto_resolucao = request.POST.get('resolucao', '').strip()
-    if not texto_resolucao:
-        return HttpResponseBadRequest('Informe a solução antes de encerrar o chamado.')
+    form = ResolucaoForm(request.POST, request.FILES)
+    if not form.is_valid():
+        return HttpResponseBadRequest(form.errors.as_text(), content_type='text/plain; charset=utf-8')
+    texto_resolucao = form.cleaned_data['resolucao']
     Comentario.objects.create(
         chamado=chamado,
         autor=request.user,
         texto=f"✅ TICKET ENCERRADO POR TI - SOLUÇÃO:\n\n{texto_resolucao}",
-        anexo=request.FILES.get('anexo_resolucao'),
+        anexo=form.cleaned_data['anexo_resolucao'],
     )
     chamado.status = 'Resolvido'
     chamado.fechado_por = request.user
@@ -349,6 +350,7 @@ def editar_usuario(request, user_id):
 
 
 @login_required
+@require_POST
 def alternar_status_usuario(request, user_id):
     """
     Ativa ou desativa o acesso de um usuário ao sistema.
@@ -369,3 +371,22 @@ def alternar_status_usuario(request, user_id):
     status = "ativado" if usuario.is_active else "inativado"
     messages.success(request, f'Usuário {usuario.username} {status} com sucesso!')
     return redirect('gerenciar_usuarios')
+
+@login_required
+def baixar_anexo(request, id, comentario_id=None):
+    chamado = _chamado_visivel(request.user, id)
+    if comentario_id is None:
+        arquivo = chamado.anexo
+    else:
+        arquivo = get_object_or_404(chamado.comentarios, pk=comentario_id).anexo
+    if not arquivo:
+        raise Http404
+    try:
+        aberto = arquivo.open('rb')
+    except FileNotFoundError:
+        raise Http404
+    resposta = FileResponse(aberto, as_attachment=True, content_type='application/octet-stream')
+    resposta['X-Content-Type-Options'] = 'nosniff'
+    resposta['Content-Security-Policy'] = "sandbox; default-src 'none'"
+    resposta['Cache-Control'] = 'private, no-store'
+    return resposta

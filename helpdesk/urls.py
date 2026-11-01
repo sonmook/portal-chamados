@@ -9,6 +9,8 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     
     # --- Gestão de Chamados ---
+    path('chamado/<int:id>/anexo/', views.baixar_anexo, name='baixar_anexo'),
+    path('chamado/<int:id>/comentario/<int:comentario_id>/anexo/', views.baixar_anexo, name='baixar_anexo_comentario'),
     path('novo/', views.novo_chamado, name='novo_chamado'),
     path('chamado/<int:id>/', views.detalhes_chamado, name='detalhes_chamado'),
     path('chamado/<int:id>/status/', views.atualizar_status, name='atualizar_status'), 

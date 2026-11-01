@@ -1,6 +1,13 @@
 from django import forms
 from django.contrib.auth.models import User
 from .models import Chamado, Comentario
+from .validators import validar_anexo
+
+
+class ResolucaoForm(forms.Form):
+    resolucao = forms.CharField(strip=True)
+    anexo_resolucao = forms.FileField(required=False, validators=[validar_anexo])
+
 
 class ChamadoForm(forms.ModelForm):
     """

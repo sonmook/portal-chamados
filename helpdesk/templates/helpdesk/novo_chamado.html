@@ -72,6 +72,7 @@
                     <span>Bem-vindo, <strong>{{ request.user.username }}</strong></span>
                     <form method="post" action="{% url 'logout' %}" class="m-0">
                         {% csrf_token %}
+                            {{ form.errors }}
                         <button type="submit" class="btn btn-sm btn-outline-light">Sair</button>
                     </form>
                 </div>
@@ -105,6 +106,7 @@
                         
                         <form method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
+                            {{ form.errors }}
                             
                             <div class="row g-4">
                                 <div class="col-12">

@@ -70,3 +70,30 @@ Siga o passo a passo abaixo para clonar e rodar a aplicação na sua máquina:
 git clone https://github.com/sonmook/portal-chamados.git
 cd portal-chamados
 ```
+
+
+## Controles de acesso e anexos
+
+Novas contas são cadastradas por administradores em `/novo-usuario/` ou no Django Admin.
+O cadastro público via senha e via Google está fechado. Contas sociais já vinculadas
+continuam usando o login existente; cadastrar uma conta local não a vincula automaticamente
+à conta Google. A vinculação deve seguir um fluxo autenticado e verificado; não habilite
+cadastro público para contornar essa etapa.
+
+Anexos novos aceitam PNG, JPEG e PDF de até 10 MB. Extensão e assinatura básica são
+verificadas nas três entradas (abertura, comentário e resolução), inclusive nos formulários
+do admin por validação de modelo. Isso não constitui análise antivírus nem decodificação
+completa do conteúdo. Os arquivos são entregues como download binário, sem cache compartilhado.
+Solicitantes acessam anexos de seus chamados; equipe técnica acessa os chamados da fila.
+
+**Implantação:** mantenha `MEDIA_ROOT` privado. Não configure alias público de `/media/`,
+bucket público ou servidor estático apontando para uploads. Os downloads passam pelas rotas
+`/chamado/<id>/anexo/` e `/chamado/<id>/comentario/<id>/anexo/` com autorização.
+Arquivos antigos permanecem no armazenamento e também passam por essas rotas; não são
+revalidados ou removidos automaticamente. Links antigos de `/media/` deixam de funcionar.
+Configure no proxy um limite de corpo compatível com 10 MB por arquivo mais o formulário,
+e políticas de armazenamento/antivírus conforme a implantação.
+
+Após atualizar, execute `python manage.py migrate` (migração 0009 de validadores) e
+`python manage.py test helpdesk`. Ativar/bloquear usuários agora exige POST com CSRF;
+integrações que faziam GET nessa rota devem ser atualizadas.

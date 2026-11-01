@@ -157,3 +157,7 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 # Força o sistema a vincular o Google a uma conta existente automaticamente,
 # ignorando o formulário de Signup!
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+
+# Somente administradores cadastram novos usuários. Logins existentes continuam disponíveis.
+ACCOUNT_ADAPTER = 'helpdesk.adapters.ContaRestritaAdapter'
+SOCIALACCOUNT_ADAPTER = 'helpdesk.adapters.SocialRestritoAdapter'

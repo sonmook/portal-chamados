@@ -128,13 +128,15 @@
                                     <a href="{% url 'editar_usuario' u.id %}" class="btn btn-sm btn-light border" title="Editar">
                                         <i class="bi bi-pencil-square text-primary"></i>
                                     </a>
-                                    <a href="{% url 'alternar_status_usuario' u.id %}" class="btn btn-sm btn-light border" title="Ativar/Bloquear" onclick="return confirm('Tem certeza que deseja mudar o status deste utilizador?');">
+                                    <form method="post" action="{% url 'alternar_status_usuario' u.id %}" onsubmit="return confirm('Tem certeza que deseja mudar o status deste utilizador?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-light border" title="Ativar/Bloquear">
                                         {% if u.is_active %}
                                             <i class="bi bi-person-fill-slash text-danger"></i>
                                         {% else %}
                                             <i class="bi bi-person-check-fill text-success"></i>
                                         {% endif %}
-                                    </a>
+                                    </button></form>
                                 </div>
                             </td>
                         </tr>
