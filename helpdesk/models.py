@@ -90,7 +90,7 @@ class Chamado(models.Model):
         Propriedade computada que retorna True se o chamado não está resolvido
         e a data/hora atual ultrapassou o vencimento do SLA.
         """
-        if self.status != 'Resolvido' and self.data_vencimento and timezone.now() > self.data_vencimento:
+        if self.status not in ('Resolvido', 'Fechado') and self.data_vencimento and timezone.now() > self.data_vencimento:
             return True
         return False                                         
 
@@ -118,4 +118,9 @@ def somar_horas_uteis(data_inicio, horas_a_somar):
         data_final += timedelta(hours=1)
         if data_final.weekday() < 5:
             horas_a_somar -= 1
-    return data_final   
+    return data_final
+
+class JanelaLogin(models.Model):
+    chave = models.CharField(max_length=64, unique=True)
+    tentativas = models.PositiveIntegerField(default=0)
+    expira_em = models.DateTimeField(db_index=True)

@@ -1,5 +1,16 @@
 # Histórico de atualizações
 
+## 2026-11-01 — Autenticação, administração e SLA
+
+- Cadastro administrativo aplica os validadores de senha com os dados do usuário.
+- Proteção contra desativação/rebaixamento do último administrador ativo na aplicação e no Django Admin; exclusão de administradores ativos é bloqueada no admin.
+- Login local limitado no banco: 10 POSTs por conta/IP e 50 por IP em janelas fixas de 15 minutos; resposta 429 com Retry-After.
+- Login local renderiza mesmo sem configuração Google.
+- SLA histórico compara encerramento ao prazo (igualdade conta dentro); Fechado é terminal nas métricas, ranking e interface.
+- Registros sem datas são identificados sem classificação inventada; TMR legado usa data de atualização como fallback.
+- 48 testes aprovados. Migração necessária: 0010_limitar_login.
+
+
 ## 2026-11-01 — Anexos privados e acesso restrito
 
 - Downloads de anexos agora verificam o acesso ao chamado e são entregues como arquivos para baixar, sem cache compartilhado.

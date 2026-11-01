@@ -97,3 +97,24 @@ e políticas de armazenamento/antivírus conforme a implantação.
 Após atualizar, execute `python manage.py migrate` (migração 0009 de validadores) e
 `python manage.py test helpdesk`. Ativar/bloquear usuários agora exige POST com CSRF;
 integrações que faziam GET nessa rota devem ser atualizadas.
+
+
+## Login e administração
+
+Execute a migração 0010 antes de usar o login local. O limite de `/contas/login/`
+conta todos os POSTs que passam pelo CSRF (incluindo os bem-sucedidos): 10 por
+conta/IP e 50 por IP em janelas fixas de 15 minutos. Contadores ficam no banco,
+com chaves hash, e registros expirados são limpos nas próximas tentativas.
+Um bloqueio retorna 429 com Retry-After; a virada de janela permite novas tentativas.
+Nomes de conta são normalizados para contagem; o login mantém o comportamento Django.
+Não se confia em X-Forwarded-For. Atrás de proxy, configure REMOTE_ADDR no servidor
+com uma origem confiável; caso contrário todos os clientes podem compartilhar o limite.
+Esse limite cobre o login local do portal, não /admin/ ou o fluxo OAuth/Allauth.
+O servidor deve complementar a proteção contra tráfego abusivo e ataques distribuídos.
+
+Edição de contas preserva pelo menos um administrador ativo com acesso ao admin
+(is_active/is_staff/is_superuser). No Django Admin é necessário rebaixar um
+administrador antes de excluí-lo. Operações SQL/ORM diretas continuam sendo de
+responsabilidade do operador. Alterações pelas telas usam transações e bloqueios
+de administradores; SQLite não oferece bloqueio de linha e pode rejeitar escritas
+concorrentes. Testes de concorrência na infraestrutura de produção ainda são necessários.

@@ -3,7 +3,8 @@ from django.db import transaction
 from django.core.exceptions import PermissionDenied
 from django.http import FileResponse, Http404, HttpResponseBadRequest
 from django.views.decorators.http import require_POST
-from django.db.models import Q
+from django.db.models import Q, F
+from .user_security import bloquear_administradores
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User 
@@ -45,27 +46,27 @@ def dashboard(request):
 
     # Cálculo de Métricas (Apenas para equipe de TI)
     if request.user.is_staff:
-        resolvidos = base_chamados.filter(status='Resolvido')
+        resolvidos = base_chamados.filter(status__in=FINALIZADOS)
         
         # Análise de SLA
-        dentro_sla = resolvidos.filter(data_vencimento__gt=timezone.now()).count()
-        fora_sla = resolvidos.count() - dentro_sla
+        dentro_sla = resolvidos.filter(data_fechamento__isnull=False, data_vencimento__isnull=False).filter(data_fechamento__lte=F('data_vencimento')).count()
+        fora_sla = resolvidos.filter(data_fechamento__gt=F('data_vencimento')).count()
         
         # Ranking da Equipe
         membros_ti = User.objects.filter(is_staff=True)
         for membro in membros_ti:
-            qtd_fechados = base_chamados.filter(status='Resolvido', fechado_por=membro).count()
+            qtd_fechados = base_chamados.filter(status__in=FINALIZADOS, fechado_por=membro).count()
             produtividade_equipe.append({
                 'username': membro.get_full_name() or membro.username,
                 'count': qtd_fechados
             })
         produtividade_equipe = sorted(produtividade_equipe, key=lambda x: x['count'], reverse=True)
-        minha_produtividade = base_chamados.filter(status='Resolvido', fechado_por=request.user).count()
+        minha_produtividade = base_chamados.filter(status__in=FINALIZADOS, fechado_por=request.user).count()
         
         # Cálculo do Tempo Médio de Resolução (TMR) em Horas
         tempos_resolucao = []
         for chamado in resolvidos:
-            data_fim = getattr(chamado, 'data_fechamento', chamado.data_atualizacao)
+            data_fim = chamado.data_fechamento or chamado.data_atualizacao
             if data_fim and chamado.data_criacao:
                 tempo_segundos = (data_fim - chamado.data_criacao).total_seconds()
                 tempos_resolucao.append(tempo_segundos)
@@ -89,11 +90,12 @@ def dashboard(request):
         'tmr_horas': tmr_horas,
         'total': base_chamados.count(),
         'abertos': base_chamados.filter(status='Aberto').count(),
-        'resolvidos': base_chamados.filter(status='Resolvido').count(),
-        'vencidos': base_chamados.filter(data_vencimento__lt=timezone.now()).exclude(status='Resolvido').count(),
+        'resolvidos': base_chamados.filter(status__in=FINALIZADOS).count(),
+        'vencidos': base_chamados.filter(data_vencimento__lt=timezone.now()).exclude(status__in=FINALIZADOS).count(),
         'ultimos_chamados': ultimos_chamados,
         'dados_grafico': dados_categorias,
         'dados_sla': [dentro_sla, fora_sla],
+        'sla_sem_dados': base_chamados.filter(status__in=FINALIZADOS).filter(Q(data_fechamento__isnull=True) | Q(data_vencimento__isnull=True)).count(),
         'produtividade_equipe': produtividade_equipe,
         'minha_produtividade': minha_produtividade,
     }
@@ -328,6 +330,7 @@ def criar_usuario(request):
 
 
 @login_required
+@transaction.atomic
 def editar_usuario(request, user_id):
     """
     Permite a edição dos dados e nível de acesso de um usuário específico.
@@ -335,6 +338,7 @@ def editar_usuario(request, user_id):
     if not request.user.is_superuser:
         return redirect('lista_chamados')
         
+    bloquear_administradores()
     usuario = get_object_or_404(User, id=user_id)
     
     if request.method == 'POST':
@@ -351,6 +355,7 @@ def editar_usuario(request, user_id):
 
 @login_required
 @require_POST
+@transaction.atomic
 def alternar_status_usuario(request, user_id):
     """
     Ativa ou desativa o acesso de um usuário ao sistema.
@@ -359,6 +364,7 @@ def alternar_status_usuario(request, user_id):
     if not request.user.is_superuser:
         return redirect('lista_chamados')
         
+    bloquear_administradores()
     usuario = get_object_or_404(User, id=user_id)
     
     if usuario == request.user:

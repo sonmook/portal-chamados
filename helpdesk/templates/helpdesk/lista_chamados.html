@@ -76,6 +76,7 @@
                     <option value="">Todos os Status</option>
                     <option value="Aberto" {% if status_filter == 'Aberto' %}selected{% endif %}>🔴 Aberto</option>
                     <option value="Em Andamento" {% if status_filter == 'Em Andamento' %}selected{% endif %}>🔵 Em Andamento</option>
+                    <option value="Fechado" {% if status_filter == 'Fechado' %}selected{% endif %}>Fechado</option>
                     <option value="Resolvido" {% if status_filter == 'Resolvido' %}selected{% endif %}>🟢 Resolvido</option>
                 </select>
 
@@ -154,7 +155,7 @@
                                 {% elif chamado.status == 'Em Andamento' %}
                                     <span class="badge rounded-pill bg-primary-subtle text-primary px-3 border border-primary">Andamento</span>
                                 {% else %}
-                                    <span class="badge rounded-pill bg-success-subtle text-success px-3 border border-success">Resolvido</span>
+                                    <span class="badge rounded-pill bg-success-subtle text-success px-3 border border-success">{{ chamado.status }}</span>
                                 {% endif %}
                             </td>
                             
@@ -169,8 +170,8 @@
                             </td>
                             
                             <td>
-                                {% if chamado.status == 'Resolvido' %}
-                                    <span class="text-success small fw-bold"><i class="bi bi-check-all"></i> Cumprido</span>
+                                {% if chamado.status == 'Resolvido' or chamado.status == 'Fechado' %}
+                                    <span class="text-success small fw-bold"><i class="bi bi-check-all"></i> Finalizado</span>
                                 {% elif chamado.sla_estourado %}
                                     <span class="badge bg-danger shadow-sm py-2 px-2 text-wrap" style="animation: pulse 2s infinite;">
                                         <i class="bi bi-alarm-fill"></i> Venceu: {{ chamado.data_vencimento|date:"d/m H:i" }}

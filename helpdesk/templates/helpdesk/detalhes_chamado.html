@@ -249,7 +249,7 @@
                                 {% elif chamado.status == 'Em Andamento' %}
                                     <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill">Em Andamento</span>
                                 {% else %}
-                                    <span class="badge bg-success fs-6 px-3 py-2 rounded-pill">Resolvido</span>
+                                    <span class="badge bg-success fs-6 px-3 py-2 rounded-pill">{{ chamado.status }}</span>
                                 {% endif %}
                             </li>
 

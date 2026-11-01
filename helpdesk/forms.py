@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from .user_security import validar_administrador
 from .models import Chamado, Comentario
 from .validators import validar_anexo
 
@@ -65,6 +67,15 @@ class NovoUsuarioForm(forms.ModelForm):
             raise forms.ValidationError("As senhas não coincidem.")
         return pass2
 
+    def _post_clean(self):
+        super()._post_clean()
+        senha = self.cleaned_data.get('password2')
+        if senha:
+            try:
+                validate_password(senha, self.instance)
+            except forms.ValidationError as erro:
+                self.add_error('password2', erro)
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data['password1'])
@@ -115,6 +126,15 @@ class EditarUsuarioForm(forms.ModelForm):
                 self.fields['nivel_acesso'].initial = 'ti'
             else:
                 self.fields['nivel_acesso'].initial = 'cliente'
+
+    def clean(self):
+        dados = super().clean()
+        if self.instance.pk and 'nivel_acesso' in dados:
+            validar_administrador(
+                self.instance.pk, dados.get('is_active', False),
+                dados['nivel_acesso'] == 'admin', dados['nivel_acesso'] == 'admin',
+            )
+        return dados
 
     def save(self, commit=True):
         user = super().save(commit=False)

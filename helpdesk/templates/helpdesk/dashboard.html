@@ -137,6 +137,7 @@
 
         </div>
 
+        {% if request.user.is_staff and sla_sem_dados %}<p class="text-muted">{{ sla_sem_dados }} chamado(s) finalizado(s) sem datas suficientes para classificar o SLA.</p>{% endif %}
         <div class="row g-4 mb-5">
             
             <div class="col-lg-8">
@@ -237,7 +238,7 @@
                                 {% elif chamado.status == 'Em Andamento' %}
                                     <span class="badge rounded-pill bg-primary-subtle text-primary px-3 border border-primary">Em Andamento</span>
                                 {% else %}
-                                    <span class="badge rounded-pill bg-success-subtle text-success px-3 border border-success">Resolvido</span>
+                                    <span class="badge rounded-pill bg-success-subtle text-success px-3 border border-success">{{ chamado.status }}</span>
                                 {% endif %}
                             </td>
                             <td class="pe-4 text-end">
