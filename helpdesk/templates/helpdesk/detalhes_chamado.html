@@ -80,9 +80,14 @@
                         <i class="bi bi-exclamation-circle-fill me-2 text-warning-emphasis fs-5"></i>
                         <strong class="text-dark">Chamado na Fila!</strong> Ninguém está a atuar neste ticket ainda.
                     </div>
-                    <a href="{% url 'assumir_chamado' chamado.id %}" class="btn btn-success fw-bold shadow-sm">
-                        <i class="bi bi-person-check-fill"></i> Assumir Chamado
-                    </a>
+                    {% if request.user.is_staff and ativo %}
+                    <form action="{% url 'assumir_chamado' chamado.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success fw-bold shadow-sm">
+                            <i class="bi bi-person-check-fill"></i> Assumir Chamado
+                        </button>
+                    </form>
+                    {% endif %}
                 </div>
                 
             {% elif chamado.tecnico == request.user %}
@@ -91,9 +96,14 @@
                         <i class="bi bi-person-badge-fill me-2 fs-5"></i>
                         <strong>Você é o responsável</strong> por este chamado.
                     </div>
-                    <a href="{% url 'devolver_chamado' chamado.id %}" class="btn btn-outline-danger btn-sm fw-bold">
-                        <i class="bi bi-arrow-return-left"></i> Devolver à Fila
-                    </a>
+                    {% if request.user.is_staff and ativo %}
+                    <form action="{% url 'devolver_chamado' chamado.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm fw-bold">
+                            <i class="bi bi-arrow-return-left"></i> Devolver à Fila
+                        </button>
+                    </form>
+                    {% endif %}
                 </div>
                 
             {% else %}
@@ -101,7 +111,7 @@
                     <i class="bi bi-lock-fill text-danger fs-3 me-3"></i>
                     <div>
                         <h6 class="mb-0 text-danger fw-bold">Acesso Bloqueado</h6>
-                        <span class="small text-muted">Este chamado está a ser atendido por <strong>{{ chamado.tecnico.username }}</strong>. Apenas ele pode interagir.</span>
+                        <span class="small text-muted">Este chamado está a ser atendido por <strong>{{ chamado.tecnico.username }}</strong>. O solicitante e o responsável podem responder.</span>
                     </div>
                 </div>
             {% endif %}
@@ -177,8 +187,8 @@
                     {% endfor %}
                 </div>
 
-                {% if chamado.status != 'Resolvido' %}
-                    {% if not chamado.tecnico or chamado.tecnico == request.user %}
+                {% if ativo %}
+                    {% if pode_responder %}
                         <div class="card border-0 shadow-sm border-top border-4 border-success">
                             <div class="card-body p-4" id="formulario-comentario">
                                 <h6 class="fw-bold mb-3"><i class="bi bi-reply-fill"></i> Adicionar Resposta</h6>
@@ -203,7 +213,7 @@
                     {% else %}
                         <div class="text-center p-4 bg-white rounded shadow-sm border text-muted">
                             <i class="bi bi-shield-lock display-4 opacity-25 mb-3"></i>
-                            <p class="m-0">Apenas o responsável <strong>({{ chamado.tecnico.username }})</strong> pode interagir com este chamado.</p>
+                            <p class="m-0">As respostas são permitidas ao solicitante e ao técnico responsável.</p>
                         </div>
                     {% endif %}
                 {% else %}
@@ -268,8 +278,8 @@
                             </li>
                         </ul>
                         
-                        {% if chamado.status != 'Resolvido' %}
-                            {% if not chamado.tecnico or chamado.tecnico == request.user %}
+                        {% if ativo %}
+                            {% if pode_fechar %}
                             <div class="p-3 bg-light border-top text-center">
                                 <button type="button" class="btn btn-outline-success w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#modalResolucao">
                                     <i class="bi bi-check2-circle"></i> Marcar como Resolvido

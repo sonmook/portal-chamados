@@ -1,4 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db import transaction
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseBadRequest
+from django.views.decorators.http import require_POST
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -155,110 +159,122 @@ def novo_chamado(request):
     return render(request, 'helpdesk/novo_chamado.html', {'form': form})
 
 
-@login_required
-def detalhes_chamado(request, id):
-    """
-    Exibe os detalhes de um chamado específico e processa a inclusão de novos comentários.
-    """
-    chamado = get_object_or_404(Chamado, id=id)
-    comentarios = chamado.comentarios.all().order_by('data_criacao') 
+FINALIZADOS = ('Resolvido', 'Fechado')
 
+
+def _chamado_visivel(user, id, *, bloquear=False):
+    chamados = Chamado.objects.all()
+    if bloquear:
+        chamados = chamados.select_for_update()
+    if not user.is_staff:
+        chamados = chamados.filter(solicitante=user)
+    return get_object_or_404(chamados, pk=id)
+
+
+def _exigir_responsavel(user, chamado):
+    if not user.is_staff or chamado.tecnico_id != user.pk:
+        raise PermissionDenied
+
+
+@login_required
+@transaction.atomic
+def detalhes_chamado(request, id):
+    chamado = _chamado_visivel(request.user, id, bloquear=request.method == 'POST')
+    ativo = chamado.status not in FINALIZADOS
+    pode_responder = ativo and (
+        chamado.solicitante_id == request.user.pk
+        or (request.user.is_staff and chamado.tecnico_id == request.user.pk)
+    )
     if request.method == 'POST':
-        form = ComentarioForm(request.POST, request.FILES) 
+        if not pode_responder:
+            raise PermissionDenied
+        form = ComentarioForm(request.POST, request.FILES)
         if form.is_valid():
             comentario = form.save(commit=False)
-            comentario.chamado = chamado 
-            comentario.autor = request.user 
+            comentario.chamado = chamado
+            comentario.autor = request.user
             comentario.save()
-            return redirect('detalhes_chamado', id=chamado.id) 
+            return redirect('detalhes_chamado', id=chamado.id)
     else:
         form = ComentarioForm()
-
     return render(request, 'helpdesk/detalhes_chamado.html', {
         'chamado': chamado,
-        'comentarios': comentarios,
-        'form': form
+        'comentarios': chamado.comentarios.all().order_by('data_criacao'),
+        'form': form,
+        'ativo': ativo,
+        'pode_responder': pode_responder,
+        'pode_fechar': ativo and request.user.is_staff and chamado.tecnico_id == request.user.pk,
     })
 
 
 @login_required
+@require_POST
+@transaction.atomic
 def atualizar_status(request, id):
-    """
-    Endpoint para alteração rápida do status de um chamado.
-    """
-    chamado = get_object_or_404(Chamado, id=id)
-    
-    if request.method == 'POST':
-        novo_status = request.POST.get('status')
-        if novo_status in dict(Chamado.STATUS_CHOICES).keys():
-            chamado.status = novo_status
-            chamado.save() 
-            
+    chamado = _chamado_visivel(request.user, id, bloquear=True)
+    _exigir_responsavel(request.user, chamado)
+    if chamado.status in FINALIZADOS:
+        raise PermissionDenied
+    # Encerramento deve passar por fechar_chamado para registrar solução e auditoria.
+    novo_status = request.POST.get('status')
+    if novo_status not in ('Aberto', 'Em Andamento'):
+        return HttpResponseBadRequest('Status inválido. Use o encerramento com solução.')
+    chamado.status = novo_status
+    chamado.save()
     return redirect('detalhes_chamado', id=chamado.id)
 
 
 @login_required
+@require_POST
+@transaction.atomic
 def fechar_chamado(request, id):
-    """
-    Finaliza o chamado, registrando a data de encerramento e o usuário responsável.
-    Adiciona a solução fornecida como um comentário no histórico.
-    """
-    chamado = get_object_or_404(Chamado, id=id)
-    
-    if request.method == 'POST':
-        if request.user.is_staff:
-            chamado.status = 'Resolvido'
-            chamado.fechado_por = request.user 
-            chamado.data_fechamento = timezone.now()
-            chamado.save()
-            
-            texto_resolucao = request.POST.get('resolucao')
-            anexo = request.FILES.get('anexo_resolucao')
-            
-            if texto_resolucao:
-                Comentario.objects.create(
-                    chamado=chamado,
-                    autor=request.user,
-                    texto=f"✅ TICKET ENCERRADO POR TI - SOLUÇÃO:\n\n{texto_resolucao}",
-                    anexo=anexo
-                )
-        
-        elif chamado.solicitante == request.user:
-             chamado.status = 'Resolvido'
-             chamado.data_fechamento = timezone.now()
-             chamado.save()
-                
+    chamado = _chamado_visivel(request.user, id, bloquear=True)
+    _exigir_responsavel(request.user, chamado)
+    if chamado.status in FINALIZADOS:
+        raise PermissionDenied
+    texto_resolucao = request.POST.get('resolucao', '').strip()
+    if not texto_resolucao:
+        return HttpResponseBadRequest('Informe a solução antes de encerrar o chamado.')
+    Comentario.objects.create(
+        chamado=chamado,
+        autor=request.user,
+        texto=f"✅ TICKET ENCERRADO POR TI - SOLUÇÃO:\n\n{texto_resolucao}",
+        anexo=request.FILES.get('anexo_resolucao'),
+    )
+    chamado.status = 'Resolvido'
+    chamado.fechado_por = request.user
+    chamado.data_fechamento = timezone.now()
+    chamado.save()
     return redirect('detalhes_chamado', id=chamado.id)
 
 
 @login_required
+@require_POST
 def assumir_chamado(request, chamado_id):
-    """
-    Atribui o chamado ao técnico que clicou no botão (Ticket Locking).
-    """
-    chamado = get_object_or_404(Chamado, id=chamado_id)
-    
-    if not chamado.tecnico:
-        chamado.tecnico = request.user
-        chamado.save()
-        messages.success(request, f"Você assumiu o chamado #{chamado.id}.")
-        
-    return redirect('detalhes_chamado', id=chamado_id) 
+    chamado = _chamado_visivel(request.user, chamado_id)
+    if not request.user.is_staff:
+        raise PermissionDenied
+    # A atualização condicional impede sobrescrever uma atribuição concorrente.
+    atualizado = Chamado.objects.filter(pk=chamado.pk, tecnico__isnull=True).exclude(
+        status__in=FINALIZADOS
+    ).update(tecnico=request.user, data_atualizacao=timezone.now())
+    if atualizado:
+        messages.success(request, "Você assumiu o chamado.")
+    return redirect('detalhes_chamado', id=chamado.id)
 
 
 @login_required
+@require_POST
+@transaction.atomic
 def devolver_chamado(request, chamado_id):
-    """
-    Remove a atribuição do chamado, devolvendo-o para a fila geral.
-    """
-    chamado = get_object_or_404(Chamado, id=chamado_id)
-    
-    if chamado.tecnico == request.user:
-        chamado.tecnico = None
-        chamado.save()
-        messages.warning(request, f"Chamado #{chamado.id} devolvido para a fila.")
-        
-    return redirect('detalhes_chamado', id=chamado_id)
+    chamado = _chamado_visivel(request.user, chamado_id, bloquear=True)
+    _exigir_responsavel(request.user, chamado)
+    if chamado.status in FINALIZADOS:
+        raise PermissionDenied
+    chamado.tecnico = None
+    chamado.save()
+    messages.warning(request, "Chamado devolvido para a fila.")
+    return redirect('detalhes_chamado', id=chamado.id)
 
 
 # ==========================================
