@@ -63,9 +63,9 @@ class Chamado(models.Model):
     data_fechamento = models.DateTimeField(null=True, blank=True, verbose_name="Data de Fechamento")
 
     # Relacionamentos com Usuários
-    solicitante = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chamados_solicitados')
-    tecnico = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='chamados_atendidos', verbose_name='Técnico Responsável')
-    fechado_por = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name='chamados_fechados')
+    solicitante = models.ForeignKey(User, on_delete=models.PROTECT, related_name='chamados_solicitados')
+    tecnico = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, related_name='chamados_atendidos', verbose_name='Técnico Responsável')
+    fechado_por = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True, related_name='chamados_fechados')
 
     def save(self, *args, **kwargs):
         """
@@ -102,8 +102,8 @@ class Comentario(models.Model):
     """
     Modelo para armazenar as interações (chat/respostas) dentro de um chamado.
     """
-    chamado = models.ForeignKey(Chamado, on_delete=models.CASCADE, related_name='comentarios')
-    autor = models.ForeignKey(User, on_delete=models.CASCADE)
+    chamado = models.ForeignKey(Chamado, on_delete=models.PROTECT, related_name='comentarios')
+    autor = models.ForeignKey(User, on_delete=models.PROTECT)
     texto = models.TextField(verbose_name="Mensagem")
     data_criacao = models.DateTimeField(auto_now_add=True)
     anexo = models.FileField(validators=[validar_anexo], upload_to='anexos_comentarios/', blank=True, null=True, verbose_name="Anexo")
@@ -124,3 +124,20 @@ class JanelaLogin(models.Model):
     chave = models.CharField(max_length=64, unique=True)
     tentativas = models.PositiveIntegerField(default=0)
     expira_em = models.DateTimeField(db_index=True)
+
+
+class RegistroAuditoria(models.Model):
+    criado_em = models.DateTimeField(auto_now_add=True, db_index=True)
+    ator = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True)
+    origem = models.CharField(max_length=12, default='sistema')
+    objeto = models.CharField(max_length=40)
+    objeto_id = models.PositiveBigIntegerField()
+    acao = models.CharField(max_length=16)
+    alteracoes = models.JSONField(default=dict)
+
+    class Meta:
+        ordering = ['-criado_em', '-pk']
+        indexes = [models.Index(fields=['objeto', 'objeto_id'])]
+
+    def __str__(self):
+        return f'{self.objeto} #{self.objeto_id}: {self.acao}'

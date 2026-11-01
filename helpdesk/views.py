@@ -5,6 +5,7 @@ from django.http import FileResponse, Http404, HttpResponseBadRequest
 from django.views.decorators.http import require_POST
 from django.db.models import Q, F
 from .user_security import bloquear_administradores
+from .audit import registrar
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User 
@@ -145,6 +146,7 @@ def lista_chamados(request):
 
 
 @login_required
+@transaction.atomic
 def novo_chamado(request):
     """
     Processa a criação de um novo ticket de suporte.
@@ -253,6 +255,7 @@ def fechar_chamado(request, id):
 
 @login_required
 @require_POST
+@transaction.atomic
 def assumir_chamado(request, chamado_id):
     chamado = _chamado_visivel(request.user, chamado_id)
     if not request.user.is_staff:
@@ -262,6 +265,7 @@ def assumir_chamado(request, chamado_id):
         status__in=FINALIZADOS
     ).update(tecnico=request.user, data_atualizacao=timezone.now())
     if atualizado:
+        registrar('helpdesk.chamado', chamado.pk, 'alterado', {'tecnico_id': {'antes': None, 'depois': request.user.pk}})
         messages.success(request, "Você assumiu o chamado.")
     return redirect('detalhes_chamado', id=chamado.id)
 
@@ -311,6 +315,7 @@ def gerenciar_usuarios(request):
 
 
 @login_required
+@transaction.atomic
 def criar_usuario(request):
     """
     Permite a criação manual de contas através da interface.

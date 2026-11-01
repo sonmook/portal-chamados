@@ -1,21 +1,11 @@
 from django.contrib import admin
-from .models import Chamado, Comentario
-
-# Registra os modelos no painel administrativo padrão do Django (/admin)
-# Isso permite gerenciar os dados cruamente pelo backend, se necessário.
-admin.site.register(Chamado)
-admin.site.register(Comentario)
-
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 
-from .models import Chamado, Comentario
+from .models import Chamado, Comentario, RegistroAuditoria
 from .user_security import bloquear_administradores, validar_administrador
-
-admin.site.register(Chamado)
-admin.site.register(Comentario)
 
 
 class UsuarioProtegidoForm(UserChangeForm):
@@ -41,6 +31,70 @@ class UsuarioProtegidoAdmin(UserAdmin):
         if queryset.filter(is_active=True, is_staff=True, is_superuser=True).exists():
             raise PermissionDenied('Rebaixe o administrador antes de excluir sua conta.')
         super().delete_queryset(request, queryset)
+
+
+
+
+
+@admin.register(Chamado)
+class ChamadoAdmin(admin.ModelAdmin):
+    readonly_fields = ('status', 'data_criacao', 'data_atualizacao', 'data_fechamento', 'fechado_por')
+
+    def has_change_permission(self, request, obj=None):
+        if obj and obj.status in ('Resolvido', 'Fechado'):
+            return False
+        return super().has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def save_model(self, request, obj, form, change):
+        if change and Chamado.objects.select_for_update().get(pk=obj.pk).status in ('Resolvido', 'Fechado'):
+            raise PermissionDenied
+        super().save_model(request, obj, form, change)
+
+    def delete_queryset(self, request, queryset):
+        raise PermissionDenied
+
+
+@admin.register(Comentario)
+class ComentarioAdmin(admin.ModelAdmin):
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def delete_queryset(self, request, queryset):
+        raise PermissionDenied
+
+
+@admin.register(RegistroAuditoria)
+class RegistroAuditoriaAdmin(admin.ModelAdmin):
+    list_display = ('criado_em', 'ator', 'origem', 'objeto', 'objeto_id', 'acao')
+    list_filter = ('origem', 'objeto', 'acao')
+    search_fields = ('=objeto_id',)
+
+    def has_module_permission(self, request):
+        return request.user.is_active and request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return self.has_module_permission(request)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def delete_queryset(self, request, queryset):
+        raise PermissionDenied
 
 
 admin.site.unregister(User)

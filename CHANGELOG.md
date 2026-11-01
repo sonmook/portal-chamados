@@ -1,5 +1,17 @@
 # Histórico de atualizações
 
+## 2026-11-01 — Preservação de histórico e auditoria
+
+- Exclusão de usuários com vínculos de atendimento/auditoria agora é protegida; desativação preserva os dados.
+- Chamados e comentários não podem ser excluídos no Django Admin; chamados finalizados e comentários existentes não podem ser alterados por essa interface.
+- Trilha de alterações com data, ator, origem, status, responsáveis e dados administrativos; conteúdo pessoal e senhas não são armazenados na trilha.
+- Consulta da auditoria restrita a superusuários e somente leitura no admin.
+- Registros de criação/edição/exclusão dos modelos acompanhados e de grupos/permissões de usuários; atualizações condicionais da atribuição têm registro explícito.
+- Corrigida duplicação de registros de modelos no admin introduzida no commit anterior, que impedia a inicialização.
+- Adicionadas 14 regressões de histórico/auditoria; suíte completa com 62 testes.
+- Migração necessária: 0011_preservar_historico_auditoria. Sem reconstrução retroativa de eventos.
+
+
 ## 2026-11-01 — Autenticação, administração e SLA
 
 - Cadastro administrativo aplica os validadores de senha com os dados do usuário.

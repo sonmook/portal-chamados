@@ -118,3 +118,41 @@ administrador antes de excluí-lo. Operações SQL/ORM diretas continuam sendo d
 responsabilidade do operador. Alterações pelas telas usam transações e bloqueios
 de administradores; SQLite não oferece bloqueio de linha e pode rejeitar escritas
 concorrentes. Testes de concorrência na infraestrutura de produção ainda são necessários.
+
+
+## Preservação de histórico e auditoria
+
+A migração 0011 protege usuários referenciados como solicitantes, técnicos,
+responsáveis pelo encerramento, autores de comentários ou atores da auditoria.
+Excluir essas contas retorna proteção de relacionamento; prefira desativá-las.
+Nenhum dado histórico é removido ou anonimizado automaticamente. A política de
+retenção e eventual anonimização deve ser definida antes de executar processos
+específicos para esse fim, considerando a preservação dos vínculos.
+
+O Django Admin não permite excluir chamados ou comentários, alterar chamados
+Resolvidos/Fechados nem editar comentários. Status e encerramento são controlados
+pelo fluxo de atendimento, não pelos campos do admin. Comentários novos são
+adicionados pelo portal. Chamados com comentários também têm exclusão protegida
+no relacionamento do modelo.
+
+Superusuários podem consultar os registros de auditoria no Django Admin, sem
+botões de criação, edição ou exclusão. Cada evento inclui data, ator, origem
+(portal/admin/sistema), objeto e alterações. Status, IDs de responsáveis, papéis,
+ativação e datas têm valores antes/depois. Nomes, e-mail, senha, descrição,
+comentários e caminhos de anexos são registrados apenas como campo alterado;
+nem senhas nem hashes são armazenados nessa trilha. Mudanças de grupos e
+permissões diretas dos usuários registram os IDs envolvidos.
+
+A coleta começa após a migração, sem reconstruir eventos anteriores. Alterações
+fora de requisições identificadas pelo middleware ficam com ator vazio e origem
+sistema. Isso não constitui log imutável contra administradores do banco:
+SQL direto, QuerySet.update/bulk_create e mudanças externas não passam pelos
+signals. A atribuição condicional de chamados tem registro explícito na view.
+As rotas de alteração do portal e o admin usam transações para preservar a
+consistência do registro e da alteração. Integrações futuras devem também usar
+transações e registrar atualizações em lote explicitamente. Operações de terminal
+fora de transação não oferecem a mesma atomicidade.
+
+Backups devem abranger banco, uploads privados e trilha de auditoria juntos.
+Não foram realizados nesta etapa testes de restauração, concorrência real em
+produção ou retenção em armazenamento externo protegido contra adulteração.
