@@ -1,0 +1,67 @@
+name: portal-homologacao
+services:
+  app:
+    build:
+      context: ..
+      secrets:
+        - proxy_ca
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    env_file:
+      - ${HOMOLOGACAO_ENV_FILE:-../.env.homologacao}
+    environment:
+      DJANGO_SETTINGS_MODULE: core.settings_production
+      DJANGO_ALLOWED_HOSTS: ${STAGING_DOMAIN:?Defina STAGING_DOMAIN}
+      DJANGO_CSRF_TRUSTED_ORIGINS: https://${STAGING_DOMAIN}
+      DJANGO_DB_PATH: /data/db.sqlite3
+      DJANGO_MEDIA_ROOT: /data/private
+      DJANGO_STATIC_ROOT: /static
+      DJANGO_TRUST_PROXY_SSL_HEADER: '1'
+      DJANGO_TRUSTED_PROXY_NETWORKS: ${HOMOLOGACAO_PROXY_IP:-172.30.89.254}/32
+    volumes:
+      - data:/data
+      - static:/static
+    networks:
+      - backend
+    healthcheck:
+      test: ['CMD', 'python', '-c', 'import os,urllib.request; r=urllib.request.Request("http://127.0.0.1:8000/contas/login/",headers={"Host":os.environ["DJANGO_ALLOWED_HOSTS"],"X-Forwarded-Proto":"https"}); urllib.request.urlopen(r,timeout=5)']
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+  proxy:
+    image: caddy:2.10.2-alpine
+    restart: unless-stopped
+    environment:
+      STAGING_DOMAIN: ${STAGING_DOMAIN:?Defina STAGING_DOMAIN}
+      NO_PROXY: app,localhost,127.0.0.1
+      no_proxy: app,localhost,127.0.0.1
+    ports:
+      - '${BIND_ADDRESS:-0.0.0.0}:${HTTP_PORT:-80}:80'
+      - '${BIND_ADDRESS:-0.0.0.0}:${HTTPS_PORT:-443}:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - static:/srv/static:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      backend:
+        ipv4_address: ${HOMOLOGACAO_PROXY_IP:-172.30.89.254}
+    depends_on:
+      app:
+        condition: service_healthy
+networks:
+  backend:
+    ipam:
+      config:
+        - subnet: ${HOMOLOGACAO_SUBNET:-172.30.89.0/24}
+volumes:
+  data:
+  static:
+  caddy_data:
+  caddy_config:
+secrets:
+  proxy_ca:
+    file: ${BUILD_CA_BUNDLE:-/etc/ssl/certs/ca-certificates.crt}

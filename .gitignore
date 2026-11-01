@@ -19,3 +19,7 @@ media/
 .env.*
 !.env.example
 staticfiles/
+
+# Cópias privadas de homologação
+backups/
+*.sqlite3
