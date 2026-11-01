@@ -12,3 +12,10 @@ __pycache__/
 
 # Arquivos de Mídia (Uploads dos usuários)
 media/
+
+# Configuração local e saídas de build
+.django-secret-key
+.env
+.env.*
+!.env.example
+staticfiles/

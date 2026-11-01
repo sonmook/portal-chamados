@@ -65,12 +65,28 @@ Um sistema completo de Helpdesk e Gestão de Tickets de TI desenvolvido em **Pyt
 
 Siga o passo a passo abaixo para clonar e rodar a aplicação na sua máquina:
 
-### 1. Clone o repositório
+Use Python 3.12 (registrado em `.python-version`). As dependências de execução
+estão fixadas com hashes em `requirements.txt`; `requirements.in` declara as diretas.
+
 ```bash
 git clone https://github.com/sonmook/portal-chamados.git
 cd portal-chamados
+python3 -m venv .venv
+.venv/bin/python -m pip install --require-hashes -r requirements.txt
+.venv/bin/python manage.py migrate
+.venv/bin/python manage.py createsuperuser
+.venv/bin/python manage.py runserver
 ```
 
+No Windows, use `py -3.12 -m venv .venv` e substitua `.venv/bin/python` por
+`.\.venv\Scripts\python.exe` nos comandos.
+O login local funciona sem Google; configurar OAuth é necessário apenas para login social.
+A chave de desenvolvimento é gerada em `.django-secret-key`, ignorada pelo Git;
+não a copie para produção. Uma chave local diferente invalida sessões antigas.
+
+Para validar: `python manage.py test`, `python manage.py check --fail-level WARNING`
+e `python manage.py makemigrations --check --dry-run`, usando o Python da venv.
+Consulte [produção e CI](docs/operacao.md) e [auditoria de dependências](docs/dependencias.md).
 
 ## Controles de acesso e anexos
 

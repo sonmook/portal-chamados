@@ -1,0 +1,63 @@
+# Desenvolvimento, CI e produção
+
+## Instalação e atualização
+
+- Python 3.12, dependências de execução em requirements.txt com todas as versões e hashes.
+- Instalar: `python -m pip install --require-hashes -r requirements.txt` e `python -m pip check`.
+- Atualizar o lockfile em Python 3.12, num ambiente de ferramentas separado, com pip-tools 7.6.2:
+  `pip-compile --generate-hashes --strip-extras --upgrade --no-emit-index-url --no-emit-trusted-host --output-file requirements.txt requirements.in`.
+- Revisar o diff, auditar e rodar toda a suíte antes de publicar. Não editar hashes para contornar erros de integridade.
+- O lockfile foi instalado e validado em Linux/Python 3.12. Windows/macOS ainda não foram executados nesta etapa.
+
+## GitHub Actions
+
+O workflow `.github/workflows/ci.yml` roda em pushes à main, pull requests, manualmente
+e semanalmente (segunda-feira às 12:00 UTC). Usa token somente de leitura e não faz deploy.
+
+Executa instalação com hashes, pip check, checks Django, teste de migrações pendentes,
+suíte de testes, perfil de produção e collectstatic com configuração isolada.
+O job de dependências consulta pip-audit 2.10.1; falha em vulnerabilidades conhecidas
+ou falhas de consulta, sem ignorar advisories. Para exigir aprovação desses checks antes
+de merges, o proprietário deve configurar a proteção da branch; o workflow não altera
+permissões do repositório. Push direto continua sujeito à política configurada no GitHub.
+
+## Perfil de produção
+
+Selecionar explicitamente `DJANGO_SETTINGS_MODULE=core.settings_production` no processo
+WSGI/ASGI e também nas operações de migrate, collectstatic e checks.
+O perfil exige valores definidos pelo operador, nunca credenciais versionadas:
+
+| Variável | Finalidade |
+| --- | --- |
+| DJANGO_SECRET_KEY | Chave nova, aleatória, pelo menos 50 caracteres; gerar com get_random_secret_key e armazenar em gerenciador de segredos. Não reutilizar a chave antiga do repositório. |
+| DJANGO_ALLOWED_HOSTS | Hosts separados por vírgula, sem esquema, porta ou wildcard. |
+| DJANGO_DB_PATH | Caminho absoluto do banco SQLite persistente e privado. |
+| DJANGO_MEDIA_ROOT | Diretório absoluto de uploads privados, sem alias público. |
+| DJANGO_STATIC_ROOT | Diretório absoluto público para collectstatic, separado de uploads e banco. |
+| DJANGO_CSRF_TRUSTED_ORIGINS | Opcional: origens HTTPS explícitas, separadas por vírgula, quando necessárias. |
+| DJANGO_TRUST_PROXY_SSL_HEADER | Opcional: 1 somente com proxy confiável que remova/substitua X-Forwarded-Proto recebido do cliente. |
+
+DEBUG permanece desativado em produção; redirecionamento HTTPS e cookies Secure ficam
+ativos. O HSTS usa duração inicial de uma hora e não abrange subdomínios nem preload.
+O `check --deploy` mostra W005 e W021 por essa decisão; `python scripts/check_production.py`
+mantém essas observações visíveis e falha para qualquer outro diagnóstico. Não habilitar
+preload ou abranger subdomínios sem comprovar HTTPS em toda a infraestrutura.
+
+A chave fixa antiga foi removida do código atual, mas permanece no histórico Git:
+qualquer implantação que a utilizasse deve trocar a chave e invalidar sessões antigas.
+A chave gerada para desenvolvimento fica em arquivo local ignorado com permissão 0600
+na criação em sistemas POSIX. Não versionar arquivos .env, bancos, uploads ou chaves.
+
+Esse perfil continua com SQLite. É necessário validar volume, concorrência, backup e
+restauração antes de decidir por SQLite em produção ou implementar PostgreSQL. Nenhum
+servidor, domínio, certificado ou banco externo foi provisionado por esta alteração.
+O backend de e-mail real também precisa ser configurado e testado na implantação.
+
+Use servidor WSGI/ASGI apropriado, proxy HTTPS, processo supervisionado e armazenamento
+persistente. Não usar runserver em produção. Configure limites de upload e o endereço
+real do cliente no servidor para que o limitador de login não agrupe todos pelo proxy.
+Depois de fornecer configuração segura, execute migrate, collectstatic,
+check_production.py e um teste funcional pelo domínio HTTPS real.
+
+OAuth real, restauração, concorrência, infraestrutura e entrega de e-mails permanecem
+fora da validação local. A separação de configurações não equivale a publicar o sistema.

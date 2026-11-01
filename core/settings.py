@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+from django.core.management.utils import get_random_secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,13 +21,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-a^5(&mr^bubgzx)i7yrx^-kpngj#%#xe90y2ws(@7!+ql%*wht'
-
-# SECURITY WARNING: don't run with debug turned on in production!
+# Configuração local; produção deve usar core.settings_production.
+# Chave local persistida em arquivo ignorado, criada sem sobrescrever arquivos existentes.
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if not SECRET_KEY and os.environ.get('DJANGO_SETTINGS_MODULE') != 'core.settings_production':
+    chave_local = BASE_DIR / '.django-secret-key'
+    try:
+        fd = os.open(chave_local, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    except FileExistsError:
+        pass
+    else:
+        with os.fdopen(fd, 'w') as arquivo:
+            arquivo.write(get_random_secret_key())
+    SECRET_KEY = chave_local.read_text().strip()
 DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
 
 
 # Application definition
@@ -145,10 +155,9 @@ LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login' 
 
 # Comportamento do Usuário
-ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 
 # Comportamento do Login Social (Google)
 SOCIALACCOUNT_AUTO_SIGNUP = True

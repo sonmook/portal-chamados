@@ -1,5 +1,16 @@
 # Histórico de atualizações
 
+## 2026-11-01 — Instalação reproduzível, CI e perfil de produção
+
+- Python 3.12 registrado e dependências diretas/lockfile com hashes versionados.
+- Django atualizado para 6.0.9 e sqlparse para 0.6.1; auditoria do lockfile final sem vulnerabilidades conhecidas reportadas. IDs anteriores documentados em docs/dependencias.md.
+- Workflow GitHub Actions com testes, checks, migrações pendentes, produção, estáticos e auditoria de dependências semanal.
+- Removida chave fixa do código atual; desenvolvimento usa chave local ignorada e produção exige configuração explícita, HTTPS e cookies seguros.
+- Uploads e banco não podem ficar nos estáticos públicos pelo perfil de produção. HSTS em subdomínios/preload não é habilitado automaticamente.
+- Configurações Allauth obsoletas substituídas.
+- 67 testes aprovados; instalação validada em venv vazio com hashes. Sem implantação pública ou validação de infraestrutura/OAuth real.
+
+
 ## 2026-11-01 — Correção de autoria Git
 
 - Configurada a identidade oficial sonmook (e-mail noreply do GitHub) para novos commits neste repositório.
