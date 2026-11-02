@@ -48,6 +48,7 @@ class ProducaoTests(SimpleTestCase):
         for nome, valor in [('DJANGO_SECRET_KEY','fraca'),('DJANGO_ALLOWED_HOSTS','*'),
                             ('DJANGO_ALLOWED_HOSTS','https://portal.example.invalid'),
                             ('DJANGO_MEDIA_ROOT','relativo'),
+                            ('DJANGO_EMAIL_USE_SSL','1'),
                             ('DJANGO_CSRF_TRUSTED_ORIGINS','http://portal.example.invalid'),
                             ('DJANGO_CSRF_TRUSTED_ORIGINS','https://portal.example.invalid/path')]:
             with self.subTest(nome=nome,valor=valor):
@@ -63,4 +64,14 @@ class ProducaoTests(SimpleTestCase):
 
     def test_banco_fora_dos_estaticos(self):
         self.env['DJANGO_DB_PATH']=self.env['DJANGO_STATIC_ROOT']+'/db.sqlite3'
+        self.assertNotEqual(self.importar().returncode,0)
+
+    def test_smtp_exige_transporte_seguro_e_remetente(self):
+        self.env.update(DJANGO_EMAIL_HOST='smtp.example.invalid', DJANGO_DEFAULT_FROM_EMAIL='portal@example.invalid')
+        self.assertEqual(self.importar().returncode,0)
+        self.env['DJANGO_EMAIL_USE_TLS']='0'
+        self.assertNotEqual(self.importar().returncode,0)
+        self.env['DJANGO_EMAIL_USE_SSL']='1'
+        self.assertEqual(self.importar().returncode,0)
+        self.env.pop('DJANGO_DEFAULT_FROM_EMAIL')
         self.assertNotEqual(self.importar().returncode,0)

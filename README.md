@@ -172,3 +172,10 @@ fora de transação não oferecem a mesma atomicidade.
 Backups devem abranger banco, uploads privados e trilha de auditoria juntos.
 Não foram realizados nesta etapa testes de restauração, concorrência real em
 produção ou retenção em armazenamento externo protegido contra adulteração.
+
+
+## Homologação
+
+A preparação Docker/HTTPS, envio SMTP e procedimentos de backup/restauração estão em
+[docs/homologacao.md](docs/homologacao.md). Publicação exige servidor, domínio e acesso
+ao provedor; o teste local automatizado não significa que uma URL pública foi criada.

@@ -1,5 +1,16 @@
 # Histórico de atualizações
 
+## 2026-11-01 — Preparação portátil de homologação
+
+- Docker com Gunicorn sem privilégios e filesystem somente leitura; Caddy com HTTPS e volumes separados. Nenhum serviço externo contratado.
+- IP real do cliente aceito somente de proxies explicitamente configurados.
+- Variáveis SMTP e rejeição de configuração TLS/SSL conflitante.
+- Backup/restauração de SQLite, uploads e auditoria para destino novo, com manifesto de hashes e validação de integridade. Exige escritores parados.
+- Teste isolado Docker/HTTPS/restauração executado com sucesso e incorporado ao CI; documentação de domínio, OAuth, SMTP e cópias externas privadas.
+- Dependências de execução incluem Gunicorn; lockfile e auditoria atualizados.
+- 78 testes Django; OAuth/SMTP e HTTPS públicos aguardam infraestrutura e credenciais do operador.
+
+
 ## 2026-11-01 — Instalação reproduzível, CI e perfil de produção
 
 - Python 3.12 registrado e dependências diretas/lockfile com hashes versionados.

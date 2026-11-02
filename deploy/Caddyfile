@@ -1,0 +1,17 @@
+{$STAGING_DOMAIN} {
+    request_body {
+        max_size 12MB
+    }
+    handle_path /static/* {
+        root * /srv/static
+        file_server
+    }
+    handle /media/* {
+        respond 404
+    }
+    handle {
+        reverse_proxy app:8000 {
+            header_up X-Real-IP {remote_host}
+        }
+    }
+}

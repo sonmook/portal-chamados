@@ -39,3 +39,11 @@ consulta semanalmente e em alterações.
 Não inclui bibliotecas do navegador/CDNs, imagens de sistema, infraestrutura,
 ferramentas de desenvolvimento ou testes de exploração das falhas reportadas.
 A confirmação de execução do workflow no GitHub é separada da validação local.
+
+
+## Complemento de homologação — 01/11/2026
+
+Adicionados Gunicorn 25.3.0 e packaging 26.3 para o servidor WSGI. A auditoria
+PyPI do lockfile com 16 dependências não reportou vulnerabilidades conhecidas.
+A imagem Docker foi construída com verificação de hashes/TLS. Este resultado não
+é uma varredura das imagens base Python/Caddy nem dos pacotes do sistema operacional.

@@ -49,3 +49,20 @@ SECURE_HSTS_PRELOAD = False
 # Habilitar somente com proxy confiável que remova/substitua o cabeçalho recebido.
 if os.environ.get('DJANGO_TRUST_PROXY_SSL_HEADER') == '1':
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+
+TRUSTED_PROXY_NETWORKS = [rede.strip() for rede in os.environ.get('DJANGO_TRUSTED_PROXY_NETWORKS', '').split(',') if rede.strip()]
+EMAIL_HOST = os.environ.get('DJANGO_EMAIL_HOST', '')
+EMAIL_PORT = int(os.environ.get('DJANGO_EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.environ.get('DJANGO_EMAIL_USE_TLS', '1') == '1'
+EMAIL_USE_SSL = os.environ.get('DJANGO_EMAIL_USE_SSL', '0') == '1'
+if EMAIL_USE_TLS and EMAIL_USE_SSL:
+    raise ImproperlyConfigured('Escolha STARTTLS ou SSL para SMTP, nunca ambos.')
+EMAIL_HOST_USER = os.environ.get('DJANGO_EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('DJANGO_EMAIL_HOST_PASSWORD', '')
+EMAIL_TIMEOUT = 10
+DEFAULT_FROM_EMAIL = os.environ.get('DJANGO_DEFAULT_FROM_EMAIL', '')
+# Falha explícita ao enviar se SMTP não estiver configurado; não registrar tokens em console.
+
+if EMAIL_HOST and (not DEFAULT_FROM_EMAIL or not (EMAIL_USE_TLS or EMAIL_USE_SSL)):
+    raise ImproperlyConfigured('SMTP exige remetente explícito e STARTTLS ou SSL.')
