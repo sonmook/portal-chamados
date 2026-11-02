@@ -93,7 +93,18 @@ docker compose --env-file .env.homologacao -f deploy/compose.yml up -d app
 A cópia inclui SQLite (com usuários, chamados, comentários e auditoria), uploads e
 manifesto SHA-256; verifica integridade SQLite e chaves estrangeiras. O comando
 recusa sobrescrita, links simbólicos e destino dentro dos uploads. A restauração
-recusa arquivos ausentes/adicionais ou hashes divergentes e usa diretório novo:
+recusa arquivos ausentes/adicionais ou hashes divergentes e usa diretório novo.
+
+Na criação, verificação e restauração, as referências de anexos dos chamados e
+comentários no snapshot SQLite também são comparadas com os uploads copiados.
+Um anexo referenciado mas ausente impede a operação, mesmo que o manifesto de
+hashes seja coerente. Uma raiz de uploads inexistente só é aceita quando o banco
+não referencia anexos. Se houver falha na criação, a cópia parcial é removida;
+o banco e os uploads de origem são preservados. Corrija a montagem ou recupere os
+arquivos ausentes antes de repetir; não apague referências para contornar o erro.
+Essa validação não revalida o conteúdo dos anexos antigos nem autentica o manifesto.
+
+Para restaurar:
 
 ```bash
 docker compose --env-file .env.homologacao -f deploy/compose.yml run --rm --no-deps --entrypoint python app manage.py backup_homologacao /data/restauracao-ID --restaurar /data/backups/ID_NOVO

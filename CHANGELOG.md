@@ -1,5 +1,11 @@
 # Histórico de atualizações
 
+## 2026-11-02 — Completude dos anexos nos backups
+
+- Criação, verificação e restauração agora cruzam referências de anexos de chamados e comentários com os arquivos copiados, além dos hashes e integridade SQLite.
+- Backups incompletos são recusados; uma instalação sem anexos continua aceitando raiz de uploads inexistente. Cópias parciais de criação são removidas sem alterar a origem.
+- Testes de regressão cobrem anexos ausentes, manifesto coerente mas incompleto, restauração e referências inválidas.
+
 ## 2026-11-01 — Preparação portátil de homologação
 
 - Docker com Gunicorn sem privilégios e filesystem somente leitura; Caddy com HTTPS e volumes separados. Nenhum serviço externo contratado.
