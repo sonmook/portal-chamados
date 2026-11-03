@@ -1,3 +1,4 @@
+from .test_helpers import integrar_triagem
 from unittest.mock import patch
 
 from django.contrib import admin
@@ -17,6 +18,7 @@ class HistoricoTests(TestCase):
         self.admin = User.objects.create_user(username='gestor', is_staff=True, is_superuser=True)
         self.user = User.objects.create_user(username='cliente')
         self.tecnico = User.objects.create_user(username='tecnico', is_staff=True)
+        integrar_triagem(self.admin, self.tecnico)
         self.ticket = Chamado.objects.create(titulo='Privado', descricao='Dados privados', solicitante=self.user)
         self.client.force_login(self.admin)
 

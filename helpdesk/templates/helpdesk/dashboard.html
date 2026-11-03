@@ -64,6 +64,12 @@
             </div>
             
             <form method="GET" class="d-flex align-items-center bg-white p-2 rounded shadow-sm">
+                {% if request.user.is_staff or request.user.is_superuser %}
+                <select name="equipe" aria-label="Filtrar indicadores por equipe" class="form-select form-select-sm" style="max-width:260px" onchange="this.form.submit()">
+                    <option value="">{% if request.user.is_superuser %}Todas as equipes{% else %}Minhas equipes e solicitações{% endif %}</option>
+                    {% for equipe in equipes_filtro %}<option value="{{ equipe.pk }}" {% if equipe_filter == equipe.pk|stringformat:'s' %}selected{% endif %}>{{ equipe.nome }}</option>{% endfor %}
+                </select>
+                {% endif %}
                 <i class="bi bi-calendar3 text-muted me-2 ms-1"></i>
                 <select name="periodo" class="form-select form-select-sm border-0 fw-bold shadow-none" style="cursor: pointer; background-color: transparent;" onchange="this.form.submit()">
                     <option value="hoje" {% if periodo_atual == 'hoje' %}selected{% endif %}>Hoje</option>

@@ -1,3 +1,4 @@
+from .test_helpers import integrar_triagem, dados_atribuicao
 from datetime import timedelta
 from html import unescape
 from importlib import import_module
@@ -21,6 +22,7 @@ class UltimaInteracaoTests(TestCase):
         self.cliente = User.objects.create_user('cliente')
         self.tecnico = User.objects.create_user('tecnico', is_staff=True)
         self.admin = User.objects.create_user('admin', is_staff=True, is_superuser=True)
+        integrar_triagem(self.admin, self.tecnico)
         self.chamado = Chamado.objects.create(titulo='Rede & Acesso', descricao='Fixture', categoria='Rede',
                                              solicitante=self.cliente, tecnico=self.tecnico)
         self.client.force_login(self.cliente)
@@ -58,7 +60,7 @@ class UltimaInteracaoTests(TestCase):
     def test_transferencia_nao_disfarca_inatividade(self):
         self.client.force_login(self.admin)
         self.assertEqual(self.client.post(reverse('redistribuir_chamado', args=[self.chamado.pk]), {
-            'tecnico': self.admin.pk, 'responsavel_anterior': self.tecnico.pk, 'motivo': 'Cobertura',
+            **dados_atribuicao(self.chamado), 'tecnico': self.admin.pk, 'responsavel_anterior': self.tecnico.pk, 'motivo': 'Cobertura',
         }).status_code, 302)
         self.chamado.refresh_from_db()
         self.assertIsNone(self.chamado.ultima_interacao_em)

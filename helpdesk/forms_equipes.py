@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 
 from .models import Equipe
+from .acesso import FINALIZADOS
 
 
 class UsuarioEquipeChoice(forms.ModelMultipleChoiceField):
@@ -49,4 +50,11 @@ class EquipeForm(forms.ModelForm):
                 self.add_error('coordenadores', 'Coordenadores devem fazer parte dos integrantes selecionados.')
             if any(not u.is_active or not u.is_staff for u in integrantes):
                 self.add_error('integrantes', 'Remova da seleção as contas sem acesso de técnico ativo antes de salvar.')
+            if self.instance.pk and self.instance.chamados.exclude(status__in=FINALIZADOS).exclude(tecnico_id=None).exclude(tecnico_id__in=ids).exists():
+                self.add_error('integrantes', 'Redistribua os chamados ativos antes de remover seus responsáveis da equipe.')
+        if self.instance.pk and not dados.get('ativa', False):
+            if self.instance.triagem_padrao:
+                self.add_error('ativa', 'A equipe de triagem deve permanecer ativa para receber novos chamados.')
+            elif self.instance.chamados.exclude(status__in=FINALIZADOS).exists():
+                self.add_error('ativa', 'Transfira os chamados pendentes antes de desativar a equipe.')
         return dados

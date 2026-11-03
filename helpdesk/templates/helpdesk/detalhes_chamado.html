@@ -68,7 +68,7 @@
 
     <div class="container">
         {% for message in messages %}<div class="alert alert-info" role="status">{{ message }}</div>{% endfor %}
-        {% if request.user.is_superuser and ativo %}
+        {% if pode_distribuir %}
         <div class="mb-3"><a class="btn btn-outline-primary" href="{% url 'redistribuir_chamado' chamado.pk %}">Redistribuir chamado</a></div>
         {% endif %}
         
@@ -85,7 +85,7 @@
                         <i class="bi bi-exclamation-circle-fill me-2 text-warning-emphasis fs-5"></i>
                         <strong class="text-dark">Chamado na Fila!</strong> Ninguém está a atuar neste ticket ainda.
                     </div>
-                    {% if request.user.is_staff and ativo %}
+                    {% if pode_assumir %}
                     <form action="{% url 'assumir_chamado' chamado.id %}" method="post">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-success fw-bold shadow-sm">
@@ -101,7 +101,7 @@
                         <i class="bi bi-person-badge-fill me-2 fs-5"></i>
                         <strong>Você é o responsável</strong> por este chamado.
                     </div>
-                    {% if request.user.is_staff and ativo %}
+                    {% if pode_fechar %}
                     <form action="{% url 'devolver_chamado' chamado.id %}" method="post">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-outline-danger btn-sm fw-bold">
@@ -245,6 +245,7 @@
                             <li class="list-group-item p-3">
                                 <span class="text-muted small d-block text-uppercase fw-bold mb-1">Ticket ID</span>
                                 <span class="fs-5 fw-bold text-primary">#{{ chamado.id }}</span>
+                                <div class="mt-2 small"><strong>Equipe:</strong> {{ chamado.equipe.nome }}</div>
                             </li>
                             
                             <li class="list-group-item p-3">

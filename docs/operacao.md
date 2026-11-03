@@ -1,29 +1,48 @@
 # Desenvolvimento, CI e produção
 
-## Cadastro de equipes — primeira etapa da v1.1.0
+## Atendimento por equipes — segunda etapa da v1.1.0
 
-Faça backup e execute `python manage.py migrate` antes de iniciar esta revisão.
-A migração 0013 cria equipes e vínculos de integrantes e inclui os seis cadastros
-iniciais de forma idempotente. Não migra chamados, não atribui técnicos e não concede
-permissões adicionais a coordenadores. Não publicar a v1.1.0 antes das próximas etapas.
+Antes de atualizar, faça backup do banco/uploads e interrompa todos os escritores.
+Execute `python manage.py migrate` antes de iniciar a versão nova. A migração 0015
+acrescenta a equipe obrigatória e a versão de atribuição dos chamados. Ela aponta os
+registros existentes para Central de Serviços — N1, preservando status, datas,
+responsáveis, comentários e auditoria. Técnicos ativos já responsáveis ou autores
+ativos de encerramentos passam a integrar a triagem, sem receber coordenação; vínculos
+anteriores são preservados. A triagem é marcada por identificador próprio, permitindo
+renomear a equipe sem quebrar a entrada de novos chamados. Se o nome original não
+existir, a migração cria a equipe inicial; se estiver inativa, reativa-a. Valide
+uma cópia representativa antes de atualizar bases grandes.
 
-Administradores gerenciam as equipes em `/equipes/`, pelo menu do portal. A edição
-é transacional com a auditoria; conta ativa com `is_staff` é requisito para seleção
-e coordenadores precisam integrar a equipe. Se um integrante for desativado ou
-rebaixado na gestão de usuários, seu vínculo permanece visível, sinalizado na tela;
-é necessário removê-lo explicitamente da seleção para salvar uma nova edição.
-Desativar uma equipe preserva seus vínculos, sem excluir registros. O registro de
-auditoria preserva IDs de integrantes/coordenadores e status antes/depois; nome e
-descrição são registrados como alterados, sem reproduzir o conteúdo.
+Após migrar, administradores revisam integrantes/coordenadores em `/equipes/`.
+Não atribuímos automaticamente todo técnico a todas as equipes. Novos técnicos
+precisam de vínculo explícito para atender; solicitantes mantêm seus próprios
+chamados. A remoção de responsáveis com chamados ativos e a desativação de equipes
+com pendências são bloqueadas. A equipe de triagem não pode ser desativada.
 
-Edições antigas retornam 409 e exigem reabrir o formulário. O Django Admin permite
-somente consulta. Escritas diretas por SQL/ORM não passam pelo fluxo de validação
-e auditoria. SQLite continua sem bloqueio de linha: o controle de versão não é
-garantia de capacidade sob carga concorrente real de produção.
+Coordenadores ativos distribuem somente chamados das equipes ativas que coordenam;
+administradores podem distribuir qualquer chamado ativo, inclusive recuperar um
+registro que tenha sido mantido em equipe inativa fora do fluxo normal. O responsável
+escolhido precisa ser integrante ativo do destino, ou o chamado pode ficar na fila.
+Mudanças de equipe e técnico são transacionais com motivo e auditoria. A versão de
+atribuição e as comparações anteriores impedem que uma tela antiga sobrescreva outra
+atribuição, inclusive após ida e volta entre equipes. Transferências não reiniciam
+SLA nem mudam o status, e chamados concluídos não são transferidos.
 
-A migração 0014 concilia os ramos 0012 (última interação) e 0013 (equipes),
-sem apagar ou recriar dados. Instalações que já aplicaram a 0013 recebem também
-a 0012 antes da conciliação. Execute migrate na janela de atualização.
+Fila, indicadores, detalhes, comentários e anexos usam o mesmo escopo: administrador
+vê todos; técnico vê suas equipes ativas e seus próprios chamados como solicitante;
+cliente vê apenas seus próprios chamados. Atribuição direta por SQL sem vínculo não
+concede acesso. A remoção do vínculo ou desativação da equipe revoga o acesso técnico,
+mas preserva os dados para administradores e solicitantes. O ranking não inclui
+pessoas de equipes alheias sem chamados visíveis; filtros não ampliam o escopo.
+
+O Django Admin aplica o escopo aos chamados/comentários e reserva a edição de
+chamados aos superusuários; equipe e técnico são somente leitura. Alterações por
+SQL, bulk operations e integrações que evitem os serviços não passam por estas
+regras e são responsabilidade do operador. SQLite permanece sem bloqueio de linha;
+a validação funcional não constitui teste de carga concorrente de produção.
+
+Esta entrega não publica a tag v1.1.0. Os indicadores agrupados de comparação entre
+equipes e a revisão final da release ficam para a próxima etapa.
 
 ## Proteção do login administrativo
 
@@ -53,11 +72,12 @@ com regras de infraestrutura verificadas; nenhuma regra externa é criada pelo P
 
 ## Redistribuição de chamados
 
-Redistribuição de chamados não exige migração. Administradores acessam o botão
-nos detalhes de um chamado ativo ou os links de pendências na edição do técnico.
-Só são aceitos destinos ativos com papel de técnico e um motivo de até 500
-caracteres. O motivo é persistido na auditoria: não inclua credenciais ou dados
-sensíveis. O registro inclui ator, data e os IDs anterior/novo; sua gravação e a
+Com a migração 0015 aplicada, administradores e coordenadores da origem acessam
+o botão nos detalhes de um chamado ativo; administradores também têm os links
+de pendências na edição do técnico. Selecione uma equipe ativa e carregue seus
+integrantes, depois escolha um técnico ativo do destino ou deixe na fila. O motivo
+obrigatório tem até 500 caracteres e é persistido na auditoria: não inclua credenciais
+ou dados sensíveis. O registro inclui ator, data e os IDs anterior/novo; sua gravação e a
 transferência ocorrem na mesma transação. O campo técnico no Django Admin passa
 a ser somente leitura para manter a atribuição administrativa nesse fluxo.
 

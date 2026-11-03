@@ -1,3 +1,4 @@
+from .test_helpers import integrar_triagem
 from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
@@ -5,7 +6,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import Chamado
+from .models import Chamado, IntegranteEquipe, Equipe
 
 
 class DashboardTests(TestCase):
@@ -35,6 +36,7 @@ class DashboardTests(TestCase):
                 data_fechamento=self.agora - timedelta(hours=fim) if fim is not None else None,
                 data_vencimento=self.agora - timedelta(hours=prazo) if prazo is not None else None,
             )
+        integrar_triagem(self.tecnico, self.outro, self.sem_resolucoes, self.inativo)
         self.client.force_login(self.tecnico)
 
     @patch('helpdesk.views.timezone.now')
@@ -90,16 +92,18 @@ class DashboardTests(TestCase):
         self.assertTrue(all(p['count'] == 0 for p in contexto['produtividade_equipe']))
 
     def test_numero_de_consultas_independe_da_equipe_e_do_volume(self):
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(6):
             resposta = self.client.get(reverse('dashboard'))
             self.assertEqual(resposta.status_code, 200)
         User.objects.bulk_create([User(username=f'extra-{i}', is_staff=True) for i in range(20)])
+        IntegranteEquipe.objects.bulk_create([IntegranteEquipe(equipe=Equipe.objects.get(triagem_padrao=True), usuario=u)
+            for u in User.objects.filter(username__startswith='extra-')])
         Chamado.objects.bulk_create([
             Chamado(titulo=f'Volume {i}', descricao='Fixture', solicitante=self.alheio,
                     status='Resolvido', fechado_por=self.outro, data_fechamento=self.agora)
             for i in range(40)
         ])
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(6):
             resposta = self.client.get(reverse('dashboard'))
             self.assertEqual(len(resposta.context['produtividade_equipe']), 24)
             self.assertEqual(len(resposta.context['ultimos_chamados']), 5)

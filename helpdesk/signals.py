@@ -8,11 +8,11 @@ from .models import Chamado, Comentario
 # Conteúdo pessoal, texto e senhas são registrados apenas como "alterado".
 CAMPOS = {
     User: ('username', 'email', 'first_name', 'last_name', 'password', 'is_active', 'is_staff', 'is_superuser'),
-    Chamado: ('titulo', 'descricao', 'categoria', 'prioridade', 'status', 'solicitante_id', 'tecnico_id', 'fechado_por_id', 'data_vencimento', 'data_fechamento', 'anexo'),
+    Chamado: ('titulo', 'descricao', 'categoria', 'prioridade', 'status', 'solicitante_id', 'tecnico_id', 'equipe_id', 'fechado_por_id', 'data_vencimento', 'data_fechamento', 'anexo'),
     Comentario: ('chamado_id', 'autor_id', 'texto', 'anexo'),
 }
 VALORES = {'is_active', 'is_staff', 'is_superuser', 'categoria', 'prioridade', 'status',
-           'solicitante_id', 'tecnico_id', 'fechado_por_id', 'chamado_id', 'autor_id',
+           'solicitante_id', 'tecnico_id', 'equipe_id', 'fechado_por_id', 'chamado_id', 'autor_id',
            'data_vencimento', 'data_fechamento'}
 
 

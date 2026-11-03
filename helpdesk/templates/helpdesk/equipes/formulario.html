@@ -3,6 +3,7 @@
 {% block conteudo %}
 <a href="{% url 'gerenciar_equipes' %}">Voltar às equipes</a>
 <h1 class="h2 mt-3">{% if equipe.pk %}Gerenciar equipe{% else %}Nova equipe{% endif %}</h1>
+{% if equipe.triagem_padrao %}<p class="alert alert-info">Esta é a equipe de triagem que recebe os novos chamados.</p>{% endif %}
 <div class="card mt-3"><div class="card-body"><form method="post">{% csrf_token %}
 {{ form.versao_atual }}{{ form.non_field_errors }}
 <div class="mb-3">{{ form.nome.label_tag }}{{ form.nome.errors }}{{ form.nome }}</div>

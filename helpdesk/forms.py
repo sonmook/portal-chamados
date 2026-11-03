@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from .user_security import validar_administrador, validar_pendencias
-from .models import Chamado, Comentario
+from .models import Chamado, Comentario, Equipe
 from .validators import validar_anexo
 
 
@@ -12,18 +12,40 @@ class ResolucaoForm(forms.Form):
 
 
 class RedistribuirChamadoForm(forms.Form):
-    tecnico = forms.ModelChoiceField(queryset=User.objects.none(), label='Novo responsável',
+    equipe = forms.ModelChoiceField(queryset=Equipe.objects.filter(ativa=True), label='Equipe de destino',
+                                   widget=forms.HiddenInput)
+    tecnico = forms.ModelChoiceField(queryset=User.objects.none(), required=False, label='Responsável no destino',
+                                    empty_label='Sem responsável — deixar na fila',
                                     widget=forms.Select(attrs={'class': 'form-select'}))
     motivo = forms.CharField(max_length=500, strip=True, widget=forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
-                            help_text='Informe o motivo da transferência, sem senhas ou dados sensíveis.')
+                            help_text='Informe o motivo, sem senhas ou dados sensíveis.')
     responsavel_anterior = forms.IntegerField(required=False, widget=forms.HiddenInput)
+    equipe_anterior = forms.IntegerField(widget=forms.HiddenInput)
+    versao_atribuicao = forms.IntegerField(min_value=0, widget=forms.HiddenInput)
 
     def __init__(self, *args, chamado, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['tecnico'].queryset = User.objects.filter(is_active=True, is_staff=True).exclude(
-            pk=chamado.tecnico_id
-        ).order_by('username')
-        self.fields['responsavel_anterior'].initial = chamado.tecnico_id
+        self.chamado = chamado
+        destino = self.data.get('equipe') if self.is_bound else self.initial.get('equipe', chamado.equipe_id)
+        try:
+            destino = int(destino)
+        except (TypeError, ValueError):
+            destino = None
+        self.fields['tecnico'].queryset = User.objects.filter(
+            is_active=True, is_staff=True, vinculos_equipes__equipe_id=destino, vinculos_equipes__equipe__ativa=True,
+        ).order_by('username') if destino else User.objects.none()
+        for campo, valor in {'equipe': chamado.equipe_id, 'equipe_anterior': chamado.equipe_id,
+                             'responsavel_anterior': chamado.tecnico_id,
+                             'versao_atribuicao': chamado.versao_atribuicao}.items():
+            self.fields[campo].initial = valor
+
+    def clean(self):
+        dados = super().clean()
+        if dados.get('equipe') and dados['equipe'].pk == self.chamado.equipe_id:
+            tecnico = dados.get('tecnico')
+            if 'tecnico' in dados and (tecnico.pk if tecnico else None) == self.chamado.tecnico_id:
+                self.add_error(None, 'Selecione outra equipe ou altere o responsável.')
+        return dados
 
 
 class ChamadoForm(forms.ModelForm):

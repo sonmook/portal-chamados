@@ -11,6 +11,7 @@ from django.urls import reverse
 from .forms import ChamadoForm, ComentarioForm, ResolucaoForm
 from .models import Chamado, Comentario
 from .validators import MAX_ATTACHMENT_SIZE, validar_anexo
+from .test_helpers import integrar_triagem
 
 
 class SegurancaTests(TestCase):
@@ -23,6 +24,7 @@ class SegurancaTests(TestCase):
         self.dono = User.objects.create_user(username='dono', password='Valid-test-password-91')
         self.outro = User.objects.create_user(username='outro')
         self.admin = User.objects.create_user(username='admin', is_staff=True, is_superuser=True)
+        integrar_triagem(self.admin)
         self.chamado = Chamado.objects.create(titulo='Privado', descricao='Dados', solicitante=self.dono)
 
     def pdf(self, name='arquivo.pdf'):

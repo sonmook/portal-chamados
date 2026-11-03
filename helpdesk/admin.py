@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied
 
 from .models import Chamado, Comentario, RegistroAuditoria, Equipe, IntegranteEquipe
 from .user_security import bloquear_administradores, validar_administrador, validar_pendencias
+from .acesso import chamados_acessiveis
 
 
 class UsuarioProtegidoForm(UserChangeForm):
@@ -41,9 +42,17 @@ class UsuarioProtegidoAdmin(UserAdmin):
 
 @admin.register(Chamado)
 class ChamadoAdmin(admin.ModelAdmin):
-    readonly_fields = ('status', 'tecnico', 'data_criacao', 'data_atualizacao', 'ultima_interacao_em', 'data_fechamento', 'fechado_por')
+    readonly_fields = ('status', 'tecnico', 'equipe', 'versao_atribuicao', 'data_criacao', 'data_atualizacao', 'ultima_interacao_em', 'data_fechamento', 'fechado_por')
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).filter(pk__in=chamados_acessiveis(request.user).values('pk'))
+
+    def has_add_permission(self, request):
+        return request.user.is_active and request.user.is_superuser
 
     def has_change_permission(self, request, obj=None):
+        if not request.user.is_superuser:
+            return False
         if obj and obj.status in ('Resolvido', 'Fechado'):
             return False
         return super().has_change_permission(request, obj)
@@ -52,8 +61,13 @@ class ChamadoAdmin(admin.ModelAdmin):
         return False
 
     def save_model(self, request, obj, form, change):
-        if change and Chamado.objects.select_for_update().get(pk=obj.pk).status in ('Resolvido', 'Fechado'):
-            raise PermissionDenied
+        if change:
+            atual = Chamado.objects.select_for_update().get(pk=obj.pk)
+            if atual.status in ('Resolvido', 'Fechado'):
+                raise PermissionDenied
+            # Campos controlados pelo atendimento não podem voltar a valores de uma tela antiga do admin.
+            for campo in ('equipe_id', 'tecnico_id', 'versao_atribuicao', 'status', 'fechado_por_id', 'data_fechamento'):
+                setattr(obj, campo, getattr(atual, campo))
         super().save_model(request, obj, form, change)
 
     def delete_queryset(self, request, queryset):
@@ -62,6 +76,9 @@ class ChamadoAdmin(admin.ModelAdmin):
 
 @admin.register(Comentario)
 class ComentarioAdmin(admin.ModelAdmin):
+    def get_queryset(self, request):
+        return super().get_queryset(request).filter(chamado_id__in=chamados_acessiveis(request.user).values('pk'))
+
     def has_add_permission(self, request):
         return False
 

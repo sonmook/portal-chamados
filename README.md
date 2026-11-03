@@ -42,7 +42,7 @@ As capturas abaixo mostram a interface da versão atual com **dados fictícios d
 ### 👥 Gerenciamento de Usuários (Admin)
 ![Gerenciamento de usuários com pesquisa, níveis de acesso e ativação de contas](docs/imagens/usuarios.png)
 
-* **Controle de Acessos:** `Cliente` abre e acompanha seus chamados; `Técnico de TI` atende a fila e consulta os indicadores; `Administrador` também gerencia usuários e redistribui chamados.
+* **Controle de Acessos:** `Cliente` abre e acompanha seus chamados; `Técnico de TI` atende as filas das suas equipes e consulta indicadores dentro do seu acesso; `Administrador` também gerencia usuários e redistribui chamados.
 * **Busca Inteligente:** Barra de pesquisa com filtros avançados para encontrar rapidamente colaboradores por nome, e-mail ou username.
 * **Ativação e Bloqueio:** Alterações protegidas por POST e CSRF. Desativar ou retirar o papel de técnico exige redistribuir seus chamados pendentes.
 * **Contas Administradas:** Cadastro por administrador, com validação de senha e preservação de pelo menos um administrador ativo.
@@ -51,7 +51,7 @@ As capturas abaixo mostram a interface da versão atual com **dados fictícios d
 
 ![Transferência de chamado com seleção de técnico ativo e motivo obrigatório](docs/imagens/redistribuicao.png)
 
-* **Transferência Administrativa:** Administradores escolhem um técnico ativo e informam o motivo da transferência.
+* **Distribuição e Transferência:** Coordenadores distribuem chamados das equipes que coordenam; administradores têm visão geral. O destino pode ser outra equipe ativa, com responsável opcional entre seus integrantes ativos e motivo obrigatório.
 * **Auditoria:** Registro do autor, data, motivo e responsáveis anterior e novo, sem alterar o histórico dos chamados concluídos.
 * **Recuperação de Pendências:** Chamados de técnicos inativos podem ser redistribuídos pelo portal.
 
@@ -116,7 +116,7 @@ Anexos novos aceitam PNG, JPEG e PDF de até 10 MB. Extensão e assinatura bási
 verificadas nas três entradas (abertura, comentário e resolução), inclusive nos formulários
 do admin por validação de modelo. Isso não constitui análise antivírus nem decodificação
 completa do conteúdo. Os arquivos são entregues como download binário, sem cache compartilhado.
-Solicitantes acessam anexos de seus chamados; equipe técnica acessa os chamados da fila.
+Solicitantes acessam anexos de seus chamados; técnicos acessam anexos das equipes ativas das quais participam. A mesma regra protege fila, detalhes, comentários e indicadores.
 
 **Implantação:** mantenha `MEDIA_ROOT` privado. Não configure alias público de `/media/`,
 bucket público ou servidor estático apontando para uploads. Os downloads passam pelas rotas
@@ -151,19 +151,38 @@ As seis equipes iniciais são Central de Serviços — N1, Suporte Especializado
 Infraestrutura e Redes, Sistemas e Aplicações, Identidades e Acessos e Segurança da Informação.
 
 Execute `python manage.py migrate` para criar o cadastro inicial. Desativar uma
-equipe preserva os vínculos. Remoções de integrantes e alterações de coordenadores
+equipe preserva os vínculos, mas exige transferir seus chamados pendentes. A equipe
+de triagem permanece ativa para receber novas solicitações. Responsáveis por
+chamados ativos não podem ser removidos da equipe antes de redistribuir o atendimento.
+Remoções de integrantes e alterações de coordenadores
 ficam registradas na auditoria, com os IDs antes/depois e o administrador responsável.
 O Django Admin oferece consulta desses cadastros; a edição é realizada pelo portal.
 
-Esta é a primeira etapa: chamados ainda não são vinculados a equipes, não existe
-contagem de pendências por equipe e a coordenação ainda não concede novas permissões.
-Filas por equipe, transferência entre equipes e proteção de chamados/anexos serão
-implementadas na próxima entrega, antes de publicar a versão v1.1.0.
+Na segunda etapa, novos chamados entram na equipe de triagem, inicialmente
+Central de Serviços — N1. A migração 0015 encaminha os chamados existentes a essa
+equipe, preservando status, responsáveis e histórico, e inclui seus técnicos ativos
+já responsáveis no cadastro de integrantes. Também inclui os responsáveis ativos
+por encerramentos históricos, sem conceder coordenação automaticamente.
+
+Técnicos veem as equipes ativas das quais participam e continuam acessando seus
+próprios chamados como solicitantes, mesmo quando atendidos por outra equipe.
+Coordenadores distribuem os chamados da equipe que coordenam e podem transferi-los
+para outra equipe ativa. Ao transferir, selecione a equipe, clique em **Carregar
+integrantes**, escolha um integrante ativo ou deixe o chamado na fila e informe
+o motivo. A transferência preserva o status, o SLA e o histórico; o acesso da
+antiga equipe é revogado, exceto para quem também participa do destino ou é solicitante.
+
+Fila e dashboard têm filtro de equipe, respeitando o mesmo escopo. O Django Admin
+também aplica as restrições: edição de chamados fica reservada a superusuários e
+equipe/responsável são controlados pelo fluxo auditado do portal.
+Para atuar, o usuário precisa ser um técnico ativo vinculado a uma equipe ativa;
+ser técnico sem vínculo não concede acesso global. A release v1.1.0 ainda não foi publicada.
 
 ### Contas e atendimento
 
-Administradores podem usar **Redistribuir chamado** nos detalhes de um chamado
-ativo para escolher outro técnico ativo e informar um motivo (até 500 caracteres).
+Administradores e coordenadores da equipe de origem podem usar **Redistribuir chamado** nos detalhes de um chamado
+ativo para escolher uma equipe ativa, opcionalmente atribuir um técnico integrante
+do destino e informar um motivo (até 500 caracteres).
 A transferência registra ator, data, responsável anterior/novo e motivo na auditoria;
 não informe senhas ou dados sensíveis nesse campo. O novo técnico assume as ações
 de atendimento; o solicitante mantém seu acesso. Chamados concluídos não são transferidos.

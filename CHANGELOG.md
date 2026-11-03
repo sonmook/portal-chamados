@@ -1,5 +1,13 @@
 # Histórico de atualizações
 
+## Preparação da v1.1.0 — Atendimento por equipes
+
+- Chamados vinculados a equipes; novos registros entram na triagem N1. Migração 0015 preserva o histórico e inclui técnicos ativos já responsáveis na equipe inicial.
+- Filas, detalhes, comentários, anexos, indicadores e Django Admin respeitam o escopo de acesso por equipe, mantendo o acesso do solicitante aos próprios chamados.
+- Coordenadores distribuem na origem e transferem para equipes ativas, com responsável opcional, motivo e auditoria; administradores têm visão geral.
+- Versão de atribuição protege contra edição antiga. Remoção de responsáveis com pendências e desativação de equipes com chamados ativos são bloqueadas; triagem permanece ativa.
+- Filtros por equipe e contagem de pendências na gestão; nenhuma tag de release publicada.
+
 ## 2026-11-03 — Idioma padrão em português do Brasil
 
 - Definido pt-br como idioma padrão do Django, corrigindo a duração da última interação e demais mensagens traduzíveis do framework. O fuso horário permanece inalterado.

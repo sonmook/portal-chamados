@@ -1,3 +1,4 @@
+from .test_helpers import integrar_triagem
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -117,6 +118,7 @@ class AutenticacaoTests(TestCase):
 class MetricasTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='tecnico', is_staff=True)
+        integrar_triagem(self.user)
         self.client.force_login(self.user)
         self.agora = timezone.now()
 
