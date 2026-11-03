@@ -123,7 +123,9 @@ class SegurancaTests(TestCase):
     def test_cadastro_publico_fechado_get_e_post(self):
         dados = {'email':'publico@example.invalid','password1':'Valid-test-password-91','password2':'Valid-test-password-91'}
         for metodo in [self.client.get, self.client.post]:
-            self.assertContains(metodo(reverse('account_signup'), dados), 'closed')
+            resposta = metodo(reverse('account_signup'), dados)
+            self.assertEqual(resposta.status_code, 200)
+            self.assertTemplateUsed(resposta, 'account/signup_closed.html')
         self.assertFalse(User.objects.filter(email=dados['email']).exists())
 
     def test_adapters_fecham_cadastro_local_e_social(self):

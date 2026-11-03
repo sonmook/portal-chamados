@@ -1,5 +1,10 @@
 # Histórico de atualizações
 
+## 2026-11-03 — Idioma padrão em português do Brasil
+
+- Definido pt-br como idioma padrão do Django, corrigindo a duração da última interação e demais mensagens traduzíveis do framework. O fuso horário permanece inalterado.
+- Regressão valida a exibição de “1 dia, 23 horas atrás” na fila com o idioma padrão real da aplicação.
+
 ## 2026-11-03 — Última interação e fila por inatividade
 
 - Comentários e soluções registram a última interação do chamado na mesma transação; salvamentos administrativos não sobrescrevem essa informação.
