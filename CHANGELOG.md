@@ -1,5 +1,12 @@
 # Histórico de atualizações
 
+## 2026-11-03 — Limitação de tentativas no Django Admin
+
+- Login administrativo agora compartilha com o portal o limite por conta/IP e por IP, sem renovar a cota ao alternar as rotas.
+- Preservados CSRF, formulário e permissões padrão do Django Admin; respostas 429 incluem Retry-After e não são cacheadas.
+- Testes cobrem expiração, contadores compartilhados, cabeçalhos de IP forjados, login válido e recusa de contas sem acesso.
+- MFA permanece pendente; documentados os requisitos para proteger também sessões iniciadas no portal/Google e recuperação de acesso.
+
 ## 2026-11-02 — Completude dos anexos nos backups
 
 - Criação, verificação e restauração agora cruzam referências de anexos de chamados e comentários com os arquivos copiados, além dos hashes e integridade SQLite.
