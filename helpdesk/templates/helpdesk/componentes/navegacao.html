@@ -1,24 +1,26 @@
+{% load static %}
 <a class="portal-skip" href="#conteudo-principal">Pular para o conteúdo</a>
 <nav class="navbar navbar-expand-lg navbar-dark portal-navbar mb-4" aria-label="Navegação principal">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="{% url 'lista_chamados' %}"><span class="portal-brand-mark" aria-hidden="true">TI</span> Portal de TI</a>
+        <a class="navbar-brand fw-bold" href="{% url 'lista_chamados' %}"><img class="portal-brand-mark" src="{% static 'helpdesk/brand/simbolo.svg' %}" width="34" height="34" alt=""> Portal de TI</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir ou fechar menu">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             {% with pagina=request.resolver_match.url_name %}
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link{% if pagina == 'lista_chamados' or pagina == 'novo_chamado' or pagina == 'detalhes_chamado' or pagina == 'redistribuir_chamado' %} active" aria-current="page{% endif %}" href="{% url 'lista_chamados' %}">Chamados</a></li>
+                <li class="nav-item"><a class="nav-link{% if pagina == 'lista_chamados' or pagina == 'novo_chamado' or pagina == 'detalhes_chamado' or pagina == 'redistribuir_chamado' %} active" aria-current="page{% endif %}" href="{% url 'lista_chamados' %}"><i class="bi bi-ticket-perforated" aria-hidden="true"></i> Chamados</a></li>
                 {% if request.user.is_staff %}
-                <li class="nav-item"><a class="nav-link{% if pagina == 'dashboard' %} active" aria-current="page{% endif %}" href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link{% if pagina == 'dashboard' %} active" aria-current="page{% endif %}" href="{% url 'dashboard' %}"><i class="bi bi-bar-chart" aria-hidden="true"></i> Dashboard</a></li>
                 {% endif %}
                 {% if request.user.is_superuser %}
-                <li class="nav-item"><a class="nav-link{% if pagina == 'gerenciar_usuarios' or pagina == 'criar_usuario' or pagina == 'editar_usuario' %} active" aria-current="page{% endif %}" href="{% url 'gerenciar_usuarios' %}">Gerenciar Usuários</a></li>
-                <li class="nav-item"><a class="nav-link{% if pagina == 'gerenciar_equipes' or pagina == 'criar_equipe' or pagina == 'editar_equipe' or pagina == 'listar_regras_encaminhamento' or pagina == 'criar_regra_encaminhamento' or pagina == 'editar_regra_encaminhamento' %} active" aria-current="page{% endif %}" href="{% url 'gerenciar_equipes' %}">Gerenciar Equipes</a></li>
+                <li class="nav-item"><a class="nav-link{% if pagina == 'gerenciar_usuarios' or pagina == 'criar_usuario' or pagina == 'editar_usuario' %} active" aria-current="page{% endif %}" href="{% url 'gerenciar_usuarios' %}"><i class="bi bi-people" aria-hidden="true"></i> Gerenciar Usuários</a></li>
+                <li class="nav-item"><a class="nav-link{% if pagina == 'gerenciar_equipes' or pagina == 'criar_equipe' or pagina == 'editar_equipe' or pagina == 'listar_regras_encaminhamento' or pagina == 'criar_regra_encaminhamento' or pagina == 'editar_regra_encaminhamento' %} active" aria-current="page{% endif %}" href="{% url 'gerenciar_equipes' %}"><i class="bi bi-diagram-3" aria-hidden="true"></i> Gerenciar Equipes</a></li>
                 {% endif %}
             </ul>
             {% endwith %}
             <div class="portal-account">
+                <span class="portal-version" aria-label="Versão {{ portal_version }}">v{{ portal_version }}</span>
                 <span class="portal-username" title="{{ request.user.username }}">Olá, <strong>{{ request.user.username }}</strong></span>
                 <form method="post" action="{% url 'logout' %}" class="m-0">{% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-light">Sair</button></form>
             </div>

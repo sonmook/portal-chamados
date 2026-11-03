@@ -1,0 +1,53 @@
+name: Publicar versão
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: publicar-versao-main
+  cancel-in-progress: false
+jobs:
+  validation:
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/ci.yml
+  release:
+    needs: validation
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - name: Validar versão e main
+        id: version
+        run: |
+          version=$(python scripts/check_release.py)
+          git fetch origin main --tags
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" || { echo 'A main avançou. Execute novamente para validar o novo commit.'; exit 1; }
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+      - name: Criar tag oficial e release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PORTAL_VERSION: ${{ steps.version.outputs.value }}
+          GIT_COMMITTER_NAME: Emerson Franco
+          GIT_COMMITTER_EMAIL: 132287925+sonmook@users.noreply.github.com
+        run: |
+          tag="v$PORTAL_VERSION"
+          if git show-ref --verify --quiet "refs/tags/$tag"; then
+            test "$(git rev-list -n 1 "$tag")" = "$(git rev-parse HEAD)" || { echo 'A tag já aponta para outro commit; não será sobrescrita.'; exit 1; }
+          else
+            git tag -a "$tag" -m "Portal de TI $tag"
+            git push origin "$tag"
+          fi
+          # A repetição após uma falha de publicação reaproveita a tag, sem movê-la.
+          releases=$(gh api "repos/$GITHUB_REPOSITORY/releases" --paginate --jq '.[].tag_name')
+          if printf '%s\n' "$releases" | grep -Fxq "$tag"; then
+            echo 'Release já publicada.'
+          else
+            gh release create "$tag" --verify-tag --title "Portal de TI $tag" --notes-file "docs/releases/$tag.md" --latest
+          fi
