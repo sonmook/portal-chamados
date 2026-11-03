@@ -26,6 +26,25 @@ isso. Cobrir sessões já existentes, recuperação e acesso de emergência ante
 exigir MFA em produção. Enquanto isso, avaliar acesso ao admin por rede restrita,
 com regras de infraestrutura verificadas; nenhuma regra externa é criada pelo PR.
 
+## Redistribuição de chamados
+
+Redistribuição de chamados não exige migração. Administradores acessam o botão
+nos detalhes de um chamado ativo ou os links de pendências na edição do técnico.
+Só são aceitos destinos ativos com papel de técnico e um motivo de até 500
+caracteres. O motivo é persistido na auditoria: não inclua credenciais ou dados
+sensíveis. O registro inclui ator, data e os IDs anterior/novo; sua gravação e a
+transferência ocorrem na mesma transação. O campo técnico no Django Admin passa
+a ser somente leitura para manter a atribuição administrativa nesse fluxo.
+
+Desativação/rebaixamento pelos formulários do portal/admin exige redistribuir
+as pendências primeiro, sem modificar os responsáveis de chamados concluídos.
+O fluxo recupera também chamados já atribuídos a contas inativas. Alterações
+diretas por SQL/ORM não passam por essa validação. A transferência compara a
+atribuição recebida da tela com a persistida e recusa conflito; em caso de 409,
+reabra a página e confira o responsável atual. SQLite continua sem bloqueio de
+linha e pode rejeitar escritas concorrentes; não foi validada carga concorrente
+real de produção. Valide no banco/infraestrutura de destino antes de escalar.
+
 ## Instalação e atualização
 
 - Python 3.12, dependências de execução em requirements.txt com todas as versões e hashes.

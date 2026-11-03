@@ -117,6 +117,19 @@ integrações que faziam GET nessa rota devem ser atualizadas.
 
 ## Login e administração
 
+Administradores podem usar **Redistribuir chamado** nos detalhes de um chamado
+ativo para escolher outro técnico ativo e informar um motivo (até 500 caracteres).
+A transferência registra ator, data, responsável anterior/novo e motivo na auditoria;
+não informe senhas ou dados sensíveis nesse campo. O novo técnico assume as ações
+de atendimento; o solicitante mantém seu acesso. Chamados concluídos não são transferidos.
+
+Antes de desativar ou retirar o acesso de técnico de uma conta, redistribua seus
+chamados pendentes. A tela de edição do colaborador mostra links para as pendências
+(até 20 por vez). A proteção vale no portal e no formulário do Django Admin;
+o responsável do chamado é somente leitura no admin para manter as transferências
+nesse fluxo auditado. SQL/ORM direto continua sob responsabilidade do operador.
+Uma transferência também pode recuperar chamados já presos a técnicos inativos.
+
 Execute a migração 0010 antes de usar o login local. O limite de `/contas/login/` e `/admin/login/`
 conta todos os POSTs que passam pelo CSRF (incluindo os bem-sucedidos): 10 por
 conta/IP e 50 por IP em janelas fixas de 15 minutos. Contadores ficam no banco,

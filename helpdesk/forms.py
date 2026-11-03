@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
-from .user_security import validar_administrador
+from .user_security import validar_administrador, validar_pendencias
 from .models import Chamado, Comentario
 from .validators import validar_anexo
 
@@ -9,6 +9,21 @@ from .validators import validar_anexo
 class ResolucaoForm(forms.Form):
     resolucao = forms.CharField(strip=True)
     anexo_resolucao = forms.FileField(required=False, validators=[validar_anexo])
+
+
+class RedistribuirChamadoForm(forms.Form):
+    tecnico = forms.ModelChoiceField(queryset=User.objects.none(), label='Novo responsável',
+                                    widget=forms.Select(attrs={'class': 'form-select'}))
+    motivo = forms.CharField(max_length=500, strip=True, widget=forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+                            help_text='Informe o motivo da transferência, sem senhas ou dados sensíveis.')
+    responsavel_anterior = forms.IntegerField(required=False, widget=forms.HiddenInput)
+
+    def __init__(self, *args, chamado, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['tecnico'].queryset = User.objects.filter(is_active=True, is_staff=True).exclude(
+            pk=chamado.tecnico_id
+        ).order_by('username')
+        self.fields['responsavel_anterior'].initial = chamado.tecnico_id
 
 
 class ChamadoForm(forms.ModelForm):
@@ -134,6 +149,7 @@ class EditarUsuarioForm(forms.ModelForm):
                 self.instance.pk, dados.get('is_active', False),
                 dados['nivel_acesso'] == 'admin', dados['nivel_acesso'] == 'admin',
             )
+            validar_pendencias(self.instance.pk, dados.get('is_active', False), dados['nivel_acesso'] != 'cliente')
         return dados
 
     def save(self, commit=True):

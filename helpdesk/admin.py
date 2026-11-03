@@ -5,17 +5,20 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 
 from .models import Chamado, Comentario, RegistroAuditoria
-from .user_security import bloquear_administradores, validar_administrador
+from .user_security import bloquear_administradores, validar_administrador, validar_pendencias
 
 
 class UsuarioProtegidoForm(UserChangeForm):
     def clean(self):
         dados = super().clean()
         bloquear_administradores()
+        if self.instance.pk:
+            User.objects.select_for_update().get(pk=self.instance.pk)
         validar_administrador(
             self.instance.pk, dados.get('is_active', False),
             dados.get('is_staff', False), dados.get('is_superuser', False),
         )
+        validar_pendencias(self.instance.pk, dados.get('is_active', False), dados.get('is_staff', False))
         return dados
 
 
@@ -38,7 +41,7 @@ class UsuarioProtegidoAdmin(UserAdmin):
 
 @admin.register(Chamado)
 class ChamadoAdmin(admin.ModelAdmin):
-    readonly_fields = ('status', 'data_criacao', 'data_atualizacao', 'data_fechamento', 'fechado_por')
+    readonly_fields = ('status', 'tecnico', 'data_criacao', 'data_atualizacao', 'data_fechamento', 'fechado_por')
 
     def has_change_permission(self, request, obj=None):
         if obj and obj.status in ('Resolvido', 'Fechado'):
