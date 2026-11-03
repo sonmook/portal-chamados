@@ -5,49 +5,64 @@
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)
 ![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)
 
-Um sistema completo de Helpdesk e Gestão de Tickets de TI desenvolvido em **Python (Django)**. O projeto foi desenhado para otimizar o fluxo de atendimento de suporte, oferecendo controle rigoroso de SLA, métricas de produtividade em tempo real e autenticação facilitada para ambientes corporativos.
+Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django**, com fila de atendimento, acompanhamento de SLA, indicadores, controle de acesso e trilha de auditoria.
+
+As capturas abaixo mostram a interface da versão atual com **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
 
 ---
 
 ## ✨ Principais Funcionalidades
 
 ### 📊 Dashboard e Métricas (Para a Equipe de TI)
-<img width="1360" height="931" alt="Tela_Dashboard" src="https://github.com/user-attachments/assets/a7128337-8fea-40c3-bf59-b6d249db50d4" />
+![Dashboard com indicadores de chamados, SLA, categorias e produtividade da equipe](docs/imagens/dashboard.png)
 
 * **Tempo Médio de Resolução (TMR):** Cálculo automático da média de horas levadas para fechar tickets.
 * **Controle de SLA Inteligente:** Prazos (SLA) calculados dinamicamente com base na prioridade do chamado (Crítica, Alta, Normal, Baixa), **pulando finais de semana automaticamente**.
-* **Gráficos em Tempo Real:** Visualização da distribuição de tickets por categoria (Software, Hardware, Rede, etc.) e saúde geral do SLA utilizando Chart.js.
+* **Gráficos:** Distribuição por categoria e cumprimento de SLA com Chart.js, atualizados ao carregar o painel.
 * **Ranking de Produtividade:** Gamificação amigável mostrando a quantidade de tickets resolvidos por cada membro da equipe.
 
 ### 🎫 Gestão de Tickets
-<img width="1430" height="435" alt="Tela_Chamados" src="https://github.com/user-attachments/assets/39aaebc6-20fe-4879-9bdd-299101277954" />
+![Fila de chamados com busca, filtros, status, prioridade e prazo de SLA](docs/imagens/chamados.png)
 
 * **Fila de Chamados:** Listagem responsiva com filtros combinados (Busca por texto + Status + Categoria).
-* **Ticket Locking:** Mecanismo de "Assumir Chamado", garantindo que apenas o técnico responsável possa enviar respostas e encerrar o ticket.
+* **Responsável pelo Atendimento:** Apenas o técnico responsável responde como equipe e encerra o chamado; o solicitante também pode comentar enquanto ele estiver ativo.
 * **Histórico Interativo:** Timeline de comentários estilo "chat" entre o usuário e o técnico, com suporte a anexo de prints/arquivos.
 * **Encerramento Documentado:** Obrigatoriedade de informar a solução do problema ao fechar um ticket, gerando base de conhecimento.
 
 ### 💬 Interação e Resolução de Chamados
-<img width="1505" height="881" alt="Chamado_Resolvido" src="https://github.com/user-attachments/assets/9c45ef59-494d-4ef4-a2b0-dae7b230d6c5" />
+![Detalhes de chamado em atendimento com histórico de mensagens e técnico responsável](docs/imagens/atendimento.png)
 
 * **Histórico Interativo:** Timeline de comentários estilo "chat" entre o usuário solicitante e o técnico responsável.
-* **Barra de Progresso Visual:** Identificação clara e com cores (via Bootstrap) do status atual e do técnico atribuído.
+* **Status e Responsável:** Identificação com cores do estado do chamado e do técnico atribuído.
 * **Encerramento Documentado:** Obrigatoriedade de informar a solução do problema ao fechar um ticket. Uma vez resolvido, o chamado é bloqueado para novas interações, garantindo a integridade da base de conhecimento (auditoria).
 
-### 👥 Gerenciamento de Usuários (Admin)
-<img width="1476" height="692" alt="image" src="https://github.com/user-attachments/assets/18906f85-f551-44cd-8085-fd4a940d3def" />
+![Chamado resolvido com solução registrada e histórico preservado](docs/imagens/resolucao.png)
 
-* **Controle de Acessos:** Separação estrita entre `Cliente` (Apenas visualiza e abre chamados), `Técnico de TI` (Acesso ao Dashboard e resolução) e `Administrador` (Gestor de usuários).
+### 👥 Gerenciamento de Usuários (Admin)
+![Gerenciamento de usuários com pesquisa, níveis de acesso e ativação de contas](docs/imagens/usuarios.png)
+
+* **Controle de Acessos:** `Cliente` abre e acompanha seus chamados; `Técnico de TI` atende a fila e consulta os indicadores; `Administrador` também gerencia usuários e redistribui chamados.
 * **Busca Inteligente:** Barra de pesquisa com filtros avançados para encontrar rapidamente colaboradores por nome, e-mail ou username.
-* **Ativação e Bloqueio:** Interface ágil para ativar ou revogar o acesso de funcionários ao sistema com um único clique.
-* **Identificação Automática:** Captura e exibição automática do e-mail corporativo sincronizado com o Google.
+* **Ativação e Bloqueio:** Alterações protegidas por POST e CSRF. Desativar ou retirar o papel de técnico exige redistribuir seus chamados pendentes.
+* **Contas Administradas:** Cadastro por administrador, com validação de senha e preservação de pelo menos um administrador ativo.
+
+### 🔄 Redistribuição de Chamados
+
+![Transferência de chamado com seleção de técnico ativo e motivo obrigatório](docs/imagens/redistribuicao.png)
+
+* **Transferência Administrativa:** Administradores escolhem um técnico ativo e informam o motivo da transferência.
+* **Auditoria:** Registro do autor, data, motivo e responsáveis anterior e novo, sem alterar o histórico dos chamados concluídos.
+* **Recuperação de Pendências:** Chamados de técnicos inativos podem ser redistribuídos pelo portal.
+
+![Edição de colaborador com chamados pendentes e links para redistribuição](docs/imagens/pendencias-tecnico.png)
 
 ### 🔒 Autenticação e Segurança
-<img width="1908" height="935" alt="image" src="https://github.com/user-attachments/assets/981005fc-88a1-4ef7-90ad-167fd414d247" />
+![Tela de login local do Portal de TI com campos de usuário e senha](docs/imagens/login.png)
 
-* **Google SSO (Single Sign-On):** Login com "um clique" utilizando contas corporativas do Google.
-* **Auto-Connect:** Vinculação automática de e-mails do Google com usuários previamente cadastrados manualmente, evitando duplicidade de contas.
+* **Login Local:** Funciona sem configurar Google. Portal e Django Admin compartilham limites de tentativas por conta/IP e por IP.
+* **Google SSO:** Integração opcional via Allauth, sujeita à configuração OAuth. Cadastro público está fechado; contas locais não são vinculadas automaticamente ao Google apenas por compartilharem e-mail.
 * **Proteção de Rotas:** Bloqueio de acesso não autorizado a páginas administrativas e restrição de visualização de tickets.
+* **MFA:** Ainda não implementado; requisitos de adoção e recuperação de acesso estão em [operação](docs/operacao.md).
 
 ---
 
@@ -56,7 +71,7 @@ Um sistema completo de Helpdesk e Gestão de Tickets de TI desenvolvido em **Pyt
 * **Back-end:** Python, Django
 * **Front-end:** HTML5, CSS3, Bootstrap 5, Ícones do Bootstrap
 * **Visualização de Dados:** Chart.js
-* **Banco de Dados:** SQLite (Fácil migração para PostgreSQL/MySQL)
+* **Banco de Dados:** SQLite; uso com maior concorrência exige validação e avaliação de outro banco.
 * **Autenticação:** Django Allauth (Google OAuth2)
 
 ---
@@ -185,9 +200,10 @@ consistência do registro e da alteração. Integrações futuras devem também 
 transações e registrar atualizações em lote explicitamente. Operações de terminal
 fora de transação não oferecem a mesma atomicidade.
 
-Backups devem abranger banco, uploads privados e trilha de auditoria juntos.
-Não foram realizados nesta etapa testes de restauração, concorrência real em
-produção ou retenção em armazenamento externo protegido contra adulteração.
+Backups abrangem banco, uploads privados e trilha de auditoria juntos. O fluxo
+automatizado de homologação valida restauração isolada e completude dos anexos
+referenciados no banco. Concorrência real em produção e retenção em armazenamento
+externo protegido contra adulteração continuam dependentes da implantação.
 
 
 ## Homologação
