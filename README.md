@@ -11,7 +11,7 @@
 
 Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django**, com fila de atendimento, acompanhamento de SLA, indicadores, controle de acesso e trilha de auditoria.
 
-As capturas abaixo ilustram as funcionalidades do portal com **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
+As capturas abaixo mostram o visual da **v1.1.0**, com a marca atual, os novos ícones e **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
 
 ---
 
@@ -53,7 +53,7 @@ As capturas abaixo ilustram as funcionalidades do portal com **dados fictícios 
 
 ### 🔄 Redistribuição de Chamados
 
-![Transferência de chamado com seleção de técnico ativo e motivo obrigatório](docs/imagens/redistribuicao.png)
+![Redistribuição com equipe de destino, técnico opcional e motivo obrigatório](docs/imagens/redistribuicao.png)
 
 * **Distribuição e Transferência:** Coordenadores distribuem chamados das equipes que coordenam; administradores têm visão geral. O destino pode ser outra equipe ativa, com responsável opcional entre seus integrantes ativos e motivo obrigatório.
 * **Auditoria:** Registro do autor, data, motivo e responsáveis anterior e novo, sem alterar o histórico dos chamados concluídos.
@@ -61,7 +61,16 @@ As capturas abaixo ilustram as funcionalidades do portal com **dados fictícios 
 
 ![Edição de colaborador com chamados pendentes e links para redistribuição](docs/imagens/pendencias-tecnico.png)
 
+### 👥 Gestão de Equipes
+
+![Gestão de equipes com integrantes, coordenadores, pendências e situação](docs/imagens/equipes.png)
+
+* **Administração no portal:** Cadastro e edição de equipes, integrantes e coordenadores em **Gerenciar Equipes**.
+* **Organização do atendimento:** Cada equipe tem sua fila e seus indicadores; um técnico pode participar de mais de uma equipe.
+
 ### 🧭 Encaminhamento automático por categoria
+
+![Regras de encaminhamento com categoria, equipe configurada e situação](docs/imagens/encaminhamento.png)
 
 Administradores configuram as regras em **Gerenciar Equipes → Encaminhamento por categoria**.
 A configuração inicial é:
