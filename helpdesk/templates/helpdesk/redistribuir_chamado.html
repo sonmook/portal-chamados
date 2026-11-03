@@ -8,8 +8,15 @@
 <div class="card mt-3"><div class="card-body">
 <h1 class="h4">Redistribuir chamado #{{ chamado.pk }}</h1>
 <p>{{ chamado.titulo }}</p>
+<p>Equipe atual: <strong>{{ chamado.equipe.nome }}</strong></p>
 <p>Responsável atual: <strong>{{ chamado.tecnico.username|default:'Sem responsável' }}</strong></p>
-<p>O novo responsável poderá responder e encerrar este chamado. O histórico será preservado.</p>
+<p>Escolha a equipe de destino e carregue seus integrantes antes de confirmar. O histórico e o SLA serão preservados.</p>
+<form method="get" class="mb-4">
+<label for="equipe-destino">Equipe de destino</label>
+<select id="equipe-destino" name="destino" class="form-select">
+{% for equipe in equipes_destino %}<option value="{{ equipe.pk }}" {% if equipe.pk == destino_id %}selected{% endif %}>{{ equipe.nome }}</option>{% endfor %}
+</select><button type="submit" class="btn btn-outline-primary mt-2">Carregar integrantes</button>
+</form>
 <form method="post">{% csrf_token %}{{ form.as_p }}
 <button class="btn btn-primary" type="submit">Confirmar transferência</button></form>
 </div></div></main></body></html>

@@ -59,6 +59,10 @@
     </nav>
 
     <div class="container">
+        {% for message in messages %}<div class="alert alert-info" role="status">{{ message }}</div>{% endfor %}
+        {% if request.user.is_staff and not request.user.is_superuser and not equipes_filtro %}
+        <div class="alert alert-info">Você ainda não participa de uma equipe ativa. Peça ao administrador para definir seus vínculos de atendimento. Seus próprios chamados continuam disponíveis.</div>
+        {% endif %}
         
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-3 gap-3">
             <div>
@@ -87,9 +91,15 @@
                     <option value="interacao_recente" {% if ordenacao == 'interacao_recente' %}selected{% endif %}>Interações mais recentes</option>
                     <option value="sem_interacao" {% if ordenacao == 'sem_interacao' %}selected{% endif %}>Ativos sem interação há mais tempo</option>
                 </select>
+                {% if request.user.is_staff or request.user.is_superuser %}
+                <select name="equipe" aria-label="Filtrar por equipe" class="form-select form-select-sm" style="width: auto; max-width: 260px;">
+                    <option value="">{% if request.user.is_superuser %}Todas as equipes{% else %}Minhas equipes e solicitações{% endif %}</option>
+                    {% for equipe in equipes_filtro %}<option value="{{ equipe.pk }}" {% if equipe_filter == equipe.pk|stringformat:'s' %}selected{% endif %}>{{ equipe.nome }}{% if not equipe.ativa %} (inativa){% endif %}</option>{% endfor %}
+                </select>
+                {% endif %}
                 <button type="submit" class="btn btn-sm btn-dark shadow-sm px-3 fw-bold">Filtrar</button>
 
-                {% if query or status_filter or categoria_filter or ordenacao != 'novos' %}
+                {% if query or status_filter or categoria_filter or equipe_filter or ordenacao != 'novos' %}
                     <a href="{% url 'lista_chamados' %}" class="btn btn-sm btn-outline-danger shadow-sm px-3 fw-bold d-flex align-items-center gap-1" title="Remover todos os filtros">
                         <i class="bi bi-x-circle-fill"></i> Limpar
                     </a>
@@ -150,6 +160,7 @@
                             <td>
                                 <div class="fw-bold text-dark">{{ chamado.titulo }}</div>
                                 <span class="badge bg-light text-dark border fw-normal" style="font-size: 0.7rem;">{{ chamado.categoria }}</span>
+                                <div class="small text-muted mt-1">{{ chamado.equipe.nome }}</div>
                             </td>
 
                             <td>

@@ -1,3 +1,4 @@
+from .test_helpers import integrar_triagem, dados_atribuicao
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
@@ -14,20 +15,21 @@ class RedistribuicaoTests(TestCase):
         self.tecnico = User.objects.create_user('tecnico', is_staff=True)
         self.novo = User.objects.create_user('novo-tecnico', is_staff=True)
         self.cliente = User.objects.create_user('cliente')
+        integrar_triagem(self.admin, self.tecnico, self.novo)
         self.chamado = Chamado.objects.create(titulo='Transferência', descricao='Fixture',
                                              solicitante=self.cliente, tecnico=self.tecnico)
         self.url = reverse('redistribuir_chamado', args=[self.chamado.pk])
         self.client.force_login(self.admin)
 
     def dados(self, **extras):
-        dados = {'tecnico': self.novo.pk, 'responsavel_anterior': self.tecnico.pk, 'motivo': 'Férias do responsável'}
+        dados = {**dados_atribuicao(self.chamado), 'tecnico': self.novo.pk, 'responsavel_anterior': self.tecnico.pk, 'motivo': 'Férias do responsável'}
         dados.update(extras)
         return dados
 
     def test_transferencia_auditada_com_ator_e_motivo(self):
         anterior = self.chamado.data_atualizacao
         resposta = self.client.post(self.url, self.dados())
-        self.assertRedirects(resposta, reverse('detalhes_chamado', args=[self.chamado.pk]))
+        self.assertRedirects(resposta, reverse('lista_chamados'))
         self.chamado.refresh_from_db()
         self.assertEqual(self.chamado.tecnico, self.novo)
         self.assertGreater(self.chamado.data_atualizacao, anterior)

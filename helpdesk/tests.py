@@ -1,3 +1,4 @@
+from .test_helpers import integrar_triagem
 from datetime import datetime, timezone
 from unittest.mock import patch
 
@@ -14,6 +15,7 @@ class AtendimentoTests(TestCase):
         self.outro_cliente = User.objects.create_user(username='outro_cliente')
         self.tecnico = User.objects.create_user(username='tecnico', is_staff=True)
         self.outro_tecnico = User.objects.create_user(username='outro_tecnico', is_staff=True)
+        integrar_triagem(self.tecnico, self.outro_tecnico)
         self.chamado = Chamado.objects.create(
             titulo='Problema privado', descricao='Descrição privada', solicitante=self.cliente,
         )

@@ -6,6 +6,10 @@ from django.utils import timezone
 from datetime import timedelta
 from .validators import validar_anexo
 
+
+def equipe_triagem_id():
+    return Equipe.objects.get(triagem_padrao=True, ativa=True).pk
+
 def calcular_prazo_util(data_inicial, horas_prazo):
     """
     Função auxiliar para calcular a data final de um SLA, adicionando horas 
@@ -69,6 +73,8 @@ class Chamado(models.Model):
     solicitante = models.ForeignKey(User, on_delete=models.PROTECT, related_name='chamados_solicitados')
     tecnico = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, related_name='chamados_atendidos', verbose_name='Técnico Responsável')
     fechado_por = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True, related_name='chamados_fechados')
+    equipe = models.ForeignKey('Equipe', on_delete=models.PROTECT, related_name='chamados', default=equipe_triagem_id)
+    versao_atribuicao = models.PositiveIntegerField(default=0, editable=False)
 
     def save(self, *args, **kwargs):
         """
@@ -172,11 +178,14 @@ class Equipe(models.Model):
     descricao = models.TextField(blank=True, max_length=1000)
     ativa = models.BooleanField(default=True)
     versao = models.PositiveIntegerField(default=0, editable=False)
+    triagem_padrao = models.BooleanField(default=False, editable=False)
 
     class Meta:
         ordering = ['nome', 'pk']
         constraints = [models.UniqueConstraint(Lower('nome'), name='equipe_nome_unico',
-                                              violation_error_message='Já existe uma equipe com esse nome.')]
+                                              violation_error_message='Já existe uma equipe com esse nome.'),
+                       models.UniqueConstraint(fields=['triagem_padrao'], condition=models.Q(triagem_padrao=True),
+                                               name='uma_equipe_triagem')]
 
     def __str__(self):
         return self.nome

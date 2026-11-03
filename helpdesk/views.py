@@ -7,6 +7,7 @@ from django.db.models import Q, F, Count, Avg, DurationField, ExpressionWrapper
 from django.db.models.functions import Coalesce
 from .user_security import bloquear_administradores, validar_pendencias
 from .audit import registrar
+from .acesso import chamados_acessiveis, equipes_acessiveis, integrante_ativo, pode_distribuir, filtrar_equipe
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User 
@@ -14,7 +15,7 @@ from django.utils import timezone
 from django.contrib import messages
 from datetime import timedelta
 
-from .models import Chamado, Comentario
+from .models import Chamado, Comentario, Equipe, IntegranteEquipe
 from .forms import ChamadoForm, ComentarioForm, NovoUsuarioForm, EditarUsuarioForm, ResolucaoForm, RedistribuirChamadoForm
 
 
@@ -28,12 +29,10 @@ def dashboard(request):
     periodo = request.GET.get('periodo', 'sempre')
     hoje = timezone.now().date()
     
-    # Define a base de chamados de acordo com o cargo
-    if request.user.is_staff:
-        base_chamados = Chamado.objects.all()
-    else:
-        base_chamados = Chamado.objects.filter(solicitante=request.user)
-        
+    base_chamados = chamados_acessiveis(request.user)
+    equipe_filter = request.GET.get('equipe', '')
+    base_chamados = filtrar_equipe(base_chamados, equipe_filter)
+
     # Aplicação do Filtro de Data
     if periodo == 'hoje':
         base_chamados = base_chamados.filter(data_criacao__date=hoje)
@@ -69,7 +68,12 @@ def dashboard(request):
     minha_produtividade = tmr_horas = 0
     if request.user.is_staff:
         # Um agrupamento para toda a equipe, incluindo membros sem resoluções.
-        membros = User.objects.filter(is_staff=True).annotate(
+        membros = User.objects.filter(is_staff=True)
+        if not request.user.is_superuser:
+            membros = membros.filter(Q(pk__in=IntegranteEquipe.objects.filter(
+                equipe_id__in=equipes_acessiveis(request.user).values('pk')
+            ).values('usuario_id')) | Q(pk__in=base_chamados.values('fechado_por_id')) | Q(pk=request.user.pk))
+        membros = membros.annotate(
             total_fechados=Count('chamados_fechados', filter=Q(
                 chamados_fechados__in=base_chamados.filter(status__in=FINALIZADOS)
             ))
@@ -86,6 +90,7 @@ def dashboard(request):
 
     context = {
         'periodo_atual': periodo,
+        'equipes_filtro': equipes_acessiveis(request.user), 'equipe_filter': equipe_filter,
         'tmr_horas': tmr_horas,
         **{campo: metricas[campo] for campo in ('total', 'abertos', 'resolvidos', 'vencidos', 'sla_sem_dados')},
         'ultimos_chamados': base_chamados.select_related('solicitante').order_by('-data_criacao')[:5],
@@ -103,15 +108,14 @@ def lista_chamados(request):
     """
     Exibe a lista de chamados com suporte a busca, filtros e paginação.
     """
-    if request.user.is_staff:
-        chamados_list = Chamado.objects.all().order_by('-id')
-    else:
-        chamados_list = Chamado.objects.filter(solicitante=request.user).order_by('-id')
+    chamados_list = chamados_acessiveis(request.user).order_by('-id')
 
     # Captura parâmetros da URL
     query = request.GET.get('q')
     status_filter = request.GET.get('status')
-    categoria_filter = request.GET.get('categoria') 
+    categoria_filter = request.GET.get('categoria')
+    equipe_filter = request.GET.get('equipe', '')
+    chamados_list = filtrar_equipe(chamados_list, equipe_filter)
     ordenacao = request.GET.get('ordenacao', 'novos')
     if ordenacao not in ('novos', 'interacao_recente', 'sem_interacao'):
         ordenacao = 'novos'
@@ -134,7 +138,7 @@ def lista_chamados(request):
         )
     elif ordenacao == 'interacao_recente':
         chamados_list = chamados_list.order_by(Coalesce('ultima_interacao_em', 'data_criacao').desc(), '-pk')
-    chamados_list = chamados_list.select_related('solicitante', 'tecnico')
+    chamados_list = chamados_list.select_related('solicitante', 'tecnico', 'equipe')
 
     # Paginação (10 itens por página)
     paginator = Paginator(chamados_list, 10)
@@ -147,6 +151,7 @@ def lista_chamados(request):
         'status_filter': status_filter,
         'categoria_filter': categoria_filter,
         'ordenacao': ordenacao,
+        'equipes_filtro': equipes_acessiveis(request.user), 'equipe_filter': equipe_filter,
     }
     return render(request, 'helpdesk/lista_chamados.html', context)
 
@@ -173,16 +178,16 @@ FINALIZADOS = ('Resolvido', 'Fechado')
 
 
 def _chamado_visivel(user, id, *, bloquear=False):
-    chamados = Chamado.objects.all()
+    chamados = chamados_acessiveis(user).select_related('equipe')
+    chamado = get_object_or_404(chamados, pk=id)
     if bloquear:
-        chamados = chamados.select_for_update()
-    if not user.is_staff:
-        chamados = chamados.filter(solicitante=user)
-    return get_object_or_404(chamados, pk=id)
+        get_object_or_404(Equipe.objects.select_for_update(), pk=chamado.equipe_id)
+        chamado = get_object_or_404(chamados.select_for_update(), pk=id, equipe_id=chamado.equipe_id)
+    return chamado
 
 
 def _exigir_responsavel(user, chamado):
-    if not user.is_staff or chamado.tecnico_id != user.pk:
+    if chamado.tecnico_id != user.pk or not integrante_ativo(user, chamado.equipe_id):
         raise PermissionDenied
 
 
@@ -190,10 +195,10 @@ def _exigir_responsavel(user, chamado):
 @transaction.atomic
 def detalhes_chamado(request, id):
     chamado = _chamado_visivel(request.user, id, bloquear=request.method == 'POST')
-    ativo = chamado.status not in FINALIZADOS
+    ativo = chamado.status not in FINALIZADOS and chamado.equipe.ativa
     pode_responder = ativo and (
         chamado.solicitante_id == request.user.pk
-        or (request.user.is_staff and chamado.tecnico_id == request.user.pk)
+        or (chamado.tecnico_id == request.user.pk and integrante_ativo(request.user, chamado.equipe_id))
     )
     if request.method == 'POST':
         if not pode_responder:
@@ -213,7 +218,9 @@ def detalhes_chamado(request, id):
         'form': form,
         'ativo': ativo,
         'pode_responder': pode_responder,
-        'pode_fechar': ativo and request.user.is_staff and chamado.tecnico_id == request.user.pk,
+        'pode_fechar': ativo and chamado.tecnico_id == request.user.pk and integrante_ativo(request.user, chamado.equipe_id),
+        'pode_assumir': ativo and chamado.tecnico_id is None and integrante_ativo(request.user, chamado.equipe_id),
+        'pode_distribuir': pode_distribuir(request.user, chamado),
     })
 
 
@@ -264,14 +271,14 @@ def fechar_chamado(request, id):
 @require_POST
 @transaction.atomic
 def assumir_chamado(request, chamado_id):
-    chamado = _chamado_visivel(request.user, chamado_id)
-    if not request.user.is_staff:
+    chamado = _chamado_visivel(request.user, chamado_id, bloquear=True)
+    if not integrante_ativo(request.user, chamado.equipe_id):
         raise PermissionDenied
     get_object_or_404(User.objects.select_for_update(), pk=request.user.pk, is_active=True, is_staff=True)
     # A atualização condicional impede sobrescrever uma atribuição concorrente.
     atualizado = Chamado.objects.filter(pk=chamado.pk, tecnico__isnull=True).exclude(
         status__in=FINALIZADOS
-    ).update(tecnico=request.user, data_atualizacao=timezone.now())
+    ).update(tecnico=request.user, data_atualizacao=timezone.now(), versao_atribuicao=F('versao_atribuicao') + 1)
     if atualizado:
         registrar('helpdesk.chamado', chamado.pk, 'alterado', {'tecnico_id': {'antes': None, 'depois': request.user.pk}})
         messages.success(request, "Você assumiu o chamado.")
@@ -282,31 +289,54 @@ def assumir_chamado(request, chamado_id):
 @require_http_methods(['GET', 'POST'])
 @transaction.atomic
 def redistribuir_chamado(request, id):
-    if not request.user.is_superuser:
+    chamado = _chamado_visivel(request.user, id)
+    if not pode_distribuir(request.user, chamado):
         raise PermissionDenied
-    chamado = get_object_or_404(Chamado, pk=id)
-    if chamado.status in FINALIZADOS:
-        raise PermissionDenied
-    form = RedistribuirChamadoForm(request.POST if request.method == 'POST' else None, chamado=chamado)
+    destino_id = request.POST.get('equipe') if request.method == 'POST' else request.GET.get('destino', chamado.equipe_id)
+    try:
+        destino_id = int(destino_id)
+    except (TypeError, ValueError):
+        destino_id = chamado.equipe_id
+    form = RedistribuirChamadoForm(request.POST if request.method == 'POST' else None,
+                                  chamado=chamado, initial={'equipe': destino_id})
     status = 200
     if request.method == 'POST' and form.is_valid():
-        tecnico = get_object_or_404(User.objects.select_for_update(), pk=form.cleaned_data['tecnico'].pk,
-                                   is_active=True, is_staff=True)
-        anterior = form.cleaned_data['responsavel_anterior']
-        # A comparação impede que uma tela antiga sobrescreva outra atribuição.
-        atualizado = Chamado.objects.filter(pk=id, tecnico_id=anterior).exclude(status__in=FINALIZADOS).update(
-            tecnico=tecnico, data_atualizacao=timezone.now()
-        )
-        if atualizado:
-            registrar('helpdesk.chamado', id, 'redistribuido', {
-                'tecnico_id': {'antes': anterior, 'depois': tecnico.pk},
-                'motivo': form.cleaned_data['motivo'],
-            })
-            messages.success(request, 'Responsável atualizado. A transferência foi registrada na auditoria.')
-            return redirect('detalhes_chamado', id=id)
-        form.add_error(None, 'O chamado foi alterado por outra pessoa. Reabra a página antes de transferir.')
-        status = 409
-    return render(request, 'helpdesk/redistribuir_chamado.html', {'form': form, 'chamado': chamado}, status=status)
+        destino = form.cleaned_data['equipe']
+        # Equipes antes dos chamados: a edição de integrantes usa os mesmos bloqueios.
+        list(Equipe.objects.select_for_update().filter(pk__in=sorted({chamado.equipe_id, destino.pk})).order_by('pk'))
+        chamado = _chamado_visivel(request.user, id, bloquear=True)
+        if not pode_distribuir(request.user, chamado):
+            raise PermissionDenied
+        if not Equipe.objects.filter(pk=destino.pk, ativa=True).exists():
+            form.add_error('equipe', 'A equipe de destino foi desativada. Escolha outra.')
+        else:
+            tecnico = form.cleaned_data['tecnico']
+            if tecnico:
+                tecnico = get_object_or_404(User.objects.select_for_update(), pk=tecnico.pk, is_active=True, is_staff=True)
+                if not integrante_ativo(tecnico, destino.pk):
+                    raise PermissionDenied
+            anterior = form.cleaned_data['responsavel_anterior']
+            atualizado = Chamado.objects.filter(
+                pk=id, tecnico_id=anterior, equipe_id=form.cleaned_data['equipe_anterior'],
+                versao_atribuicao=form.cleaned_data['versao_atribuicao'],
+            ).exclude(status__in=FINALIZADOS).update(
+                equipe=destino, tecnico=tecnico, data_atualizacao=timezone.now(),
+                versao_atribuicao=F('versao_atribuicao') + 1,
+            )
+            if atualizado:
+                alteracoes = {'tecnico_id': {'antes': anterior, 'depois': tecnico.pk if tecnico else None},
+                              'motivo': form.cleaned_data['motivo']}
+                if chamado.equipe_id != destino.pk:
+                    alteracoes['equipe_id'] = {'antes': chamado.equipe_id, 'depois': destino.pk}
+                registrar('helpdesk.chamado', id, 'redistribuido', alteracoes)
+                messages.success(request, 'Chamado redistribuído e registrado na auditoria.')
+                # O coordenador pode deixar de ter acesso após encaminhar a outra equipe.
+                return redirect('lista_chamados')
+            form.add_error(None, 'O chamado foi alterado por outra pessoa. Reabra a página antes de transferir.')
+            status = 409
+    return render(request, 'helpdesk/redistribuir_chamado.html', {
+        'form': form, 'chamado': chamado, 'equipes_destino': Equipe.objects.filter(ativa=True), 'destino_id': destino_id,
+    }, status=status)
 
 
 @login_required
@@ -318,6 +348,7 @@ def devolver_chamado(request, chamado_id):
     if chamado.status in FINALIZADOS:
         raise PermissionDenied
     chamado.tecnico = None
+    chamado.versao_atribuicao += 1
     chamado.save()
     messages.warning(request, "Chamado devolvido para a fila.")
     return redirect('detalhes_chamado', id=chamado.id)

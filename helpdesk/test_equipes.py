@@ -154,10 +154,10 @@ class EquipesTests(TestCase):
             self.assertFalse(registro.has_change_permission(None))
             self.assertFalse(registro.has_delete_permission(None))
 
-    def test_primeira_etapa_nao_restringe_chamados_existentes(self):
+    def test_tecnico_sem_vinculo_nao_acessa_chamado(self):
         chamado = Chamado.objects.create(titulo='Sem equipe', descricao='Fixture', solicitante=self.cliente)
         self.client.force_login(self.tecnico)
-        self.assertEqual(self.client.get(reverse('detalhes_chamado', args=[chamado.pk])).status_code, 200)
+        self.assertEqual(self.client.get(reverse('detalhes_chamado', args=[chamado.pk])).status_code, 404)
 
     def test_paginacao_deterministica_preserva_busca(self):
         Equipe.objects.bulk_create([Equipe(nome=f'Paginação {i:02d}') for i in range(25)])
