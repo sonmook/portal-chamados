@@ -1,5 +1,12 @@
 # Histórico de atualizações
 
+## Preparação da v1.1.0 — Cadastro de equipes
+
+- Área Gerenciar Equipes no menu administrativo, com pesquisa, paginação, cadastro, integrantes, coordenadores e ativação/desativação.
+- Migração 0013 cria as seis equipes aprovadas, incluindo Suporte Especializado — N2, sem atribuir usuários ou chamados automaticamente.
+- Coordenadores devem ser integrantes; seleção restrita a técnicos ativos, alterações auditadas e proteção contra sobrescrita de edição antiga.
+- Django Admin disponível para consulta. Vínculo de chamados, filas e permissões por equipe ficam para a próxima etapa; nenhuma tag de release publicada.
+
 ## 2026-11-03 — Consultas do dashboard
 
 - Indicadores e categorias agrupados em uma agregação; tempo médio de resolução calculado no banco, preservando o fallback para a última atualização.
