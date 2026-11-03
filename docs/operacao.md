@@ -1,5 +1,31 @@
 # Desenvolvimento, CI e produção
 
+## Cadastro de equipes — primeira etapa da v1.1.0
+
+Faça backup e execute `python manage.py migrate` antes de iniciar esta revisão.
+A migração 0013 cria equipes e vínculos de integrantes e inclui os seis cadastros
+iniciais de forma idempotente. Não migra chamados, não atribui técnicos e não concede
+permissões adicionais a coordenadores. Não publicar a v1.1.0 antes das próximas etapas.
+
+Administradores gerenciam as equipes em `/equipes/`, pelo menu do portal. A edição
+é transacional com a auditoria; conta ativa com `is_staff` é requisito para seleção
+e coordenadores precisam integrar a equipe. Se um integrante for desativado ou
+rebaixado na gestão de usuários, seu vínculo permanece visível, sinalizado na tela;
+é necessário removê-lo explicitamente da seleção para salvar uma nova edição.
+Desativar uma equipe preserva seus vínculos, sem excluir registros. O registro de
+auditoria preserva IDs de integrantes/coordenadores e status antes/depois; nome e
+descrição são registrados como alterados, sem reproduzir o conteúdo.
+
+Edições antigas retornam 409 e exigem reabrir o formulário. O Django Admin permite
+somente consulta. Escritas diretas por SQL/ORM não passam pelo fluxo de validação
+e auditoria. SQLite continua sem bloqueio de linha: o controle de versão não é
+garantia de capacidade sob carga concorrente real de produção.
+
+Esta branch parte da main sem a migração de última interação ainda pendente na
+branch `feat/ultima-interacao`. Antes de integrar ambas as entregas, conciliar os
+dois ramos de migrações do helpdesk e repetir `makemigrations --check` e os testes;
+não resolver conflitos apagando migrações já aplicadas.
+
 ## Proteção do login administrativo
 
 O AdminSite configurado por `core.admin_config.PortalAdminConfig` aplica o mesmo

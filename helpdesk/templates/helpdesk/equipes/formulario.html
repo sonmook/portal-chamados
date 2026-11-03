@@ -1,0 +1,20 @@
+{% extends 'helpdesk/equipes/base.html' %}
+{% block titulo %}{% if equipe.pk %}Gerenciar equipe{% else %}Nova equipe{% endif %}{% endblock %}
+{% block conteudo %}
+<a href="{% url 'gerenciar_equipes' %}">Voltar às equipes</a>
+<h1 class="h2 mt-3">{% if equipe.pk %}Gerenciar equipe{% else %}Nova equipe{% endif %}</h1>
+<div class="card mt-3"><div class="card-body"><form method="post">{% csrf_token %}
+{{ form.versao_atual }}{{ form.non_field_errors }}
+<div class="mb-3">{{ form.nome.label_tag }}{{ form.nome.errors }}{{ form.nome }}</div>
+<div class="mb-3">{{ form.descricao.label_tag }}{{ form.descricao.errors }}{{ form.descricao }}</div>
+<div class="mb-4">{{ form.ativa }} {{ form.ativa.label_tag }}{{ form.ativa.errors }}
+<p class="text-muted small">Desativar preserva o cadastro e seus integrantes. A equipe pode ser reativada.</p></div>
+<div class="row"><fieldset class="col-md-6 mb-3"><legend class="h5">Integrantes</legend>
+<p class="text-muted small">Selecione técnicos ativos. Um técnico pode integrar várias equipes.</p>
+{{ form.integrantes.errors }}{{ form.integrantes }}</fieldset>
+<fieldset class="col-md-6 mb-3"><legend class="h5">Coordenadores</legend>
+<p class="text-muted small">Selecione coordenadores entre os integrantes da equipe.</p>
+{{ form.coordenadores.errors }}{{ form.coordenadores }}</fieldset></div>
+<button class="btn btn-primary" type="submit">Salvar equipe</button>
+</form></div></div>
+{% endblock %}

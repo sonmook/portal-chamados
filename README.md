@@ -132,6 +132,27 @@ integrações que faziam GET nessa rota devem ser atualizadas.
 
 ## Login e administração
 
+### Equipes — preparação da v1.1.0
+
+Administradores encontram **Gerenciar Equipes** no menu superior. A área permite
+criar equipes, editar responsabilidades, selecionar integrantes e coordenadores,
+ativar e desativar cadastros. Um técnico pode integrar várias equipes; coordenadores
+devem ser integrantes, e as contas selecionadas precisam ter acesso de técnico ativo.
+As seis equipes iniciais são Central de Serviços — N1, Suporte Especializado — N2,
+Infraestrutura e Redes, Sistemas e Aplicações, Identidades e Acessos e Segurança da Informação.
+
+Execute `python manage.py migrate` para criar o cadastro inicial. Desativar uma
+equipe preserva os vínculos. Remoções de integrantes e alterações de coordenadores
+ficam registradas na auditoria, com os IDs antes/depois e o administrador responsável.
+O Django Admin oferece consulta desses cadastros; a edição é realizada pelo portal.
+
+Esta é a primeira etapa: chamados ainda não são vinculados a equipes, não existe
+contagem de pendências por equipe e a coordenação ainda não concede novas permissões.
+Filas por equipe, transferência entre equipes e proteção de chamados/anexos serão
+implementadas na próxima entrega, antes de publicar a versão v1.1.0.
+
+### Contas e atendimento
+
 Administradores podem usar **Redistribuir chamado** nos detalhes de um chamado
 ativo para escolher outro técnico ativo e informar um motivo (até 500 caracteres).
 A transferência registra ator, data, responsável anterior/novo e motivo na auditoria;
