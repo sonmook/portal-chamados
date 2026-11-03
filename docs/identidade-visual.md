@@ -6,9 +6,9 @@ O Portal de TI tem marca própria, independente de empresas que o utilizem. O no
 
 ## Símbolo e uso
 
-O contorno de um chamado representa a solicitação; o headset representa o atendimento. O símbolo é branco sobre azul, com cantos arredondados. A versão compacta é usada no cabeçalho e na aba do navegador; a assinatura com nome e descritor é indicada para documentação e apresentação.
+A silhueta branca de um chamado representa a solicitação; o headset azul representa o atendimento. O preenchimento separa as duas formas e mantém a leitura nos tamanhos pequenos. O fundo azul tem cantos arredondados. A versão compacta é usada no cabeçalho e na aba do navegador; a assinatura com nome e descritor é indicada para documentação e apresentação.
 
-Os arquivos vetoriais estão em `helpdesk/static/helpdesk/brand/`: `simbolo.svg` e `logo.svg`. O favicon PNG de 32px atende navegadores sem ícone SVG, e o ícone de 180px atende atalhos em dispositivos Apple. As declarações ficam no componente compartilhado `estilos.html` para contemplar também equipes e regras.
+Os arquivos vetoriais estão em `helpdesk/static/helpdesk/brand/`: `simbolo.svg` e `logo.svg`. Os favicons PNG de 16px e 32px atendem navegadores sem ícone SVG, e o ícone de 180px atende atalhos em dispositivos Apple. As declarações ficam no componente compartilhado `estilos.html` para contemplar também equipes e regras.
 
 Mantenha as proporções, a legibilidade e uma área livre de pelo menos um quarto da altura do símbolo. Não use sombras ou cores de status no símbolo. No cabeçalho, o texto do nome identifica a marca; o ícone ao lado é decorativo para leitores de tela.
 

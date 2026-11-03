@@ -3,6 +3,7 @@
 ## v1.1.0 — Equipes, encaminhamento e identidade visual
 
 - Versão centralizada em `VERSION` e exibida no portal e no login.
+- Marca refinada com chamado preenchido e headset separado; favicons em 16px e 32px para melhor leitura em abas.
 - Identidade própria do Portal de TI: símbolo de chamado com headset, favicon e ícones consistentes, incluindo Gerenciar Equipes.
 - Consolida atendimento por equipes, encaminhamento por categoria, última interação e refinamento visual descritos abaixo.
 - Notas em `docs/releases/v1.1.0.md`; tag e Release são publicadas pela ação **Publicar versão**, na main, após a validação. O registro neste arquivo não significa que a tag já foi publicada.
