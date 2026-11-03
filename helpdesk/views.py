@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import transaction
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import FileResponse, Http404, HttpResponseBadRequest
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 from django.db.models import Q, F
-from .user_security import bloquear_administradores
+from .user_security import bloquear_administradores, validar_pendencias
 from .audit import registrar
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -14,7 +14,7 @@ from django.contrib import messages
 from datetime import timedelta
 
 from .models import Chamado, Comentario
-from .forms import ChamadoForm, ComentarioForm, NovoUsuarioForm, EditarUsuarioForm, ResolucaoForm
+from .forms import ChamadoForm, ComentarioForm, NovoUsuarioForm, EditarUsuarioForm, ResolucaoForm, RedistribuirChamadoForm
 
 
 @login_required
@@ -260,6 +260,7 @@ def assumir_chamado(request, chamado_id):
     chamado = _chamado_visivel(request.user, chamado_id)
     if not request.user.is_staff:
         raise PermissionDenied
+    get_object_or_404(User.objects.select_for_update(), pk=request.user.pk, is_active=True, is_staff=True)
     # A atualização condicional impede sobrescrever uma atribuição concorrente.
     atualizado = Chamado.objects.filter(pk=chamado.pk, tecnico__isnull=True).exclude(
         status__in=FINALIZADOS
@@ -268,6 +269,37 @@ def assumir_chamado(request, chamado_id):
         registrar('helpdesk.chamado', chamado.pk, 'alterado', {'tecnico_id': {'antes': None, 'depois': request.user.pk}})
         messages.success(request, "Você assumiu o chamado.")
     return redirect('detalhes_chamado', id=chamado.id)
+
+
+@login_required
+@require_http_methods(['GET', 'POST'])
+@transaction.atomic
+def redistribuir_chamado(request, id):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+    chamado = get_object_or_404(Chamado, pk=id)
+    if chamado.status in FINALIZADOS:
+        raise PermissionDenied
+    form = RedistribuirChamadoForm(request.POST if request.method == 'POST' else None, chamado=chamado)
+    status = 200
+    if request.method == 'POST' and form.is_valid():
+        tecnico = get_object_or_404(User.objects.select_for_update(), pk=form.cleaned_data['tecnico'].pk,
+                                   is_active=True, is_staff=True)
+        anterior = form.cleaned_data['responsavel_anterior']
+        # A comparação impede que uma tela antiga sobrescreva outra atribuição.
+        atualizado = Chamado.objects.filter(pk=id, tecnico_id=anterior).exclude(status__in=FINALIZADOS).update(
+            tecnico=tecnico, data_atualizacao=timezone.now()
+        )
+        if atualizado:
+            registrar('helpdesk.chamado', id, 'redistribuido', {
+                'tecnico_id': {'antes': anterior, 'depois': tecnico.pk},
+                'motivo': form.cleaned_data['motivo'],
+            })
+            messages.success(request, 'Responsável atualizado. A transferência foi registrada na auditoria.')
+            return redirect('detalhes_chamado', id=id)
+        form.add_error(None, 'O chamado foi alterado por outra pessoa. Reabra a página antes de transferir.')
+        status = 409
+    return render(request, 'helpdesk/redistribuir_chamado.html', {'form': form, 'chamado': chamado}, status=status)
 
 
 @login_required
@@ -344,7 +376,7 @@ def editar_usuario(request, user_id):
         return redirect('lista_chamados')
         
     bloquear_administradores()
-    usuario = get_object_or_404(User, id=user_id)
+    usuario = get_object_or_404(User.objects.select_for_update(), id=user_id)
     
     if request.method == 'POST':
         form = EditarUsuarioForm(request.POST, instance=usuario)
@@ -355,7 +387,10 @@ def editar_usuario(request, user_id):
     else:
         form = EditarUsuarioForm(instance=usuario)
         
-    return render(request, 'helpdesk/editar_usuario.html', {'form': form, 'usuario': usuario})
+    pendentes = Chamado.objects.filter(tecnico_id=user_id).exclude(status__in=FINALIZADOS).order_by('pk')
+    return render(request, 'helpdesk/editar_usuario.html', {
+        'form': form, 'usuario': usuario, 'pendentes': pendentes[:20], 'total_pendentes': pendentes.count(),
+    })
 
 
 @login_required
@@ -370,12 +405,17 @@ def alternar_status_usuario(request, user_id):
         return redirect('lista_chamados')
         
     bloquear_administradores()
-    usuario = get_object_or_404(User, id=user_id)
+    usuario = get_object_or_404(User.objects.select_for_update(), id=user_id)
     
     if usuario == request.user:
         messages.error(request, "Você não pode desativar sua própria conta.")
         return redirect('gerenciar_usuarios')
         
+    try:
+        validar_pendencias(usuario.pk, not usuario.is_active, usuario.is_staff)
+    except ValidationError as erro:
+        messages.error(request, erro.messages[0])
+        return redirect('editar_usuario', user_id=user_id)
     usuario.is_active = not usuario.is_active
     usuario.save()
     

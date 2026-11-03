@@ -17,6 +17,7 @@ urlpatterns = [
     path('chamado/<int:id>/fechar/', views.fechar_chamado, name='fechar_chamado'),
     path('chamado/<int:chamado_id>/assumir/', views.assumir_chamado, name='assumir_chamado'),
     path('chamado/<int:chamado_id>/devolver/', views.devolver_chamado, name='devolver_chamado'),
+    path('chamado/<int:id>/redistribuir/', views.redistribuir_chamado, name='redistribuir_chamado'),
     
     # --- Gestão de Usuários (Admin) ---
     path('usuarios/', views.gerenciar_usuarios, name='gerenciar_usuarios'),

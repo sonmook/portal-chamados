@@ -1,5 +1,13 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from .models import Chamado
+
+
+def validar_pendencias(pk, ativo, staff):
+    if pk and not (ativo and staff) and Chamado.objects.filter(tecnico_id=pk).exclude(
+        status__in=('Resolvido', 'Fechado')
+    ).exists():
+        raise ValidationError('Redistribua os chamados pendentes antes de desativar ou retirar o acesso de técnico.')
 
 
 def bloquear_administradores():

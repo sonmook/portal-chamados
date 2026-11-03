@@ -66,6 +66,10 @@
     </nav>
 
     <div class="container">
+        {% for message in messages %}<div class="alert alert-info" role="status">{{ message }}</div>{% endfor %}
+        {% if request.user.is_superuser and ativo %}
+        <div class="mb-3"><a class="btn btn-outline-primary" href="{% url 'redistribuir_chamado' chamado.pk %}">Redistribuir chamado</a></div>
+        {% endif %}
         
         <div class="mb-4">
             <a href="{% url 'lista_chamados' %}" class="text-decoration-none text-muted small fw-bold">

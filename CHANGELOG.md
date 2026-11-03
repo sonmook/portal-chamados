@@ -1,5 +1,12 @@
 # Histórico de atualizações
 
+## 2026-11-03 — Redistribuição administrativa de chamados
+
+- Administradores podem transferir chamados ativos para técnicos ativos com motivo obrigatório, registrando responsáveis anterior/novo e ator na auditoria.
+- Telas de transferência desatualizadas não sobrescrevem outra atribuição; falha no registro de auditoria reverte a transferência.
+- Desativação e retirada do papel de técnico são bloqueadas com pendências; edição de colaboradores mostra links para redistribuição. Chamados concluídos preservam seus responsáveis.
+- Campo técnico somente leitura no Django Admin; recuperação de chamados de técnicos inativos disponível no portal.
+
 ## 2026-11-03 — Limitação de tentativas no Django Admin
 
 - Login administrativo agora compartilha com o portal o limite por conta/IP e por IP, sem renovar a cota ao alternar as rotas.

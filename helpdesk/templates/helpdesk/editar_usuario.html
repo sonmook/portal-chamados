@@ -52,6 +52,14 @@
                     
                     <div class="card-body p-4">
                         <form method="POST">
+                            {% for message in messages %}<div class="alert alert-warning">{{ message }}</div>{% endfor %}
+                            {% if total_pendentes %}
+                            <div class="alert alert-warning">
+                                <p>Este colaborador possui {{ total_pendentes }} chamado(s) pendente(s). Redistribua-os antes de desativar ou retirar o acesso de técnico.</p>
+                                <ul>{% for chamado in pendentes %}<li><a href="{% url 'redistribuir_chamado' chamado.pk %}">#{{ chamado.pk }} — {{ chamado.titulo }}</a></li>{% endfor %}</ul>
+                                {% if total_pendentes > 20 %}<p>Exibindo os primeiros 20. Os demais aparecerão após a redistribuição.</p>{% endif %}
+                            </div>
+                            {% endif %}
                             {% csrf_token %}
                             {{ form.non_field_errors }}
                             
