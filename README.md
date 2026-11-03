@@ -57,6 +57,31 @@ As capturas abaixo mostram a interface da versão atual com **dados fictícios d
 
 ![Edição de colaborador com chamados pendentes e links para redistribuição](docs/imagens/pendencias-tecnico.png)
 
+### 🧭 Encaminhamento automático por categoria
+
+Administradores configuram as regras em **Gerenciar Equipes → Encaminhamento por categoria**.
+A configuração inicial é:
+
+| Categoria | Equipe de destino |
+| --- | --- |
+| Rede | Infraestrutura e Redes |
+| Acessos | Identidades e Acessos |
+| Hardware | Suporte Especializado — N2 |
+| Software | Sistemas e Aplicações |
+| Outros | Equipe de triagem, inicialmente Central de Serviços — N1 |
+
+O encaminhamento vale apenas na abertura, pelo portal ou pelo Django Admin, e
+não escolhe um técnico: o chamado entra na fila da equipe. Sem regra ativa, com
+destino inativo ou sem integrantes com conta ativa e acesso de técnico, segue
+para a triagem. A própria triagem recebe chamados mesmo sem integrantes. Essa
+verificação considera o cadastro, não a presença online dos técnicos.
+
+A tela mostra quando uma regra usará a triagem. Alterações de regras e decisões
+de encaminhamento ficam na auditoria. Chamados já abertos e transferências manuais
+mantêm suas equipes. A migração 0016 cria as regras sem reclassificar o histórico;
+se uma equipe padrão foi renomeada antes da atualização, a regra correspondente
+fica desativada na triagem para revisão, sem recriar equipes.
+
 ### 🔒 Autenticação e Segurança
 ![Tela de login local do Portal de TI com campos de usuário e senha](docs/imagens/login.png)
 
@@ -158,8 +183,8 @@ Remoções de integrantes e alterações de coordenadores
 ficam registradas na auditoria, com os IDs antes/depois e o administrador responsável.
 O Django Admin oferece consulta desses cadastros; a edição é realizada pelo portal.
 
-Na segunda etapa, novos chamados entram na equipe de triagem, inicialmente
-Central de Serviços — N1. A migração 0015 encaminha os chamados existentes a essa
+Novos chamados seguem as regras de categoria acima; sem um destino aplicável,
+entram na equipe de triagem, inicialmente Central de Serviços — N1. A migração 0015 encaminha os chamados existentes a essa
 equipe, preservando status, responsáveis e histórico, e inclui seus técnicos ativos
 já responsáveis no cadastro de integrantes. Também inclui os responsáveis ativos
 por encerramentos históricos, sem conceder coordenação automaticamente.

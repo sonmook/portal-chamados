@@ -1,5 +1,12 @@
 # Histórico de atualizações
 
+## Preparação da v1.1.0 — Encaminhamento automático por categoria
+
+- Regras administráveis em Gerenciar Equipes, com destinos iniciais para Rede, Acessos, Hardware, Software e Outros.
+- Novos chamados do portal e do Django Admin seguem a regra aplicável; destinos inativos ou sem técnico ativo e regras ausentes/desativadas usam a triagem. Não atribui técnico automaticamente.
+- Configuração e decisões auditadas, com controle de versão das regras. Migração 0016 não reclassifica chamados nem recria equipes renomeadas.
+- Chamados existentes e transferências manuais preservados; nenhuma tag de release publicada.
+
 ## Preparação da v1.1.0 — Atendimento por equipes
 
 - Chamados vinculados a equipes; novos registros entram na triagem N1. Migração 0015 preserva o histórico e inclui técnicos ativos já responsáveis na equipe inicial.

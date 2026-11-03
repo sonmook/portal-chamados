@@ -201,3 +201,16 @@ class IntegranteEquipe(models.Model):
 
     def __str__(self):
         return f'{self.equipe}: {self.usuario}'
+
+
+class RegraEncaminhamento(models.Model):
+    categoria = models.CharField(max_length=30, choices=Chamado.CATEGORIA_CHOICES, unique=True)
+    equipe = models.ForeignKey(Equipe, on_delete=models.PROTECT, related_name='regras_encaminhamento')
+    ativa = models.BooleanField(default=True)
+    versao = models.PositiveIntegerField(default=0, editable=False)
+
+    class Meta:
+        ordering = ['categoria']
+
+    def __str__(self):
+        return f'{self.get_categoria_display()} → {self.equipe}'

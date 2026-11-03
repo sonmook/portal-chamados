@@ -4,7 +4,8 @@ from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 
-from .models import Chamado, Comentario, RegistroAuditoria, Equipe, IntegranteEquipe
+from .models import Chamado, Comentario, RegistroAuditoria, Equipe, IntegranteEquipe, RegraEncaminhamento
+from .encaminhamento import criar_chamado_encaminhado
 from .user_security import bloquear_administradores, validar_administrador, validar_pendencias
 from .acesso import chamados_acessiveis
 
@@ -61,6 +62,9 @@ class ChamadoAdmin(admin.ModelAdmin):
         return False
 
     def save_model(self, request, obj, form, change):
+        if not change:
+            criar_chamado_encaminhado(obj)
+            return
         if change:
             atual = Chamado.objects.select_for_update().get(pk=obj.pk)
             if atual.status in ('Resolvido', 'Fechado'):
@@ -151,3 +155,9 @@ class EquipeAdmin(ConsultaEquipeAdmin):
 class IntegranteEquipeAdmin(ConsultaEquipeAdmin):
     list_display = ('equipe', 'usuario', 'coordenador')
     list_select_related = ('equipe', 'usuario')
+
+
+@admin.register(RegraEncaminhamento)
+class RegraEncaminhamentoAdmin(ConsultaEquipeAdmin):
+    list_display = ('categoria', 'equipe', 'ativa')
+    list_select_related = ('equipe',)

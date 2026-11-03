@@ -2,7 +2,7 @@
 {% block conteudo %}
 <div class="d-flex justify-content-between flex-wrap gap-3 mb-4"><div><h1 class="h2">Gerenciar Equipes</h1>
 <p class="text-muted">Organize responsabilidades, integrantes e coordenadores.</p></div>
-<div><a class="btn btn-primary" href="{% url 'criar_equipe' %}">Nova equipe</a></div></div>
+<div class="d-flex gap-2 align-items-start flex-wrap"><a class="btn btn-outline-primary" href="{% url 'listar_regras_encaminhamento' %}">Encaminhamento por categoria</a><a class="btn btn-primary" href="{% url 'criar_equipe' %}">Nova equipe</a></div></div>
 <form method="get" class="d-flex gap-2 mb-4"><label for="busca-equipes" class="visually-hidden">Buscar equipe pelo nome</label>
 <input class="form-control" id="busca-equipes" name="q" value="{{ busca }}" placeholder="Buscar equipe pelo nome">
 <button class="btn btn-dark">Pesquisar</button><a class="btn btn-outline-secondary" href="{% url 'gerenciar_equipes' %}">Limpar</a></form>

@@ -72,10 +72,11 @@ import django
 django.setup()
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
-from helpdesk.models import Chamado, Comentario, IntegranteEquipe
+from helpdesk.models import Chamado, Comentario, IntegranteEquipe, RegraEncaminhamento
 user=User.objects.create_user(username='validation-only',is_staff=True)
 t=Chamado.objects.create(titulo='Restauração isolada',descricao='Fixture',solicitante=user,tecnico=user)
 IntegranteEquipe.objects.create(equipe=t.equipe,usuario=user,coordenador=True)
+RegraEncaminhamento.objects.filter(categoria='Rede').update(ativa=False,versao=7)
 Comentario.objects.create(chamado=t,autor=user,texto='Fixture',anexo=SimpleUploadedFile('evidencia.pdf',b'%PDF-1.7 fixture'))
 """)
             compose('stop','app')
@@ -87,7 +88,7 @@ Comentario.objects.create(chamado=t,autor=user,texto='Fixture',anexo=SimpleUploa
 import django
 django.setup()
 from django.contrib.auth.models import User
-from helpdesk.models import Chamado, Comentario, RegistroAuditoria, IntegranteEquipe
+from helpdesk.models import Chamado, Comentario, RegistroAuditoria, IntegranteEquipe, RegraEncaminhamento
 assert User.objects.filter(username='validation-only').exists()
 assert Chamado.objects.filter(titulo='Restauração isolada').exists()
 comment=Comentario.objects.get(texto='Fixture')
@@ -97,7 +98,9 @@ t=Chamado.objects.get(titulo='Restauração isolada')
 assert t.equipe.triagem_padrao
 assert t.tecnico.username=='validation-only'
 assert IntegranteEquipe.objects.filter(equipe=t.equipe,usuario=t.tecnico,coordenador=True).exists()
-print('PASS: usuário, chamado, comentário, auditoria, anexo, equipe e coordenação restaurados em destino separado.')
+regra=RegraEncaminhamento.objects.get(categoria='Rede')
+assert not regra.ativa and regra.versao==7
+print('PASS: usuário, chamado, comentário, auditoria, anexo, equipe, coordenação e regra personalizada restaurados em destino separado.')
 """,restored=True)
         except Exception:
             subprocess.run([*base,'logs','--tail=60','app','proxy'],env=docker_env,cwd=ROOT)
