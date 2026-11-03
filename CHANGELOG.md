@@ -1,5 +1,11 @@
 # Histórico de atualizações
 
+## 2026-11-03 — Consultas do dashboard
+
+- Indicadores e categorias agrupados em uma agregação; tempo médio de resolução calculado no banco, preservando o fallback para a última atualização.
+- Ranking agrupado por técnico, incluindo integrantes sem resoluções, e solicitantes carregados junto dos cinco chamados recentes.
+- Testes verificam filtros, permissões, resultados e cinco consultas por página mesmo após ampliar equipe e volume de chamados. Nenhuma mudança de interface ou migração.
+
 ## 2026-11-03 — Redistribuição administrativa de chamados
 
 - Administradores podem transferir chamados ativos para técnicos ativos com motivo obrigatório, registrando responsáveis anterior/novo e ator na auditoria.
