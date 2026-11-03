@@ -1,5 +1,11 @@
 # Histórico de atualizações
 
+## 2026-11-03 — Última interação e fila por inatividade
+
+- Comentários e soluções registram a última interação do chamado na mesma transação; salvamentos administrativos não sobrescrevem essa informação.
+- Fila mostra data e tempo desde a última interação e permite ordenar por interações recentes ou por chamados ativos sem interação há mais tempo, preservando filtros e paginação.
+- Migração 0012 preenche o histórico com datas já registradas de abertura, comentários e encerramento, sem criar auditoria retroativa.
+
 ## Preparação da v1.1.0 — Cadastro de equipes
 
 - Área Gerenciar Equipes no menu administrativo, com pesquisa, paginação, cadastro, integrantes, coordenadores e ativação/desativação.

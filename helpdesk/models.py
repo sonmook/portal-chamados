@@ -1,5 +1,6 @@
 from django.db import models
-from django.db.models.functions import Lower
+from django.db import transaction
+from django.db.models.functions import Coalesce, Greatest, Lower
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
@@ -60,6 +61,7 @@ class Chamado(models.Model):
     # Rastreamento de Datas e SLA
     data_criacao = models.DateTimeField(auto_now_add=True)
     data_atualizacao = models.DateTimeField(auto_now=True)
+    ultima_interacao_em = models.DateTimeField(null=True, blank=True, editable=False, db_index=True)
     data_vencimento = models.DateTimeField(blank=True, null=True)
     data_fechamento = models.DateTimeField(null=True, blank=True, verbose_name="Data de Fechamento")
 
@@ -82,8 +84,19 @@ class Chamado(models.Model):
             }
             horas = regras_sla.get(self.prioridade, 48)
             self.data_vencimento = calcular_prazo_util(timezone.now(), horas)
-            
+
+        if not self._state.adding and kwargs.get('update_fields') is None:
+            # A interação é mantida pelos comentários, não por cópias antigas do chamado.
+            adiados = self.get_deferred_fields()
+            kwargs['update_fields'] = {
+                campo.name for campo in self._meta.concrete_fields
+                if not campo.primary_key and campo.name != 'ultima_interacao_em' and campo.attname not in adiados
+            }
         super().save(*args, **kwargs)
+
+    @property
+    def data_ultima_interacao(self):
+        return self.ultima_interacao_em or self.data_criacao
 
     @property
     def sla_estourado(self):
@@ -108,6 +121,16 @@ class Comentario(models.Model):
     texto = models.TextField(verbose_name="Mensagem")
     data_criacao = models.DateTimeField(auto_now_add=True)
     anexo = models.FileField(validators=[validar_anexo], upload_to='anexos_comentarios/', blank=True, null=True, verbose_name="Anexo")
+
+    def save(self, *args, **kwargs):
+        novo = self._state.adding
+        with transaction.atomic():
+            super().save(*args, **kwargs)
+            if novo:
+                # Inclui a solução registrada como comentário e não recua em gravações concorrentes.
+                Chamado.objects.filter(pk=self.chamado_id).update(ultima_interacao_em=Greatest(
+                    Coalesce('ultima_interacao_em', 'data_criacao'), models.Value(self.data_criacao)
+                ))
 
     def __str__(self):
         return f"Comentário de {self.autor.username} no chamado #{self.chamado.id}"

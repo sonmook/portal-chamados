@@ -21,10 +21,9 @@ somente consulta. Escritas diretas por SQL/ORM não passam pelo fluxo de valida�
 e auditoria. SQLite continua sem bloqueio de linha: o controle de versão não é
 garantia de capacidade sob carga concorrente real de produção.
 
-Esta branch parte da main sem a migração de última interação ainda pendente na
-branch `feat/ultima-interacao`. Antes de integrar ambas as entregas, conciliar os
-dois ramos de migrações do helpdesk e repetir `makemigrations --check` e os testes;
-não resolver conflitos apagando migrações já aplicadas.
+A migração 0014 concilia os ramos 0012 (última interação) e 0013 (equipes),
+sem apagar ou recriar dados. Instalações que já aplicaram a 0013 recebem também
+a 0012 antes da conciliação. Execute migrate na janela de atualização.
 
 ## Proteção do login administrativo
 
@@ -72,6 +71,21 @@ linha e pode rejeitar escritas concorrentes; não foi validada carga concorrente
 real de produção. Valide no banco/infraestrutura de destino antes de escalar.
 
 ## Instalação e atualização
+
+Antes de aplicar a migração 0012, faça backup e execute `python manage.py migrate`
+na janela de atualização. Ela acrescenta `ultima_interacao_em` e preenche todos os
+chamados com a maior data registrada de abertura, comentário ou encerramento.
+O tempo da migração depende do volume de chamados/comentários: valide uma cópia
+representativa antes de atualizar uma base grande. Não usa `data_atualizacao`
+para inferir uma mensagem e não reconstrói eventos de auditoria.
+
+Novas mensagens gravadas pelo modelo `Comentario.save()` atualizam a interação
+na mesma transação, sem recuar a data quando uma gravação mais antiga é processada
+depois. A solução do portal é registrada como comentário e segue a mesma regra.
+Bulk inserts e SQL/ORM direto que evitem `save()` não atualizam esse campo;
+integrações devem manter esse contrato explicitamente. A ordenação por inatividade
+mostra apenas chamados ativos e não constitui um indicador de resposta pendente
+da equipe ou do cliente. O SLA e os cálculos do dashboard não foram alterados.
 
 - Python 3.12, dependências de execução em requirements.txt com todas as versões e hashes.
 - Instalar: `python -m pip install --require-hashes -r requirements.txt` e `python -m pip check`.

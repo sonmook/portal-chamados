@@ -81,9 +81,15 @@
                     <option value="Resolvido" {% if status_filter == 'Resolvido' %}selected{% endif %}>🟢 Resolvido</option>
                 </select>
 
+                {% if categoria_filter %}<input type="hidden" name="categoria" value="{{ categoria_filter }}">{% endif %}
+                <select name="ordenacao" aria-label="Ordenação dos chamados" class="form-select form-select-sm shadow-sm" style="width: auto;">
+                    <option value="novos" {% if ordenacao == 'novos' %}selected{% endif %}>Aberturas mais recentes</option>
+                    <option value="interacao_recente" {% if ordenacao == 'interacao_recente' %}selected{% endif %}>Interações mais recentes</option>
+                    <option value="sem_interacao" {% if ordenacao == 'sem_interacao' %}selected{% endif %}>Ativos sem interação há mais tempo</option>
+                </select>
                 <button type="submit" class="btn btn-sm btn-dark shadow-sm px-3 fw-bold">Filtrar</button>
 
-                {% if query or status_filter %}
+                {% if query or status_filter or categoria_filter or ordenacao != 'novos' %}
                     <a href="{% url 'lista_chamados' %}" class="btn btn-sm btn-outline-danger shadow-sm px-3 fw-bold d-flex align-items-center gap-1" title="Remover todos os filtros">
                         <i class="bi bi-x-circle-fill"></i> Limpar
                     </a>
@@ -127,7 +133,8 @@
                             <th class="border-0 text-muted small text-uppercase">Abertura</th>
                             <th class="border-0 text-muted small text-uppercase text-center">Status</th>
                             <th class="border-0 text-muted small text-uppercase text-center">Prioridade</th>
-                            <th class="border-0 text-muted small text-uppercase">Prazo SLA</th>                            
+                            <th class="border-0 text-muted small text-uppercase">Prazo SLA</th>
+                            <th class="border-0 text-muted small text-uppercase">Última interação</th>
                             <th class="border-0 text-muted small text-uppercase">Solicitante</th>
                             <th class="border-0 text-muted small text-uppercase text-center">Técnico</th>
                             <th class="pe-4 border-0 text-end">Ações</th>
@@ -182,6 +189,10 @@
                                 {% endif %}
                             </td>
 
+                            <td class="text-nowrap">
+                                <div class="small fw-bold">{{ chamado.data_ultima_interacao|date:"d/m/Y H:i" }}</div>
+                                <span class="text-muted small">{{ chamado.data_ultima_interacao|timesince }} atrás</span>
+                            </td>
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 24px; height: 24px; font-size: 0.7rem;">
@@ -212,7 +223,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="9" class="text-center py-5 text-muted">
+                            <td colspan="10" class="text-center py-5 text-muted">
                                 <div class="d-flex flex-column align-items-center justify-content-center w-100">
                                     <i class="bi bi-search fs-1 d-block mb-3 opacity-25"></i>
                                     <h6 class="fw-bold">Nenhum chamado encontrado.</h6>
@@ -230,7 +241,7 @@
                     <ul class="pagination pagination-sm justify-content-center mb-0">
                         {% if page_obj.has_previous %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ query|default_if_none:'' }}&status={{ status_filter|default_if_none:'' }}&categoria={{ categoria_filter|default_if_none:'' }}">
+                                <a class="page-link" href="{% querystring page=page_obj.previous_page_number %}">
                                     &laquo; Anterior
                                 </a>
                             </li>
@@ -246,7 +257,7 @@
 
                         {% if page_obj.has_next %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ query|default_if_none:'' }}&status={{ status_filter|default_if_none:'' }}&categoria={{ categoria_filter|default_if_none:'' }}">
+                                <a class="page-link" href="{% querystring page=page_obj.next_page_number %}">
                                     Próximo &raquo;
                                 </a>
                             </li>
