@@ -1,0 +1,15 @@
+{% extends 'helpdesk/equipes/base.html' %}
+{% block titulo %}Configurar encaminhamento{% endblock %}
+{% block conteudo %}
+<a href="{% url 'listar_regras_encaminhamento' %}">Voltar às regras</a>
+<h1 class="h2 mt-3">{% if regra.pk %}Editar regra{% else %}Nova regra{% endif %}</h1>
+<p class="text-muted">A alteração vale para novos chamados. Os já abertos mantêm suas equipes.</p>
+<div class="card"><div class="card-body"><form method="post">{% csrf_token %}
+{{ form.versao_atual }}{{ form.non_field_errors }}
+<div class="mb-3">{{ form.categoria.label_tag }}{{ form.categoria.errors }}{{ form.categoria }}</div>
+<div class="mb-3">{{ form.equipe.label_tag }}{{ form.equipe.errors }}{{ form.equipe }}</div>
+<div class="mb-3">{{ form.ativa }} {{ form.ativa.label_tag }}{{ form.ativa.errors }}</div>
+<p class="small text-muted">Se a regra estiver desativada, a equipe estiver inativa ou não houver técnico ativo no destino, o chamado seguirá para a triagem.</p>
+<button class="btn btn-primary" type="submit">Salvar regra</button>
+</form></div></div>
+{% endblock %}

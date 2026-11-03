@@ -7,6 +7,7 @@ from django.db.models import Q, F, Count, Avg, DurationField, ExpressionWrapper
 from django.db.models.functions import Coalesce
 from .user_security import bloquear_administradores, validar_pendencias
 from .audit import registrar
+from .encaminhamento import criar_chamado_encaminhado
 from .acesso import chamados_acessiveis, equipes_acessiveis, integrante_ativo, pode_distribuir, filtrar_equipe
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -167,7 +168,7 @@ def novo_chamado(request):
         if form.is_valid():
             chamado = form.save(commit=False)
             chamado.solicitante = request.user
-            chamado.save()
+            criar_chamado_encaminhado(chamado)
             return redirect('lista_chamados')
     else:
         form = ChamadoForm()

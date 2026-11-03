@@ -5,7 +5,7 @@ from django.test import TransactionTestCase
 
 class MigracaoChamadosEquipeTests(TransactionTestCase):
     def tearDown(self):
-        MigrationExecutor(connection).migrate([('helpdesk', '0015_chamados_por_equipe')])
+        MigrationExecutor(connection).migrate([('helpdesk', '0016_regras_encaminhamento')])
         super().tearDown()
 
     def test_upgrade_preserva_chamados_e_inclui_responsaveis_ativos(self):

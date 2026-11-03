@@ -1,5 +1,40 @@
 # Desenvolvimento, CI e produção
 
+## Encaminhamento automático por categoria
+
+Faça backup e aplique `python manage.py migrate` antes de iniciar esta revisão.
+A migração 0016 acrescenta regras únicas por categoria: Rede → Infraestrutura e
+Redes; Acessos → Identidades e Acessos; Hardware → Suporte Especializado — N2;
+Software → Sistemas e Aplicações; Outros → a triagem identificada pelo cadastro.
+Não altera chamados existentes, usuários, equipes ou seus vínculos. Se um destino
+padrão foi renomeado, cria a regra desativada na triagem, sem adivinhar um destino
+nem recriar equipes; revise essas regras antes de ativá-las. Equipes inativas não
+são reativadas automaticamente.
+
+Administradores acessam **Gerenciar Equipes → Encaminhamento por categoria**.
+Podem mudar o destino ativo e ativar/desativar cada regra. Coordenadores e técnicos
+não têm essa permissão. O Django Admin oferece apenas consulta das regras, para
+manter a configuração no fluxo auditado. Edições antigas retornam 409 e devem ser
+reabertas. A categoria de uma regra existente é fixa; não há exclusão pelo portal,
+mas categorias sem regra podem ser cadastradas novamente.
+
+Na criação de chamados pelo portal e pelo Django Admin, o servidor verifica a
+regra e o destino. Regra ausente/inativa, equipe inativa ou sem técnico ativo leva
+à triagem. A triagem continua recebendo mesmo sem integrantes, para preservar a
+fila inicial. Disponibilidade significa conta ativa, is_staff e vínculo de equipe;
+não é uma verificação de presença online ou capacidade. Uma alteração de regra
+detectada durante o processamento também leva à triagem, sem tentar um destino
+não validado. A decisão fica na auditoria com categoria, regra/versão, equipe e
+motivo de uso da triagem. Não atribui técnico, não modifica as regras de SLA e não
+reclassifica chamados já abertos ou transferidos manualmente.
+
+A criação e a auditoria são transacionais. Integrações devem usar
+`helpdesk.encaminhamento.criar_chamado_encaminhado` com um objeto novo preparado;
+`Chamado.save()`, SQL e bulk operations diretas não aplicam as regras. O serviço
+recusa objetos já persistidos. A avaliação ocorre na abertura: alterações posteriores
+de equipe, integrantes ou contas não movem chamados antigos automaticamente.
+SQLite segue sem validação de carga concorrente real de produção.
+
 ## Atendimento por equipes — segunda etapa da v1.1.0
 
 Antes de atualizar, faça backup do banco/uploads e interrompa todos os escritores.
