@@ -6,9 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Portal de Chamados</title>
-    
-    <link rel="icon" href="{% static 'img/favicon.png' %}" type="image/png">
+    <title>Entrar — Portal de TI</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -46,8 +44,8 @@
             
             <div class="login-intro col-md-6 col-lg-7 d-none d-md-flex flex-column align-items-center justify-content-center text-white" style="background: linear-gradient(135deg, #212529 0%, #000000 100%);">
                 <div class="text-center p-5">
-                    <i class="bi bi-headset display-1 mb-4 text-secondary"></i>
-                    <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -1px;">Portal de Chamados</h1>
+                    <img class="portal-login-symbol mb-4" src="{% static 'helpdesk/brand/simbolo.svg' %}" width="96" height="96" alt="">
+                    <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -1px;">Portal de TI</h1>
                     <p class="lead text-secondary">Central de Suporte de TI</p>
                 </div>
             </div>
@@ -57,12 +55,13 @@
                     
                     <div class="text-center mb-5">
                         <div class="d-md-none mb-3">
-                            <i class="bi bi-headset display-4 text-dark"></i>
+                            <img src="{% static 'helpdesk/brand/logo.svg' %}" width="258" height="60" alt="Portal de TI — Central de suporte">
                         </div>
                         <h2 class="fw-bold text-dark" style="letter-spacing: -1px;">Bem-vindo(a)</h2>
                         <p class="text-muted small">Faça login para gerenciar as suas solicitações</p>
                     </div>
 
+                    <p class="portal-login-version text-muted small text-center">Versão {{ portal_version }}</p>
                     <form method="post">
                         {% csrf_token %}
                         

@@ -115,3 +115,16 @@ form label { color: var(--portal-ink); }
 #conteudo-principal form select { max-width: 100%; }
 #conteudo-principal form select:not(.form-select) { width: 100%; min-height: 40px; padding: 8px 12px; border: 1px solid #cbd6e3; border-radius: 8px; background-color: white; color: var(--portal-ink); }
 .card-header { overflow-wrap: anywhere; }
+/* Marca própria do Portal de TI; versão vem do arquivo VERSION. */
+.portal-navbar .nav-link .bi { margin-right: 4px; }
+.portal-brand-mark { flex-shrink: 0; }
+.portal-version { padding: 3px 8px; border: 1px solid #69809e; border-radius: 6px; color: #e0e8f3; font-size: .75rem; white-space: nowrap; }
+.portal-login-symbol { border-radius: 24px; box-shadow: 0 12px 32px #09182b38; }
+.portal-login-version { margin-top: -24px; margin-bottom: 24px; }
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .portal-navbar .navbar-brand { margin-right: 8px; font-size: 1rem; gap: 6px; }
+    .portal-navbar .nav-link { padding-inline: 6px !important; font-size: .8rem; }
+    .portal-account { gap: 8px; font-size: .8rem; }
+    .portal-username { max-width: 110px; }
+}
+@media (max-width: 991.98px) { .portal-account { flex-wrap: wrap; justify-content: flex-start; } .portal-account form { margin-left: auto !important; } }

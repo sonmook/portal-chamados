@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 344 80" role="img" aria-labelledby="titulo">
+  <title id="titulo">Portal de TI — Central de suporte</title>
+  <rect x="8" y="8" width="64" height="64" rx="16" fill="#245cce"/>
+  <path d="M24 23h32v8a6 6 0 0 0 0 12v14H24V43a6 6 0 0 0 0-12z" fill="none" stroke="#fff" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M32 40v-3a8 8 0 0 1 16 0v3m-16-1v7m16-7v7m0 0v3h-7" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="92" y="39" fill="#15283f" font-family="Segoe UI, system-ui, sans-serif" font-size="28" font-weight="700">Portal de TI</text>
+  <text x="93" y="62" fill="#52647a" font-family="Segoe UI, system-ui, sans-serif" font-size="16">Central de suporte</text>
+</svg>

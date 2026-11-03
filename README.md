@@ -1,4 +1,8 @@
-# 🎧 Portal de Chamados - Suporte de TI
+# Portal de TI — Central de suporte
+
+![Marca do Portal de TI](helpdesk/static/helpdesk/brand/logo.svg)
+
+**Versão do código: 1.1.0** · [Notas da versão](docs/releases/v1.1.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -7,7 +11,7 @@
 
 Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django**, com fila de atendimento, acompanhamento de SLA, indicadores, controle de acesso e trilha de auditoria.
 
-As capturas abaixo mostram a interface da versão atual com **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
+As capturas abaixo ilustram as funcionalidades do portal com **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
 
 ---
 
