@@ -40,48 +40,13 @@
             min-height: 150px; /* Garante área suficiente para descrições extensas */
         }
     </style>
+{% include "helpdesk/componentes/estilos.html" %}
 </head>
 <body class="bg-light pb-5">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{% url 'lista_chamados' %}">Portal de TI</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    {% include "helpdesk/componentes/navegacao.html" %}
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'lista_chamados' %}">Chamados</a>
-                    </li>
-                    {% if request.user.is_staff %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-                        </li>
-                    {% endif %}
-
-                    {% if request.user.is_superuser %}
-                        <li class="nav-item">
-                            <a class="nav-link text-warning fw-bold" href="{% url 'gerenciar_usuarios' %}"><i class="bi bi-people"></i> Gerenciar Usuários</a>
-                        </li>                    
-                        <li class="nav-item"><a class="nav-link text-warning fw-bold" href="{% url 'gerenciar_equipes' %}">Gerenciar Equipes</a></li>
-                    {% endif %}
-                </ul>
-
-                <div class="navbar-text text-white d-flex align-items-center gap-3">
-                    <span>Bem-vindo, <strong>{{ request.user.username }}</strong></span>
-                    <form method="post" action="{% url 'logout' %}" class="m-0">
-                        {% csrf_token %}
-                            {{ form.errors }}
-                        <button type="submit" class="btn btn-sm btn-outline-light">Sair</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container mt-4">
+    <div id="conteudo-principal" tabindex="-1" class="container mt-4">
         
         <div class="mb-4">
             <a href="{% url 'lista_chamados' %}" class="text-decoration-none text-muted small fw-bold">
@@ -99,7 +64,7 @@
                         </div>
                         <div>
                             <h4 class="m-0 fw-bold">Abrir Novo Chamado</h4>
-                            <p class="m-0 small text-white text-opacity-75">Descreva o problema para a equipa de suporte de TI.</p>
+                            <p class="m-0 small text-white text-opacity-75">Descreva o problema para a equipe de suporte de TI.</p>
                         </div>
                     </div>
                     
@@ -111,31 +76,31 @@
                             
                             <div class="row g-4">
                                 <div class="col-12">
-                                    <label class="form-label fw-bold text-muted small text-uppercase mb-2"><i class="bi bi-fonts me-1"></i> Título do Problema <span class="text-danger">*</span></label>
+                                    <label for="{{ form.titulo.id_for_label }}" class="form-label fw-bold text-muted small text-uppercase mb-2"><i class="bi bi-fonts me-1"></i> Título do Problema <span class="text-danger">*</span></label>
                                     {{ form.titulo }}
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold text-muted small text-uppercase mb-2"><i class="bi bi-tags-fill me-1"></i> Categoria <span class="text-danger">*</span></label>
+                                    <label for="{{ form.categoria.id_for_label }}" class="form-label fw-bold text-muted small text-uppercase mb-2"><i class="bi bi-tags-fill me-1"></i> Categoria <span class="text-danger">*</span></label>
                                     {{ form.categoria }}
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold text-muted small text-uppercase mb-2"><i class="bi bi-thermometer-half me-1"></i> Prioridade <span class="text-danger">*</span></label>
+                                    <label for="{{ form.prioridade.id_for_label }}" class="form-label fw-bold text-muted small text-uppercase mb-2"><i class="bi bi-thermometer-half me-1"></i> Prioridade <span class="text-danger">*</span></label>
                                     {{ form.prioridade }}
                                 </div>
 
                                 <div class="col-12">
-                                    <label class="form-label fw-bold text-muted small text-uppercase mb-2"><i class="bi bi-text-paragraph me-1"></i> Descrição Detalhada <span class="text-danger">*</span></label>
+                                    <label for="{{ form.descricao.id_for_label }}" class="form-label fw-bold text-muted small text-uppercase mb-2"><i class="bi bi-text-paragraph me-1"></i> Descrição Detalhada <span class="text-danger">*</span></label>
                                     {{ form.descricao }}
-                                    <div class="form-text mt-2 small">Informe o local, o nome do computador ou a mensagem de erro exata que aparece no ecrã.</div>
+                                    <div class="form-text mt-2 small">Informe o local, o nome do computador ou a mensagem de erro exata que aparece no tela.</div>
                                 </div>
 
                                 <div class="col-12">
-                                    <label class="form-label fw-bold text-muted small text-uppercase mb-2"><i class="bi bi-paperclip me-1"></i> Anexar Evidência / Print</label>
+                                    <label for="{{ form.anexo.id_for_label }}" class="form-label fw-bold text-muted small text-uppercase mb-2"><i class="bi bi-paperclip me-1"></i> Anexar Evidência / Print</label>
                                     <div class="p-3 bg-light border rounded">
                                         {{ form.anexo }}
-                                        <div class="form-text mt-2 mb-0 small"><i class="bi bi-info-circle me-1"></i>Um *print* do ecrã ajuda a equipa a resolver o problema muito mais rápido.</div>
+                                        <div class="form-text mt-2 mb-0 small"><i class="bi bi-info-circle me-1"></i>Um *print* do tela ajuda a equipe a resolver o problema muito mais rápido.</div>
                                     </div>
                                 </div>
                             </div>
@@ -156,7 +121,5 @@
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
