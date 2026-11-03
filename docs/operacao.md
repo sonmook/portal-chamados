@@ -1,5 +1,31 @@
 # Desenvolvimento, CI e produção
 
+## Proteção do login administrativo
+
+O AdminSite configurado por `core.admin_config.PortalAdminConfig` aplica o mesmo
+limite do portal aos POSTs de `/admin/login/`: 10 por conta/IP e 50 por IP, em
+janelas fixas de 15 minutos, incluindo tentativas bem-sucedidas. Os contadores são
+compartilhados entre ambas as rotas e processos usando o mesmo banco. Ao exceder,
+a resposta é 429 com `Retry-After` e sem cache. O CSRF é verificado antes da contagem;
+GETs não contam. O login mantém o formulário e as permissões padrão do Django Admin.
+Não há bloqueio permanente de conta. A troca de IP e a virada de janela limitam a
+proteção; complemente com controles de tráfego e alertas na infraestrutura.
+
+Atrás de proxy, configurar `DJANGO_TRUSTED_PROXY_NETWORKS` e garantir que o proxy
+substitua `X-Real-IP`; não aceitar cabeçalhos de origem não confiável. Sem isso,
+usuários podem compartilhar a cota do IP do proxy. O fluxo OAuth/Allauth continua
+com seus próprios controles, fora deste limitador. Não aumente workers SQLite
+sem validar concorrência; a limitação não substitui o dimensionamento do banco.
+
+MFA administrativo ainda não está implementado. Para uma próxima entrega, avaliar
+TOTP ou WebAuthn com biblioteca mantida, inscrição verificada, códigos de recuperação
+e procedimento seguro de perda do dispositivo. A política deve exigir o segundo
+fator no acesso ao admin mesmo para sessões iniciadas pelo portal ou pelo Google:
+proteger somente `/admin/login/` ou habilitar MFA no Allauth isoladamente não garante
+isso. Cobrir sessões já existentes, recuperação e acesso de emergência antes de
+exigir MFA em produção. Enquanto isso, avaliar acesso ao admin por rede restrita,
+com regras de infraestrutura verificadas; nenhuma regra externa é criada pelo PR.
+
 ## Instalação e atualização
 
 - Python 3.12, dependências de execução em requirements.txt com todas as versões e hashes.

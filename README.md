@@ -117,7 +117,7 @@ integrações que faziam GET nessa rota devem ser atualizadas.
 
 ## Login e administração
 
-Execute a migração 0010 antes de usar o login local. O limite de `/contas/login/`
+Execute a migração 0010 antes de usar o login local. O limite de `/contas/login/` e `/admin/login/`
 conta todos os POSTs que passam pelo CSRF (incluindo os bem-sucedidos): 10 por
 conta/IP e 50 por IP em janelas fixas de 15 minutos. Contadores ficam no banco,
 com chaves hash, e registros expirados são limpos nas próximas tentativas.
@@ -125,7 +125,10 @@ Um bloqueio retorna 429 com Retry-After; a virada de janela permite novas tentat
 Nomes de conta são normalizados para contagem; o login mantém o comportamento Django.
 Não se confia em X-Forwarded-For. Atrás de proxy, configure REMOTE_ADDR no servidor
 com uma origem confiável; caso contrário todos os clientes podem compartilhar o limite.
-Esse limite cobre o login local do portal, não /admin/ ou o fluxo OAuth/Allauth.
+Portal e Django Admin compartilham os contadores; alternar entre essas telas não
+renova a cota. O formulário administrativo mantém as restrições de conta ativa e
+is_staff. GETs e POSTs rejeitados pelo CSRF não consomem tentativas.
+Esse limite não cobre o fluxo OAuth/Allauth e não implementa MFA.
 O servidor deve complementar a proteção contra tráfego abusivo e ataques distribuídos.
 
 Edição de contas preserva pelo menos um administrador ativo com acesso ao admin
