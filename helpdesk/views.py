@@ -3,7 +3,8 @@ from django.db import transaction
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import FileResponse, Http404, HttpResponseBadRequest
 from django.views.decorators.http import require_POST, require_http_methods
-from django.db.models import Q, F
+from django.db.models import Q, F, Count, Avg, DurationField, ExpressionWrapper
+from django.db.models.functions import Coalesce
 from .user_security import bloquear_administradores, validar_pendencias
 from .audit import registrar
 from django.contrib.auth.decorators import login_required
@@ -41,66 +42,59 @@ def dashboard(request):
     elif periodo == 'mes':
         base_chamados = base_chamados.filter(data_criacao__month=hoje.month, data_criacao__year=hoje.year)
 
-    # Inicialização de variáveis locais
-    dentro_sla = fora_sla = tmr_horas = minha_produtividade = 0
-    produtividade_equipe = []
-
-    # Cálculo de Métricas (Apenas para equipe de TI)
+    finalizados = Q(status__in=FINALIZADOS)
+    categorias = ('Software', 'Hardware', 'Rede', 'Acessos', 'Outros')
+    agregacoes = {
+        'total': Count('pk'),
+        'abertos': Count('pk', filter=Q(status='Aberto')),
+        'resolvidos': Count('pk', filter=finalizados),
+        'vencidos': Count('pk', filter=Q(data_vencimento__lt=timezone.now()) & ~finalizados),
+        'sla_sem_dados': Count('pk', filter=finalizados & (
+            Q(data_fechamento__isnull=True) | Q(data_vencimento__isnull=True)
+        )),
+        **{f'categoria_{i}': Count('pk', filter=Q(categoria=categoria))
+           for i, categoria in enumerate(categorias)},
+    }
     if request.user.is_staff:
-        resolvidos = base_chamados.filter(status__in=FINALIZADOS)
-        
-        # Análise de SLA
-        dentro_sla = resolvidos.filter(data_fechamento__isnull=False, data_vencimento__isnull=False).filter(data_fechamento__lte=F('data_vencimento')).count()
-        fora_sla = resolvidos.filter(data_fechamento__gt=F('data_vencimento')).count()
-        
-        # Ranking da Equipe
-        membros_ti = User.objects.filter(is_staff=True)
-        for membro in membros_ti:
-            qtd_fechados = base_chamados.filter(status__in=FINALIZADOS, fechado_por=membro).count()
+        agregacoes.update(
+            dentro_sla=Count('pk', filter=finalizados & Q(data_fechamento__lte=F('data_vencimento'))),
+            fora_sla=Count('pk', filter=finalizados & Q(data_fechamento__gt=F('data_vencimento'))),
+            tmr=Avg(ExpressionWrapper(
+                Coalesce('data_fechamento', 'data_atualizacao') - F('data_criacao'),
+                output_field=DurationField(),
+            ), filter=finalizados),
+        )
+    metricas = base_chamados.aggregate(**agregacoes)
+    produtividade_equipe = []
+    minha_produtividade = tmr_horas = 0
+    if request.user.is_staff:
+        # Um agrupamento para toda a equipe, incluindo membros sem resoluções.
+        membros = User.objects.filter(is_staff=True).annotate(
+            total_fechados=Count('chamados_fechados', filter=Q(
+                chamados_fechados__in=base_chamados.filter(status__in=FINALIZADOS)
+            ))
+        ).order_by('-total_fechados', 'pk')
+        for membro in membros:
             produtividade_equipe.append({
                 'username': membro.get_full_name() or membro.username,
-                'count': qtd_fechados
+                'count': membro.total_fechados,
             })
-        produtividade_equipe = sorted(produtividade_equipe, key=lambda x: x['count'], reverse=True)
-        minha_produtividade = base_chamados.filter(status__in=FINALIZADOS, fechado_por=request.user).count()
-        
-        # Cálculo do Tempo Médio de Resolução (TMR) em Horas
-        tempos_resolucao = []
-        for chamado in resolvidos:
-            data_fim = chamado.data_fechamento or chamado.data_atualizacao
-            if data_fim and chamado.data_criacao:
-                tempo_segundos = (data_fim - chamado.data_criacao).total_seconds()
-                tempos_resolucao.append(tempo_segundos)
-                
-        if tempos_resolucao:
-            media_segundos = sum(tempos_resolucao) / len(tempos_resolucao)
-            tmr_horas = round(media_segundos / 3600, 1)
-
-    # Preparação de dados para os Gráficos de Categoria
-    ultimos_chamados = base_chamados.order_by('-data_criacao')[:5]
-    dados_categorias = [
-        base_chamados.filter(categoria='Software').count(),
-        base_chamados.filter(categoria='Hardware').count(),
-        base_chamados.filter(categoria='Rede').count(),
-        base_chamados.filter(categoria='Acessos').count(),
-        base_chamados.filter(categoria='Outros').count(),
-    ]
+            if membro.pk == request.user.pk:
+                minha_produtividade = membro.total_fechados
+        if metricas['tmr'] is not None:
+            tmr_horas = round(metricas['tmr'].total_seconds() / 3600, 1)
 
     context = {
         'periodo_atual': periodo,
         'tmr_horas': tmr_horas,
-        'total': base_chamados.count(),
-        'abertos': base_chamados.filter(status='Aberto').count(),
-        'resolvidos': base_chamados.filter(status__in=FINALIZADOS).count(),
-        'vencidos': base_chamados.filter(data_vencimento__lt=timezone.now()).exclude(status__in=FINALIZADOS).count(),
-        'ultimos_chamados': ultimos_chamados,
-        'dados_grafico': dados_categorias,
-        'dados_sla': [dentro_sla, fora_sla],
-        'sla_sem_dados': base_chamados.filter(status__in=FINALIZADOS).filter(Q(data_fechamento__isnull=True) | Q(data_vencimento__isnull=True)).count(),
+        **{campo: metricas[campo] for campo in ('total', 'abertos', 'resolvidos', 'vencidos', 'sla_sem_dados')},
+        'ultimos_chamados': base_chamados.select_related('solicitante').order_by('-data_criacao')[:5],
+        'dados_grafico': [metricas[f'categoria_{i}'] for i in range(len(categorias))],
+        'dados_sla': [metricas.get('dentro_sla', 0), metricas.get('fora_sla', 0)],
         'produtividade_equipe': produtividade_equipe,
         'minha_produtividade': minha_produtividade,
     }
-    
+
     return render(request, 'helpdesk/dashboard.html', context)
 
 
