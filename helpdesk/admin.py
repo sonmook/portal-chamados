@@ -41,7 +41,7 @@ class UsuarioProtegidoAdmin(UserAdmin):
 
 @admin.register(Chamado)
 class ChamadoAdmin(admin.ModelAdmin):
-    readonly_fields = ('status', 'tecnico', 'data_criacao', 'data_atualizacao', 'data_fechamento', 'fechado_por')
+    readonly_fields = ('status', 'tecnico', 'data_criacao', 'data_atualizacao', 'ultima_interacao_em', 'data_fechamento', 'fechado_por')
 
     def has_change_permission(self, request, obj=None):
         if obj and obj.status in ('Resolvido', 'Fechado'):

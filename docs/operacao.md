@@ -47,6 +47,21 @@ real de produção. Valide no banco/infraestrutura de destino antes de escalar.
 
 ## Instalação e atualização
 
+Antes de aplicar a migração 0012, faça backup e execute `python manage.py migrate`
+na janela de atualização. Ela acrescenta `ultima_interacao_em` e preenche todos os
+chamados com a maior data registrada de abertura, comentário ou encerramento.
+O tempo da migração depende do volume de chamados/comentários: valide uma cópia
+representativa antes de atualizar uma base grande. Não usa `data_atualizacao`
+para inferir uma mensagem e não reconstrói eventos de auditoria.
+
+Novas mensagens gravadas pelo modelo `Comentario.save()` atualizam a interação
+na mesma transação, sem recuar a data quando uma gravação mais antiga é processada
+depois. A solução do portal é registrada como comentário e segue a mesma regra.
+Bulk inserts e SQL/ORM direto que evitem `save()` não atualizam esse campo;
+integrações devem manter esse contrato explicitamente. A ordenação por inatividade
+mostra apenas chamados ativos e não constitui um indicador de resposta pendente
+da equipe ou do cliente. O SLA e os cálculos do dashboard não foram alterados.
+
 - Python 3.12, dependências de execução em requirements.txt com todas as versões e hashes.
 - Instalar: `python -m pip install --require-hashes -r requirements.txt` e `python -m pip check`.
 - Atualizar o lockfile em Python 3.12, num ambiente de ferramentas separado, com pip-tools 7.6.2:

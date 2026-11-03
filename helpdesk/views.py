@@ -112,6 +112,9 @@ def lista_chamados(request):
     query = request.GET.get('q')
     status_filter = request.GET.get('status')
     categoria_filter = request.GET.get('categoria') 
+    ordenacao = request.GET.get('ordenacao', 'novos')
+    if ordenacao not in ('novos', 'interacao_recente', 'sem_interacao'):
+        ordenacao = 'novos'
 
     # Filtro de Busca (Q objects permitem o uso do operador OR | )
     if query:
@@ -125,6 +128,14 @@ def lista_chamados(request):
     if categoria_filter:
         chamados_list = chamados_list.filter(categoria=categoria_filter)
 
+    if ordenacao == 'sem_interacao':
+        chamados_list = chamados_list.exclude(status__in=FINALIZADOS).order_by(
+            Coalesce('ultima_interacao_em', 'data_criacao').asc(), 'pk'
+        )
+    elif ordenacao == 'interacao_recente':
+        chamados_list = chamados_list.order_by(Coalesce('ultima_interacao_em', 'data_criacao').desc(), '-pk')
+    chamados_list = chamados_list.select_related('solicitante', 'tecnico')
+
     # Paginação (10 itens por página)
     paginator = Paginator(chamados_list, 10)
     page_number = request.GET.get('page')
@@ -135,6 +146,7 @@ def lista_chamados(request):
         'query': query,
         'status_filter': status_filter,
         'categoria_filter': categoria_filter,
+        'ordenacao': ordenacao,
     }
     return render(request, 'helpdesk/lista_chamados.html', context)
 
@@ -243,7 +255,8 @@ def fechar_chamado(request, id):
     chamado.status = 'Resolvido'
     chamado.fechado_por = request.user
     chamado.data_fechamento = timezone.now()
-    chamado.save()
+    # O comentário de solução já atualizou a interação no banco.
+    chamado.save(update_fields=['status', 'fechado_por', 'data_fechamento', 'data_atualizacao', 'data_vencimento'])
     return redirect('detalhes_chamado', id=chamado.id)
 
 

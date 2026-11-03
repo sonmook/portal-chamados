@@ -25,6 +25,7 @@ As capturas abaixo mostram a interface da versão atual com **dados fictícios d
 ![Fila de chamados com busca, filtros, status, prioridade e prazo de SLA](docs/imagens/chamados.png)
 
 * **Fila de Chamados:** Listagem responsiva com filtros combinados (Busca por texto + Status + Categoria).
+* **Última Interação:** Data e tempo desde a última mensagem/solução, com ordenação por interações recentes ou por chamados ativos sem interação há mais tempo. Essa ordenação mede inatividade da conversa; não identifica quem deve responder.
 * **Responsável pelo Atendimento:** Apenas o técnico responsável responde como equipe e encerra o chamado; o solicitante também pode comentar enquanto ele estiver ativo.
 * **Histórico Interativo:** Timeline de comentários estilo "chat" entre o usuário e o técnico, com suporte a anexo de prints/arquivos.
 * **Encerramento Documentado:** Obrigatoriedade de informar a solução do problema ao fechar um ticket, gerando base de conhecimento.
@@ -131,6 +132,14 @@ integrações que faziam GET nessa rota devem ser atualizadas.
 
 
 ## Login e administração
+
+Execute `python manage.py migrate` após atualizar para aplicar a migração 0012.
+Ela preenche a última interação usando a data mais recente registrada entre
+abertura, comentários e encerramento, sem alterar mensagens ou criar eventos de
+auditoria retroativos. Em novos chamados sem mensagens, a fila usa a abertura.
+Comentários e a solução atualizam essa data; alterações administrativas de status,
+prioridade ou responsável não representam novas interações. `data_atualizacao`
+mantém seu significado anterior, separado da atividade da conversa.
 
 Administradores podem usar **Redistribuir chamado** nos detalhes de um chamado
 ativo para escolher outro técnico ativo e informar um motivo (até 500 caracteres).
