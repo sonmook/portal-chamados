@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 
-from .models import Chamado, Comentario, RegistroAuditoria
+from .models import Chamado, Comentario, RegistroAuditoria, Equipe, IntegranteEquipe
 from .user_security import bloquear_administradores, validar_administrador, validar_pendencias
 
 
@@ -102,3 +102,35 @@ class RegistroAuditoriaAdmin(admin.ModelAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, UsuarioProtegidoAdmin)
+
+
+class ConsultaEquipeAdmin(admin.ModelAdmin):
+    def has_module_permission(self, request):
+        return request.user.is_active and request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return self.has_module_permission(request)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def delete_queryset(self, request, queryset):
+        raise PermissionDenied
+
+
+@admin.register(Equipe)
+class EquipeAdmin(ConsultaEquipeAdmin):
+    list_display = ('nome', 'ativa')
+    search_fields = ('nome',)
+
+
+@admin.register(IntegranteEquipe)
+class IntegranteEquipeAdmin(ConsultaEquipeAdmin):
+    list_display = ('equipe', 'usuario', 'coordenador')
+    list_select_related = ('equipe', 'usuario')

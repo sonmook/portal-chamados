@@ -1,9 +1,13 @@
 from django.urls import path
 from . import views
+from . import equipes
 
 # Define as rotas (URLs) do aplicativo Helpdesk.
 # Cada path vincula um endereço web a uma função específica no arquivo views.py.
 urlpatterns = [
+    path('equipes/', equipes.gerenciar_equipes, name='gerenciar_equipes'),
+    path('equipes/nova/', equipes.editar_equipe, name='criar_equipe'),
+    path('equipes/<int:equipe_id>/editar/', equipes.editar_equipe, name='editar_equipe'),
     # --- Painel e Listagem ---
     path('', views.lista_chamados, name='lista_chamados'),
     path('dashboard/', views.dashboard, name='dashboard'),

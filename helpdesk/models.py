@@ -1,6 +1,6 @@
 from django.db import models
 from django.db import transaction
-from django.db.models.functions import Coalesce, Greatest
+from django.db.models.functions import Coalesce, Greatest, Lower
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
@@ -165,3 +165,30 @@ class RegistroAuditoria(models.Model):
 
     def __str__(self):
         return f'{self.objeto} #{self.objeto_id}: {self.acao}'
+
+
+class Equipe(models.Model):
+    nome = models.CharField(max_length=100)
+    descricao = models.TextField(blank=True, max_length=1000)
+    ativa = models.BooleanField(default=True)
+    versao = models.PositiveIntegerField(default=0, editable=False)
+
+    class Meta:
+        ordering = ['nome', 'pk']
+        constraints = [models.UniqueConstraint(Lower('nome'), name='equipe_nome_unico',
+                                              violation_error_message='Já existe uma equipe com esse nome.')]
+
+    def __str__(self):
+        return self.nome
+
+
+class IntegranteEquipe(models.Model):
+    equipe = models.ForeignKey(Equipe, on_delete=models.PROTECT, related_name='vinculos')
+    usuario = models.ForeignKey(User, on_delete=models.PROTECT, related_name='vinculos_equipes')
+    coordenador = models.BooleanField(default=False)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['equipe', 'usuario'], name='integrante_equipe_unico')]
+
+    def __str__(self):
+        return f'{self.equipe}: {self.usuario}'
