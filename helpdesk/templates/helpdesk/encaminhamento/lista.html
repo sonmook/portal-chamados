@@ -9,7 +9,7 @@
 <div class="alert alert-info">Sem regra ativa aplicável, o chamado vai para <strong>{{ triagem.nome|default:'a equipe de triagem' }}</strong>.
 O destino precisa estar ativo e ter pelo menos um técnico ativo. A própria triagem recebe chamados mesmo sem integrantes.
 As regras não alteram chamados existentes nem escolhem um técnico responsável.</div>
-<div class="card"><div class="table-responsive"><table class="table align-middle mb-0">
+<div class="card"><div class="table-responsive" role="region" aria-label="Tabela de dados" tabindex="0"><table class="table align-middle mb-0">
 <thead><tr><th>Categoria</th><th>Equipe configurada</th><th>Situação</th><th>Ações</th></tr></thead>
 <tbody>{% for regra in regras %}<tr>
 <td>{{ regra.get_categoria_display }}</td><td>{{ regra.equipe.nome }}</td>

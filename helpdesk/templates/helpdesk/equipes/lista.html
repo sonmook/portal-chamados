@@ -6,7 +6,7 @@
 <form method="get" class="d-flex gap-2 mb-4"><label for="busca-equipes" class="visually-hidden">Buscar equipe pelo nome</label>
 <input class="form-control" id="busca-equipes" name="q" value="{{ busca }}" placeholder="Buscar equipe pelo nome">
 <button class="btn btn-dark">Pesquisar</button><a class="btn btn-outline-secondary" href="{% url 'gerenciar_equipes' %}">Limpar</a></form>
-<div class="card"><div class="table-responsive"><table class="table align-middle mb-0">
+<div class="card"><div class="table-responsive" role="region" aria-label="Tabela de dados" tabindex="0"><table class="table align-middle mb-0">
 <thead><tr><th>Equipe</th><th>Coordenadores</th><th>Integrantes</th><th>Pendentes</th><th>Status</th><th>Ações</th></tr></thead>
 <tbody>{% for equipe in page_obj %}<tr>
 <td><strong>{{ equipe.nome }}</strong><div class="small text-muted">{{ equipe.descricao|truncatechars:130 }}</div></td>

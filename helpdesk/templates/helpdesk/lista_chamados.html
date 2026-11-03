@@ -18,66 +18,32 @@
             100% { transform: scale(1); opacity: 1; }
         }
     </style>
+{% include "helpdesk/componentes/estilos.html" %}
 </head>
 <body class="bg-light">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{% url 'lista_chamados' %}">Portal de TI</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    {% include "helpdesk/componentes/navegacao.html" %}
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'lista_chamados' %}">Chamados</a>
-                    </li>
-                        {% if request.user.is_staff %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-                            </li>
-                        {% endif %}
-
-                        {% if request.user.is_superuser %}
-                            <li class="nav-item">
-                                <a class="nav-link text-warning fw-bold" href="{% url 'gerenciar_usuarios' %}"><i class="bi bi-people"></i> Gerenciar Usuários</a>
-                            </li>                    
-                            <li class="nav-item"><a class="nav-link text-warning fw-bold" href="{% url 'gerenciar_equipes' %}">Gerenciar Equipes</a></li>
-                        {% endif %}
-                </ul>
-
-                <div class="navbar-text text-white d-flex align-items-center gap-3">
-                    <span>Bem-vindo, <strong>{{ request.user.username }}</strong></span>
-                    <form method="post" action="{% url 'logout' %}" class="m-0">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-outline-light">Sair</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container">
+    <div id="conteudo-principal" tabindex="-1" class="container">
         {% for message in messages %}<div class="alert alert-info" role="status">{{ message }}</div>{% endfor %}
         {% if request.user.is_staff and not request.user.is_superuser and not equipes_filtro %}
         <div class="alert alert-info">Você ainda não participa de uma equipe ativa. Peça ao administrador para definir seus vínculos de atendimento. Seus próprios chamados continuam disponíveis.</div>
         {% endif %}
         
-        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-3 gap-3">
+        <div class="d-flex flex-column mb-3 gap-3 ticket-heading">
             <div>
                 <h2 class="fw-bold m-0" style="letter-spacing: -1px;">Central de Chamados</h2>
                 <p class="text-muted small mb-0">Gerencie as solicitações.</p>
             </div>
             
-            <form method="GET" class="d-flex flex-wrap align-items-center gap-2">
+            <form method="GET" class="ticket-filters d-flex flex-wrap align-items-center gap-2" role="search" aria-label="Filtrar chamados">
                 
-                <div class="input-group input-group-sm shadow-sm" style="width: 240px;">
+                <div class="input-group input-group-sm filter-search" style="width: 240px;">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="text" name="q" class="form-control border-start-0 ps-0" placeholder="Buscar ticket..." value="{{ query|default_if_none:'' }}">
+                    <input type="text" name="q" aria-label="Buscar chamado por assunto ou descrição" class="form-control border-start-0 ps-0" placeholder="Buscar chamado..." value="{{ query|default_if_none:'' }}">
                 </div>
 
-                <select name="status" class="form-select form-select-sm shadow-sm" style="width: auto; min-width: 150px;">
+                <select aria-label="Filtrar por status" name="status" class="form-select form-select-sm shadow-sm" style="width: auto; min-width: 150px;">
                     <option value="">Todos os Status</option>
                     <option value="Aberto" {% if status_filter == 'Aberto' %}selected{% endif %}>🔴 Aberto</option>
                     <option value="Em Andamento" {% if status_filter == 'Em Andamento' %}selected{% endif %}>🔵 Em Andamento</option>
@@ -108,7 +74,7 @@
                 <div class="vr mx-1 d-none d-md-block opacity-25"></div>
 
                 <a href="{% url 'novo_chamado' %}" class="btn btn-sm btn-primary shadow-sm px-3 fw-bold d-flex align-items-center gap-1">
-                    <i class="bi bi-plus-lg"></i> Novo Ticket
+                    <i class="bi bi-plus-lg"></i> Novo chamado
                 </a>
             </form>
         </div>
@@ -133,31 +99,32 @@
         <div class="mb-4"></div> {% endif %}
 
 
+        <p class="table-hint d-lg-none">Toque no número para abrir. Deslize a tabela para ver os demais dados.</p>
         <div class="card border-0 shadow-sm overflow-hidden">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+            <div class="table-responsive" role="region" aria-label="Lista de chamados" tabindex="0">
+                <table class="table table-hover align-middle mb-0 ticket-table">
                     <thead class="bg-light">
                         <tr>
-                            <th class="ps-4 border-0 text-muted small text-uppercase">Ticket</th>
-                            <th class="border-0 text-muted small text-uppercase">Assunto / Categoria</th>
-                            <th class="border-0 text-muted small text-uppercase">Abertura</th>
-                            <th class="border-0 text-muted small text-uppercase text-center">Status</th>
-                            <th class="border-0 text-muted small text-uppercase text-center">Prioridade</th>
-                            <th class="border-0 text-muted small text-uppercase">Prazo SLA</th>
-                            <th class="border-0 text-muted small text-uppercase">Última interação</th>
-                            <th class="border-0 text-muted small text-uppercase">Solicitante</th>
-                            <th class="border-0 text-muted small text-uppercase text-center">Técnico</th>
-                            <th class="pe-4 border-0 text-end">Ações</th>
+                            <th scope="col" class="ps-4 border-0 text-muted small text-uppercase">Ticket</th>
+                            <th scope="col" class="border-0 text-muted small text-uppercase">Assunto / Categoria</th>
+                            <th scope="col" class="border-0 text-muted small text-uppercase">Abertura</th>
+                            <th scope="col" class="border-0 text-muted small text-uppercase text-center">Status</th>
+                            <th scope="col" class="border-0 text-muted small text-uppercase text-center">Prioridade</th>
+                            <th scope="col" class="border-0 text-muted small text-uppercase">Prazo SLA</th>
+                            <th scope="col" class="border-0 text-muted small text-uppercase">Última interação</th>
+                            <th scope="col" class="border-0 text-muted small text-uppercase">Solicitante</th>
+                            <th scope="col" class="border-0 text-muted small text-uppercase text-center">Técnico</th>
+                            <th scope="col" class="pe-4 border-0 text-end">Ações</th>
                         </tr>
                     </thead>
                     <tbody class="border-top-0">
                         {% for chamado in page_obj %}
                         <tr style="transition: all 0.2s;">
                             <td class="ps-4">
-                                <span class="fw-bold text-primary">#{{ chamado.id }}</span>
+                                <a class="ticket-number fw-bold text-primary" href="{% url 'detalhes_chamado' chamado.id %}" aria-label="Abrir chamado {{ chamado.id }}: {{ chamado.titulo }}">#{{ chamado.id }}</a>
                             </td>
                             
-                            <td>
+                            <td class="ticket-subject">
                                 <div class="fw-bold text-dark">{{ chamado.titulo }}</div>
                                 <span class="badge bg-light text-dark border fw-normal" style="font-size: 0.7rem;">{{ chamado.categoria }}</span>
                                 <div class="small text-muted mt-1">{{ chamado.equipe.nome }}</div>
@@ -280,7 +247,5 @@
             </div>
         </div> 
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

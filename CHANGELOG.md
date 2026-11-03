@@ -1,5 +1,12 @@
 # Histórico de atualizações
 
+## Preparação da v1.1.0 — Refinamento visual
+
+- Navegação e estilos compartilhados entre atendimento e administração, com página ativa e menu móvel.
+- Painel de filtros separado do título, tabelas com rolagem acessível e histórico adaptado a telas pequenas.
+- Cores, espaçamentos, foco de teclado, rótulos e controles de senha refinados; textos ajustados para português brasileiro.
+- Auditoria e capturas fictícias em `docs/auditoria-visual.md`. Sem migrações de banco de dados.
+
 ## Preparação da v1.1.0 — Encaminhamento automático por categoria
 
 - Regras administráveis em Gerenciar Equipes, com destinos iniciais para Rede, Acessos, Hardware, Software e Outros.
