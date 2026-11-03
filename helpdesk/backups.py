@@ -2,7 +2,7 @@
 from contextlib import closing
 import hashlib
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import shutil
 import sqlite3
 
@@ -32,12 +32,34 @@ def arquivos(root):
     return resultado
 
 
+def verificar_anexos(banco, midia):
+    """Cruza as referências do snapshot com os arquivos privados copiados."""
+    presentes = {p.relative_to(midia).as_posix() for p in arquivos(midia)}
+    try:
+        with closing(sqlite3.connect(banco.as_uri() + '?mode=ro', uri=True)) as db:
+            referencias = db.execute(
+                "SELECT anexo FROM helpdesk_chamado WHERE anexo IS NOT NULL AND anexo != '' "
+                "UNION SELECT anexo FROM helpdesk_comentario WHERE anexo IS NOT NULL AND anexo != ''"
+            )
+            for (nome,) in referencias:
+                if (not isinstance(nome, str) or '\\' in nome
+                        or PurePosixPath(nome).is_absolute()
+                        or any(parte in ('', '.', '..') for parte in nome.split('/'))):
+                    raise ValueError('Referência de anexo inválida no banco do backup.')
+                if nome not in presentes:
+                    raise ValueError('Backup incompleto: anexo referenciado no banco ausente dos uploads.')
+    except sqlite3.DatabaseError as erro:
+        raise ValueError('Não foi possível verificar as referências de anexos no banco do backup.') from erro
+
+
 def criar_backup(banco, midia, destino):
     banco, midia, destino = [Path(p).absolute() for p in (banco, midia, destino)]
     if banco.is_symlink() or midia.is_symlink():
         raise ValueError('Links simbólicos não são permitidos.')
     if not banco.is_file():
         raise ValueError('Banco SQLite de origem não encontrado.')
+    if midia.exists() and not midia.is_dir():
+        raise ValueError('A origem dos uploads deve ser um diretório.')
     if destino == midia or midia in destino.parents:
         raise ValueError('O backup não pode ficar dentro dos uploads.')
     if destino.exists():
@@ -56,6 +78,7 @@ def criar_backup(banco, midia, destino):
             shutil.copyfile(origem, target)
             target.chmod(0o600)
         verificar_sqlite(destino / 'db.sqlite3')
+        verificar_anexos(destino / 'db.sqlite3', destino / 'media')
         manifest = {'versao':1, 'arquivos':{p.relative_to(destino).as_posix():digest(p) for p in arquivos(destino)}}
         (destino / 'manifest.json').write_text(json.dumps(manifest, indent=2))
         (destino / 'manifest.json').chmod(0o600)
@@ -84,6 +107,7 @@ def verificar_backup(origem):
         if digest(origem / nome) != hash_esperado:
             raise ValueError('Arquivo diverge do hash registrado.')
     verificar_sqlite(origem / 'db.sqlite3')
+    verificar_anexos(origem / 'db.sqlite3', origem / 'media')
     return origem
 
 
