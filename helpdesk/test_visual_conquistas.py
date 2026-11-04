@@ -70,6 +70,6 @@ class VisualConquistasTests(TestCase):
 
     def test_rollback_da_edicao_preserva_icone(self):
         self.client.force_login(self.admin)
-        with patch('helpdesk.conquistas.reavaliar_regra',side_effect=RuntimeError('falha')):
+        with patch('helpdesk.conquistas.registrar',side_effect=RuntimeError('falha')):
             with self.assertRaises(RuntimeError):self.client.post(reverse('editar_conquista',args=[self.regra.pk]),self.dados(icone='raio'))
         self.regra.refresh_from_db();self.assertEqual(self.regra.icone,'foguete')

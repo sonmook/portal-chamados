@@ -17,7 +17,7 @@
                 <li class="nav-item"><a class="nav-link{% if pagina == 'gerenciar_usuarios' or pagina == 'criar_usuario' or pagina == 'editar_usuario' %} active" aria-current="page{% endif %}" href="{% url 'gerenciar_usuarios' %}"><i class="bi bi-people" aria-hidden="true"></i> Gerenciar Usuários</a></li>
                 <li class="nav-item"><a class="nav-link{% if pagina == 'gerenciar_equipes' or pagina == 'criar_equipe' or pagina == 'editar_equipe' or pagina == 'listar_regras_encaminhamento' or pagina == 'criar_regra_encaminhamento' or pagina == 'editar_regra_encaminhamento' %} active" aria-current="page{% endif %}" href="{% url 'gerenciar_equipes' %}"><i class="bi bi-diagram-3" aria-hidden="true"></i> Gerenciar Equipes</a></li>
                 {% endif %}
-                <li class="nav-item"><a class="nav-link{% if pagina == 'minhas_conquistas' or pagina == 'gerenciar_conquistas' or pagina == 'editar_conquista' %} active" aria-current="page{% endif %}" href="{% url 'minhas_conquistas' %}"><i class="bi bi-award" aria-hidden="true"></i> Conquistas</a></li>
+                <li class="nav-item"><a class="nav-link{% if pagina == 'minhas_conquistas' or pagina == 'gerenciar_conquistas' or pagina == 'editar_conquista' or pagina == 'criar_plano' or pagina == 'editar_plano' or pagina == 'prever_plano' or pagina == 'aparencia_plano' %} active" aria-current="page{% endif %}" href="{% url 'minhas_conquistas' %}"><i class="bi bi-award" aria-hidden="true"></i> Conquistas</a></li>
             </ul>
             {% endwith %}
             <div class="portal-account">

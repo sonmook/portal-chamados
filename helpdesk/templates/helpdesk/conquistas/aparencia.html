@@ -1,0 +1,6 @@
+{% extends 'helpdesk/equipes/base.html' %}
+{% block titulo %}Aparência da trilha{% endblock %}
+{% block conteudo %}
+<a href="{% url 'prever_plano' plano.pk %}">Voltar à conquista</a><h1 class="h2 mt-3">Editar aparência</h1><div class="alert alert-info">A aparência vale para apresentações e medalhas futuras. Esta ação não muda metas, não concede medalhas e não reescreve as já recebidas.</div>
+<div class="card" style="max-width:760px"><div class="card-body p-4"><form method="post">{% csrf_token %}{{ form.versao_atual }}{{ form.non_field_errors }}{% for campo in form.visible_fields %}<div class="mb-3">{{ campo.label_tag }}{{ campo.errors }}{{ campo }}</div>{% endfor %}<button class="btn btn-primary" type="submit">Salvar aparência</button></form></div></div>
+{% endblock %}

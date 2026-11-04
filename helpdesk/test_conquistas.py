@@ -8,10 +8,10 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .conquistas import registrar_resolucao
-from .models import Chamado, Comentario, Conquista, Equipe, IntegranteEquipe, RegraConquista, ResolucaoConquista, RegistroAuditoria
+from .models import Chamado, Comentario, Conquista, Equipe, IntegranteEquipe, RegraConquista, ResolucaoConquista, RegistroAuditoria, PlanoConquista
 
 
-class ConquistasTests(TestCase):
+class ConquistasFixtureMixin:
     def setUp(self):
         self.tecnico=User.objects.create_user('tecnico',is_staff=True)
         self.outro=User.objects.create_user('outro',is_staff=True)
@@ -36,6 +36,13 @@ class ConquistasTests(TestCase):
         return {'nome':regra.nome,'descricao':regra.descricao,'meta':regra.meta,
                 'ativa':'on','icone':regra.icone,'versao_atual':regra.versao,**extra}
 
+    def publicar_revisao(self, regra):
+        plano=PlanoConquista.objects.get(regra_origem=regra,estado='rascunho')
+        r=self.client.get(reverse('prever_plano',args=[plano.pk]))
+        return self.client.post(reverse('publicar_plano',args=[plano.pk]),{'confirmacao':r.context['impacto']['token']})
+
+
+class ConquistasTests(ConquistasFixtureMixin, TestCase):
     def test_primeira_solucao_concedida_apenas_uma_vez_no_fluxo_real(self):
         t=self.chamado();r=self.fechar(t)
         self.assertEqual(r.status_code,302)
@@ -121,6 +128,8 @@ class ConquistasTests(TestCase):
         self.regra.refresh_from_db()
         r=self.client.post(reverse('editar_conquista',args=[self.regra.pk]),self.regra_dados(self.regra))
         self.assertEqual(r.status_code,302)
+        self.assertFalse(Conquista.objects.filter(regra=self.regra,usuario=self.tecnico).exists())
+        self.assertEqual(self.publicar_revisao(self.regra).status_code,302)
         self.assertTrue(Conquista.objects.filter(regra=self.regra,usuario=self.tecnico).exists())
 
     def test_editar_meta_nao_altera_medalha_concedida_e_nao_altera_criterio_por_post(self):
@@ -133,12 +142,17 @@ class ConquistasTests(TestCase):
         self.assertEqual(c.nome,'Primeira solução');self.assertEqual(c.meta,1)
         self.assertEqual(self.regra.alvo,'pessoa');self.assertEqual(self.regra.metrica,'resolucoes')
         self.assertEqual(self.regra.codigo,'primeira-solucao')
+        self.assertEqual(self.regra.nome,'Primeira solução')
+        self.publicar_revisao(self.regra);self.regra.refresh_from_db()
         self.assertEqual(self.regra.nome,'Novo nome')
+        c.refresh_from_db();self.assertEqual(c.nome,'Primeira solução')
 
     def test_meta_reduzida_reavalia_sem_duplicar(self):
         self.fechar(self.chamado());r=RegraConquista.objects.get(codigo='vinte-solucoes')
         self.client.force_login(self.admin)
         self.client.post(reverse('editar_conquista',args=[r.pk]),self.regra_dados(r,meta=1))
+        self.assertFalse(Conquista.objects.filter(regra=r,usuario=self.tecnico).exists())
+        self.publicar_revisao(r)
         self.assertTrue(Conquista.objects.filter(regra=r,usuario=self.tecnico).exists())
         r.refresh_from_db();self.client.post(reverse('editar_conquista',args=[r.pk]),self.regra_dados(r))
         self.assertEqual(Conquista.objects.filter(regra=r,usuario=self.tecnico).count(),1)
@@ -179,10 +193,10 @@ class ConquistasTests(TestCase):
         url=reverse('editar_conquista',args=[self.regra.pk])
         self.client.post(url,self.regra_dados(self.regra,meta=2))
         self.assertEqual(self.client.post(url,self.regra_dados(self.regra,meta=3)).status_code,409)
-        self.regra.refresh_from_db();self.assertEqual(self.regra.meta,2)
+        self.regra.refresh_from_db();self.assertEqual(self.regra.meta,1)
         for meta in [0,-1,100001,'abc']:
             self.assertEqual(self.client.post(url,self.regra_dados(self.regra,meta=meta)).status_code,200)
-        self.regra.refresh_from_db();self.assertEqual(self.regra.meta,2)
+        self.regra.refresh_from_db();self.assertEqual(self.regra.meta,1)
 
     def test_falha_de_auditoria_reverte_encerramento_evento_e_conquista(self):
         t=self.chamado()
@@ -194,8 +208,9 @@ class ConquistasTests(TestCase):
 
     def test_falha_de_reavaliacao_reverte_regra(self):
         self.client.force_login(self.admin)
-        with patch('helpdesk.conquistas.reavaliar_regra',side_effect=RuntimeError('falha')):
-            with self.assertRaises(RuntimeError):self.client.post(reverse('editar_conquista',args=[self.regra.pk]),self.regra_dados(self.regra,meta=2))
+        self.client.post(reverse('editar_conquista',args=[self.regra.pk]),self.regra_dados(self.regra,meta=2))
+        with patch('helpdesk.construtor_conquistas.conceder_previa',side_effect=RuntimeError('falha')):
+            with self.assertRaises(RuntimeError):self.publicar_revisao(self.regra)
         self.regra.refresh_from_db();self.assertEqual(self.regra.meta,1);self.assertEqual(self.regra.versao,0)
 
     def test_restricoes_de_destinatario_e_unicidade(self):

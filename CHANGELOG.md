@@ -1,5 +1,14 @@
 # Histórico de atualizações
 
+## v1.4.0 — Construtor de conquistas
+
+- Criação administrativa com destinatário, métrica, início de contagem e níveis Bronze, Prata e Ouro.
+- Rascunhos sem concessão; prévia assinada por 15 minutos e publicação explícita com revisão obrigatória se o impacto mudar.
+- Alterações de aparência não concedem medalhas; pausa e retomada preservam progresso, datas e histórico.
+- Regras anteriores mantidas; mudar sua meta ou reativá-las passa por rascunho e confirmação.
+- Migração 0021 adiciona planos e níveis sem reescrever medalhas existentes. Versão do portal atualizada; publicação oficial após merge e validação.
+- Notas e atualização em `docs/releases/v1.4.0.md`.
+
 ## v1.3.0 — Conquistas
 
 - Medalhas com fitas, cores e ícones individuais; coleção pessoal, mensagens de incentivo e seletor administrativo com oito símbolos. Migração 0020 preserva o histórico e aplica os ícones iniciais às medalhas existentes.
