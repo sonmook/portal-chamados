@@ -2,7 +2,7 @@
 
 ![Marca do Portal de TI](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.1.0** · [Notas da versão](docs/releases/v1.1.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.2.0** · [Notas da versão](docs/releases/v1.2.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -11,13 +11,13 @@
 
 Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django**, com fila de atendimento, acompanhamento de SLA, indicadores, controle de acesso e trilha de auditoria.
 
-As capturas abaixo mostram o visual da **v1.1.0**, com a marca atual, os novos ícones e **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
+As capturas da galeria principal foram registradas na **v1.1.0**, com a marca atual, os novos ícones e **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
 
 ---
 
-## Próxima versão: Meu Perfil
+## Meu Perfil
 
-A preparação da v1.2.0 inclui **Meu Perfil**, acessível pelo avatar ou nome no cabeçalho: foto com ajuste de posição e zoom, nome, sobrenome, cargo, departamento e ramal. Login, e-mail, permissões e equipes continuam sob administração. As fotos aparecem no cabeçalho e nas conversas e exigem autenticação para acesso. [Detalhes e atualização](docs/perfis.md).
+A v1.2.0 inclui **Meu Perfil**, acessível pelo avatar ou nome no cabeçalho: foto com ajuste de posição e zoom, nome, sobrenome, cargo, departamento e ramal. Login, e-mail, permissões e equipes continuam sob administração. As fotos aparecem no cabeçalho e nas conversas e exigem autenticação para acesso. [Detalhes e atualização](docs/perfis.md).
 
 ## ✨ Principais Funcionalidades
 

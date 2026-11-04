@@ -1,6 +1,6 @@
 # Histórico de atualizações
 
-## Preparação da v1.2.0 — Meu Perfil
+## v1.2.0 — Meu Perfil e enquadramento da foto
 
 - Enquadramento da foto com prévia circular, arraste por mouse/toque, controles de posição e zoom (100–300%) e centralização. Fonte normalizada preservada para ajustes posteriores; migração 0018 mantém o enquadramento central dos perfis existentes.
 
@@ -8,7 +8,7 @@
 - Fotos normalizadas em PNG sem metadados, com limites de tamanho/dimensões e acesso autenticado; avatar no cabeçalho e nas mensagens, com iniciais como fallback.
 - Alterações auditadas sem conteúdo pessoal, controle de versão e limpeza de arquivos após confirmação da gravação.
 - Migração 0017 cria perfis; backups verificam as fotos sem perder compatibilidade com cópias antigas. Pillow adicionado ao lockfile com hashes.
-- Documentação em `docs/perfis.md`; sem publicação de tag ou Release nesta entrega.
+- Versão do código atualizada para 1.2.0 no portal e no login. Notas em `docs/releases/v1.2.0.md`; publicação oficial pela ação **Publicar versão** após o merge na main.
 
 ## v1.1.0 — Equipes, encaminhamento e identidade visual
 

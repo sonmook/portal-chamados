@@ -1,4 +1,4 @@
-# Meu Perfil — preparação da v1.2.0
+# Meu Perfil — v1.2.0
 
 Usuários autenticados acessam **Meu Perfil** pelo nome ou avatar no canto superior direito. Podem editar nome, sobrenome, cargo, departamento e ramal, além de incluir, trocar ou remover sua foto.
 
@@ -22,7 +22,7 @@ Instale `requirements.txt`, execute `python manage.py migrate`, colete estático
 
 Os backups passam a conferir também os caminhos de fotos referenciados no banco. Backups antigos, anteriores à tabela de perfis, continuam aceitos. Pare escritores conforme as instruções de operação antes de copiar banco e arquivos.
 
-Esta entrega prepara a v1.2.0. Não publica uma nova tag ou Release nem altera a tag v1.1.0.
+Esta funcionalidade faz parte da v1.2.0. O registro oficial da tag e da Release segue o fluxo descrito em [versionamento](versionamento.md), após o merge. A tag v1.1.0 é preservada.
 
 ## Tela de demonstração
 
