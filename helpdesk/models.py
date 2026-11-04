@@ -238,3 +238,52 @@ class Perfil(models.Model):
 
     def __str__(self):
         return f'Perfil de {self.usuario.username}'
+
+
+class RegraConquista(models.Model):
+    codigo = models.SlugField(max_length=40, unique=True)
+    nome = models.CharField(max_length=80)
+    descricao = models.CharField(max_length=240)
+    alvo = models.CharField(max_length=10, choices=[('pessoa', 'Individual'), ('equipe', 'Equipe')])
+    metrica = models.CharField(max_length=12, choices=[('resolucoes', 'Resoluções'), ('no_prazo', 'Resoluções no prazo')])
+    meta = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(100000)])
+    ativa = models.BooleanField(default=True)
+    inicio_em = models.DateTimeField(default=timezone.now, editable=False)
+    versao = models.PositiveIntegerField(default=0, editable=False)
+
+    class Meta:
+        ordering = ['pk']
+        constraints = [models.CheckConstraint(condition=models.Q(meta__range=(1, 100000)), name='conquista_meta_valida')]
+
+    def __str__(self):
+        return self.nome
+
+
+class ResolucaoConquista(models.Model):
+    chamado = models.OneToOneField(Chamado, on_delete=models.PROTECT, related_name='evento_conquista')
+    usuario = models.ForeignKey(User, on_delete=models.PROTECT, related_name='resolucoes_conquistas')
+    equipe = models.ForeignKey(Equipe, on_delete=models.PROTECT, related_name='resolucoes_conquistas')
+    concluido_em = models.DateTimeField()
+    no_prazo = models.BooleanField()
+
+    class Meta:
+        indexes = [models.Index(fields=['usuario', 'concluido_em']), models.Index(fields=['equipe', 'concluido_em'])]
+
+
+class Conquista(models.Model):
+    regra = models.ForeignKey(RegraConquista, on_delete=models.PROTECT)
+    usuario = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, related_name='conquistas')
+    equipe = models.ForeignKey(Equipe, on_delete=models.PROTECT, null=True, blank=True, related_name='conquistas')
+    nome = models.CharField(max_length=80)
+    descricao = models.CharField(max_length=240)
+    meta = models.PositiveIntegerField()
+    versao_regra = models.PositiveIntegerField()
+    alcancada_em = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ['-alcancada_em', '-pk']
+        constraints = [
+            models.CheckConstraint(condition=(models.Q(usuario__isnull=False, equipe__isnull=True) | models.Q(usuario__isnull=True, equipe__isnull=False)), name='conquista_um_destinatario'),
+            models.UniqueConstraint(fields=['regra', 'usuario'], condition=models.Q(usuario__isnull=False), name='conquista_unica_pessoa'),
+            models.UniqueConstraint(fields=['regra', 'equipe'], condition=models.Q(equipe__isnull=False), name='conquista_unica_equipe'),
+        ]

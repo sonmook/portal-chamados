@@ -141,3 +141,12 @@ form label { color: var(--portal-ink); }
 #previa-foto:active { cursor: grabbing; }
 .editor-foto-controles input[type=range] { display: block; width: 100%; min-height: 40px; padding: 0; border: 0; background: transparent; accent-color: var(--portal-blue); }
 @media (max-width: 767.98px) { .editor-foto-layout { grid-template-columns: minmax(0, 1fr); } #previa-foto { margin-inline: auto; } }
+.conquista-icone { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; background: #edf2fa; color: #52647a; font-size: 1.7rem; }
+.conquista-obtida .conquista-icone { background: #e0f3e9; color: #17623c; }
+.conquista-card .progress { height: 8px; }
+@media (max-width: 1399.98px) {
+    .portal-navbar .navbar-collapse { padding-top: 18px; }
+    .portal-navbar .nav-link { padding: 12px !important; }
+    .portal-account { margin: 12px 0 0; padding-top: 14px; border-top: 1px solid #ffffff26; flex-wrap: wrap; }
+    .portal-account form { margin-left: auto !important; }
+}

@@ -1,0 +1,14 @@
+{% extends 'helpdesk/equipes/base.html' %}
+{% block titulo %}Conquistas{% endblock %}
+{% block conteudo %}
+<div class="d-flex flex-wrap justify-content-between gap-3 mb-4"><div><h1 class="h2">Conquistas</h1><p class="text-muted mb-0">Reconheça sua evolução e os resultados da sua equipe.</p></div>{% if request.user.is_superuser %}<div><a class="btn btn-outline-primary" href="{% url 'gerenciar_conquistas' %}">Gerenciar conquistas</a></div>{% endif %}</div>
+<div class="alert alert-info">Contam apenas resoluções pelo portal desde o início da contagem, com solução registrada. Cada chamado conta uma vez; transferências e chamados abertos pelo próprio técnico não contam. As metas são acumuladas, sem prazo mensal e sem ranking.</div>
+<h2 class="h4 mb-3">Minhas conquistas</h2>
+{% include 'helpdesk/conquistas/cartoes.html' with cartoes=pessoais %}
+{% if equipe_selecionada %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3"><h2 class="h4 mb-0">Conquistas da equipe</h2><form method="get" class="d-flex gap-2"><label for="equipe-conquista" class="visually-hidden">Equipe</label><select class="form-select" id="equipe-conquista" name="equipe">{% for equipe in equipes %}<option value="{{ equipe.pk }}" {% if equipe.pk == equipe_selecionada.pk %}selected{% endif %}>{{ equipe.nome }}</option>{% endfor %}</select><button class="btn btn-outline-primary" type="submit">Ver</button></form></div>
+<p class="text-muted">{{ equipe_selecionada.nome }}{% if not equipe_selecionada.ativa %} · Equipe inativa{% endif %}</p>
+{% include 'helpdesk/conquistas/cartoes.html' with cartoes=coletivas %}
+{% endif %}
+<a href="{% url 'meu_perfil' %}">Voltar ao meu perfil</a>
+{% endblock %}

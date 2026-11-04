@@ -265,6 +265,9 @@ def fechar_chamado(request, id):
     chamado.data_fechamento = timezone.now()
     # O comentário de solução já atualizou a interação no banco.
     chamado.save(update_fields=['status', 'fechado_por', 'data_fechamento', 'data_atualizacao', 'data_vencimento'])
+    from .conquistas import registrar_resolucao
+    for conquista in registrar_resolucao(chamado):
+        messages.success(request, f'Conquista desbloqueada: {conquista.nome}!')
     return redirect('detalhes_chamado', id=chamado.id)
 
 

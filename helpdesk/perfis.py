@@ -12,7 +12,7 @@ from django.views.decorators.http import require_http_methods, require_GET
 
 from .audit import registrar
 from .forms_perfil import PerfilForm
-from .models import Perfil, IntegranteEquipe
+from .models import Perfil, IntegranteEquipe, Conquista
 
 
 @login_required
@@ -81,7 +81,7 @@ def meu_perfil(request):
                 storage.delete(novo_arquivo)
             raise
     return render(request, 'helpdesk/perfil.html', {
-        'form': form, 'perfil': perfil,
+        'form': form, 'perfil': perfil, 'conquistas': Conquista.objects.filter(usuario=request.user)[:3],
         'vinculos': IntegranteEquipe.objects.filter(usuario=request.user).select_related('equipe').order_by('equipe__nome'),
     }, status=status)
 

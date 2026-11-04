@@ -82,7 +82,7 @@ import django
 django.setup()
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
-from helpdesk.models import Chamado, Comentario, IntegranteEquipe, RegraEncaminhamento, Perfil
+from helpdesk.models import Chamado, Comentario, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista
 user=User.objects.create_user(username='validation-only',is_staff=True)
 from io import BytesIO
 from PIL import Image
@@ -94,6 +94,14 @@ t=Chamado.objects.create(titulo='Restauração isolada',descricao='Fixture',soli
 IntegranteEquipe.objects.create(equipe=t.equipe,usuario=user,coordenador=True)
 RegraEncaminhamento.objects.filter(categoria='Rede').update(ativa=False,versao=7)
 Comentario.objects.create(chamado=t,autor=user,texto='Fixture',anexo=SimpleUploadedFile('evidencia.pdf',b'%PDF-1.7 fixture'))
+cliente=User.objects.create_user(username='validation-client')
+t.solicitante=cliente;t.save(update_fields=['solicitante'])
+from django.test import Client
+client=Client();client.force_login(user)
+response=client.post(f'/chamado/{t.pk}/fechar/',{'resolucao':'Configuração corrigida e validada.'},secure=True,HTTP_HOST='localhost')
+assert response.status_code==302
+assert Conquista.objects.filter(usuario=user,regra__codigo='primeira-solucao').exists()
+
 """)
             compose('stop','app')
             compose('run','--rm','--no-deps','--entrypoint','python','app','manage.py','backup_homologacao',
@@ -104,7 +112,7 @@ Comentario.objects.create(chamado=t,autor=user,texto='Fixture',anexo=SimpleUploa
 import django
 django.setup()
 from django.contrib.auth.models import User
-from helpdesk.models import Chamado, Comentario, RegistroAuditoria, IntegranteEquipe, RegraEncaminhamento, Perfil
+from helpdesk.models import Chamado, Comentario, RegistroAuditoria, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista
 assert User.objects.filter(username='validation-only').exists()
 assert Chamado.objects.filter(titulo='Restauração isolada').exists()
 comment=Comentario.objects.get(texto='Fixture')
@@ -121,7 +129,9 @@ assert perfil.cargo=='Validação'
 assert (perfil.foto_x,perfil.foto_y,perfil.foto_zoom)==(75,25,150)
 with perfil.foto.open('rb') as imagem:
     assert imagem.read().startswith(bytes([137, 80, 78, 71]))
-print('PASS: usuário, chamado, comentário, auditoria, anexo, equipe, coordenação, regra personalizada e perfil com foto e enquadramento restaurados em destino separado.')
+assert ResolucaoConquista.objects.filter(chamado=t,usuario__username='validation-only',no_prazo=True).exists()
+assert Conquista.objects.filter(usuario__username='validation-only',regra__codigo='primeira-solucao',nome='Primeira solução').exists()
+print('PASS: usuário, chamado, comentário, auditoria, anexo, equipe, coordenação, regras, perfil com foto, enquadramento e conquistas restaurados em destino separado.')
 """,restored=True)
         except Exception:
             subprocess.run([*base,'logs','--tail=60','app','proxy'],env=docker_env,cwd=ROOT)

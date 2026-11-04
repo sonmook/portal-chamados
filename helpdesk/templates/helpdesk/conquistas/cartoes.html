@@ -1,0 +1,8 @@
+<div class="row g-3 mb-4">
+{% for item in cartoes %}<div class="col-md-6 col-xl-4"><article class="card h-100 conquista-card {% if item.conquista %}conquista-obtida{% endif %}"><div class="card-body p-4">
+<div class="d-flex align-items-center gap-3 mb-3"><span class="conquista-icone" aria-hidden="true"><i class="bi bi-award"></i></span><span class="badge {% if item.conquista %}bg-success{% elif not item.regra.ativa %}bg-secondary{% else %}bg-primary-subtle text-primary{% endif %}">{% if item.conquista %}Conquistada{% elif not item.regra.ativa %}Concessões pausadas{% else %}Em progresso{% endif %}</span></div>
+<h3 class="h5">{% if item.conquista %}{{ item.conquista.nome }}{% else %}{{ item.regra.nome }}{% endif %}</h3>
+<p class="text-muted small">{% if item.conquista %}{{ item.conquista.descricao }}{% else %}{{ item.regra.descricao }}{% endif %}</p>
+{% if item.conquista %}<p class="small mb-0">Conquistada em {{ item.conquista.alcancada_em|date:'d/m/Y H:i' }}<br>Meta registrada: {{ item.conquista.meta }}</p>
+{% else %}<p class="small mb-2">{{ item.total }} de {{ item.regra.meta }} · {{ item.regra.get_metrica_display }}</p><div class="progress" role="progressbar" aria-label="Progresso de {{ item.regra.nome }}" aria-valuenow="{{ item.percentual }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width: {{ item.percentual }}%"></div></div><p class="small text-muted mt-2 mb-0">Contagem iniciada em {{ item.regra.inicio_em|date:'d/m/Y H:i' }}.</p>{% endif %}
+</div></article></div>{% empty %}<p class="text-muted">Nenhuma regra cadastrada.</p>{% endfor %}</div>
