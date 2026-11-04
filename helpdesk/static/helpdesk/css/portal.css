@@ -179,3 +179,10 @@ form label { color: var(--portal-ink); }
 .conquista-colecao { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 20px 24px; border-radius: 14px; background: #eaf0fc; color: #24446e; }
 .conquista-colecao .conquista-chamada { color: #365b8e; }
 .conquista-colecao strong { font-size: 1.7rem; color: #245cce; }
+.nivel-selo { display: inline-block; padding: 4px 10px; border-radius: 16px; font-size: .75rem; font-weight: 700; border: 1px solid currentColor; white-space: nowrap; }
+.nivel-bronze { color: #78401e; background: #fcebdc; }
+.nivel-prata { color: #43536a; background: #edf1f6; }
+.nivel-ouro { color: #865900; background: #fff4d3; }
+.nivel-unico { color: #245cce; background: #e9f0ff; }
+.trilha-niveis li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-block: 10px; }
+.conquista-card h3, .conquista-card p, .trilha-niveis { overflow-wrap: anywhere; }

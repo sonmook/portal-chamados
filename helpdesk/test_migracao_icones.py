@@ -6,7 +6,7 @@ from django.utils import timezone
 
 class MigracaoIconesTests(TransactionTestCase):
     def tearDown(self):
-        MigrationExecutor(connection).migrate([('helpdesk','0020_icones_conquistas')])
+        MigrationExecutor(connection).migrate([('helpdesk','0021_construtor_conquistas')])
         super().tearDown()
 
     def test_medalhas_anteriores_recebem_icone_sem_perder_historico(self):

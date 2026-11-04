@@ -241,7 +241,38 @@ class Perfil(models.Model):
         return f'Perfil de {self.usuario.username}'
 
 
+class PlanoConquista(models.Model):
+    nome = models.CharField(max_length=80)
+    descricao = models.CharField(max_length=240)
+    icone = models.CharField(max_length=20, choices=OPCOES_ICONES, default='trofeu')
+    alvo = models.CharField(max_length=10, choices=[('pessoa', 'Técnico'), ('equipe', 'Equipe')])
+    metrica = models.CharField(max_length=12, choices=[('resolucoes', 'Chamados resolvidos'), ('no_prazo', 'Chamados resolvidos dentro do SLA')])
+    bronze = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(100000)])
+    prata = models.PositiveIntegerField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(100000)])
+    ouro = models.PositiveIntegerField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(100000)])
+    contagem = models.CharField(max_length=12, choices=[('publicacao', 'Começar na publicação'), ('historico', 'Usar eventos já registrados desde o início do sistema')], default='publicacao')
+    estado = models.CharField(max_length=12, choices=[('rascunho', 'Rascunho'), ('publicada', 'Publicada')], default='rascunho')
+    ativa = models.BooleanField(default=True)
+    versao = models.PositiveIntegerField(default=0, editable=False)
+    regra_origem = models.ForeignKey('RegraConquista', on_delete=models.PROTECT, null=True, blank=True, related_name='revisoes')
+    base_versao = models.PositiveIntegerField(null=True, blank=True)
+    publicada_em = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(condition=models.Q(bronze__range=(1, 100000)), name='plano_bronze_valido'),
+            models.CheckConstraint(condition=(models.Q(regra_origem__isnull=False, prata__isnull=True, ouro__isnull=True) | models.Q(regra_origem__isnull=True, prata__gt=models.F('bronze'), ouro__gt=models.F('prata'), ouro__lte=100000, prata__isnull=False, ouro__isnull=False)), name='plano_metas_crescentes'),
+            models.UniqueConstraint(fields=['regra_origem'], condition=models.Q(estado='rascunho', regra_origem__isnull=False), name='um_rascunho_por_regra'),
+        ]
+
+    @property
+    def visual(self):
+        return visual(self.icone)
+
+
 class RegraConquista(models.Model):
+    plano = models.ForeignKey(PlanoConquista, on_delete=models.PROTECT, null=True, blank=True, related_name='niveis')
+    nivel = models.CharField(max_length=6, choices=[('bronze', 'Bronze'), ('prata', 'Prata'), ('ouro', 'Ouro')], blank=True)
     codigo = models.SlugField(max_length=40, unique=True)
     icone = models.CharField(max_length=20, choices=OPCOES_ICONES, default='trofeu')
     nome = models.CharField(max_length=80)
@@ -255,7 +286,11 @@ class RegraConquista(models.Model):
 
     class Meta:
         ordering = ['pk']
-        constraints = [models.CheckConstraint(condition=models.Q(meta__range=(1, 100000)), name='conquista_meta_valida')]
+        constraints = [
+            models.CheckConstraint(condition=models.Q(meta__range=(1, 100000)), name='conquista_meta_valida'),
+            models.UniqueConstraint(fields=['plano', 'nivel'], condition=models.Q(plano__isnull=False), name='nivel_unico_por_plano'),
+            models.CheckConstraint(condition=(models.Q(plano__isnull=True, nivel='') | models.Q(plano__isnull=False, nivel__in=['bronze','prata','ouro'])), name='nivel_associado_ao_plano'),
+        ]
 
     def __str__(self):
         return self.nome
@@ -277,6 +312,7 @@ class ResolucaoConquista(models.Model):
 
 
 class Conquista(models.Model):
+    nivel = models.CharField(max_length=6, choices=[('bronze', 'Bronze'), ('prata', 'Prata'), ('ouro', 'Ouro')], blank=True)
     regra = models.ForeignKey(RegraConquista, on_delete=models.PROTECT)
     usuario = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, related_name='conquistas')
     equipe = models.ForeignKey(Equipe, on_delete=models.PROTECT, null=True, blank=True, related_name='conquistas')

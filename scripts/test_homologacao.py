@@ -82,7 +82,7 @@ import django
 django.setup()
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
-from helpdesk.models import Chamado, Comentario, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista
+from helpdesk.models import Chamado, Comentario, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista
 user=User.objects.create_user(username='validation-only',is_staff=True)
 from io import BytesIO
 from PIL import Image
@@ -101,6 +101,18 @@ client=Client();client.force_login(user)
 response=client.post(f'/chamado/{t.pk}/fechar/',{'resolucao':'Configuração corrigida e validada.'},secure=True,HTTP_HOST='localhost')
 assert response.status_code==302
 assert Conquista.objects.filter(usuario=user,regra__codigo='primeira-solucao').exists()
+admin=User.objects.create_superuser('validation-admin','admin@example.invalid','validation-only-not-production')
+client.force_login(admin)
+response=client.post('/conquistas/nova/',{'nome':'Trilha de validação','descricao':'Fixture','icone':'escudo',
+    'alvo':'pessoa','metrica':'no_prazo','bronze':1,'prata':2,'ouro':3,'contagem':'historico','ativa':'on','versao_atual':0},secure=True,HTTP_HOST='localhost')
+assert response.status_code==302
+plano=PlanoConquista.objects.get(nome='Trilha de validação')
+assert plano.estado=='rascunho' and not plano.niveis.exists()
+from helpdesk.construtor_conquistas import previsao
+response=client.post(f'/conquistas/planos/{plano.pk}/publicar/',{'confirmacao':previsao(plano)['token']},secure=True,HTTP_HOST='localhost')
+assert response.status_code==302
+assert Conquista.objects.filter(regra__plano=plano,usuario=user,nivel='bronze').exists()
+
 
 """)
             compose('stop','app')
@@ -112,7 +124,7 @@ assert Conquista.objects.filter(usuario=user,regra__codigo='primeira-solucao').e
 import django
 django.setup()
 from django.contrib.auth.models import User
-from helpdesk.models import Chamado, Comentario, RegistroAuditoria, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista
+from helpdesk.models import Chamado, Comentario, RegistroAuditoria, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista
 assert User.objects.filter(username='validation-only').exists()
 assert Chamado.objects.filter(titulo='Restauração isolada').exists()
 comment=Comentario.objects.get(texto='Fixture')
@@ -131,7 +143,10 @@ with perfil.foto.open('rb') as imagem:
     assert imagem.read().startswith(bytes([137, 80, 78, 71]))
 assert ResolucaoConquista.objects.filter(chamado=t,usuario__username='validation-only',no_prazo=True).exists()
 assert Conquista.objects.filter(usuario__username='validation-only',regra__codigo='primeira-solucao',nome='Primeira solução',icone='foguete').exists()
-print('PASS: usuário, chamado, comentário, auditoria, anexo, equipe, coordenação, regras, perfil com foto, enquadramento e conquistas restaurados em destino separado.')
+plano=PlanoConquista.objects.get(nome='Trilha de validação',estado='publicada')
+assert plano.niveis.count()==3
+assert Conquista.objects.filter(regra__plano=plano,usuario__username='validation-only',nivel='bronze',meta=1).exists()
+print('PASS: usuário, chamado, comentário, auditoria, anexos, equipes, perfil e conquistas com plano e níveis restaurados em destino separado.')
 """,restored=True)
         except Exception:
             subprocess.run([*base,'logs','--tail=60','app','proxy'],env=docker_env,cwd=ROOT)

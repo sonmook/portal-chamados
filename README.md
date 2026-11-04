@@ -2,7 +2,7 @@
 
 ![Marca do Portal de TI](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.3.0** · [Notas da versão](docs/releases/v1.3.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.4.0** · [Notas da versão](docs/releases/v1.4.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -17,9 +17,13 @@ As capturas da galeria principal foram registradas na **v1.1.0**, com a marca at
 
 ## Conquistas
 
-A v1.3.0 adiciona conquistas individuais e por equipe: primeira solução, marcos de resoluções e atendimento dentro do SLA. Acompanhe o progresso em **Conquistas** e veja suas medalhas no perfil. Cada medalha tem símbolo e cor próprios. O administrador ajusta nomes, metas, ícones e concessões em **Gerenciar conquistas**. A contagem começa na instalação da funcionalidade, sem premiação retroativa. [Critérios e operação](docs/conquistas.md).
+A v1.4.0 inclui um **construtor de conquistas**: escolha técnico ou equipe, resoluções totais ou dentro do SLA, metas de **Bronze, Prata e Ouro** e um dos oito ícones. Salve um rascunho, confira os critérios e a quantidade de medalhas previstas e só então publique. A contagem pode começar na publicação ou incluir eventos elegíveis já registrados. As quatro conquistas anteriores e suas medalhas são preservadas. [Critérios e operação](docs/conquistas.md).
 
-![Conquistas individuais e coletivas na v1.3.0, com dados e meta coletiva de demonstração](docs/imagens/conquistas.png)
+![Conquistas com níveis e progresso, usando dados fictícios](docs/imagens/conquistas.png)
+
+![Construtor com critérios, metas e identidade da conquista](docs/imagens/construtor-conquista.png)
+
+![Prévia administrativa antes da publicação](docs/imagens/previa-conquista.png)
 
 ## Meu Perfil
 

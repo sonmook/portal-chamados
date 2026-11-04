@@ -1,4 +1,5 @@
 from django.urls import path
+from . import construtor_conquistas as construtor
 from . import conquistas
 from . import perfis
 from . import views
@@ -8,6 +9,12 @@ from . import regras_encaminhamento
 # Define as rotas (URLs) do aplicativo Helpdesk.
 # Cada path vincula um endereço web a uma função específica no arquivo views.py.
 urlpatterns = [
+    path('conquistas/nova/',construtor.editar_plano,name='criar_plano'),
+    path('conquistas/planos/<int:plano_id>/editar/',construtor.editar_plano,name='editar_plano'),
+    path('conquistas/planos/<int:plano_id>/',construtor.prever_plano,name='prever_plano'),
+    path('conquistas/planos/<int:plano_id>/publicar/',construtor.publicar_plano,name='publicar_plano'),
+    path('conquistas/planos/<int:plano_id>/pausar/',construtor.pausar_plano,name='pausar_plano'),
+    path('conquistas/planos/<int:plano_id>/aparencia/',construtor.aparencia_plano,name='aparencia_plano'),
     path('conquistas/', conquistas.minhas_conquistas, name='minhas_conquistas'),
     path('conquistas/gerenciar/', conquistas.gerenciar_conquistas, name='gerenciar_conquistas'),
     path('conquistas/gerenciar/<int:regra_id>/', conquistas.editar_conquista, name='editar_conquista'),

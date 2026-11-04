@@ -10,7 +10,7 @@ from django import forms
 
 from .acesso import equipes_acessiveis, integrante_ativo
 from .audit import registrar
-from .models import Chamado, Conquista, RegraConquista, ResolucaoConquista
+from .models import Chamado, Conquista, RegraConquista, ResolucaoConquista, PlanoConquista
 from .visual_conquistas import ICONES
 
 
@@ -22,7 +22,7 @@ def eventos_regra(regra):
 def conceder(regra, destinatario_id, valor):
     campo = 'usuario_id' if regra.alvo == 'pessoa' else 'equipe_id'
     conquista, criada = Conquista.objects.get_or_create(regra=regra, **{campo: destinatario_id}, defaults={
-        'nome': regra.nome, 'descricao': regra.descricao, 'meta': regra.meta, 'versao_regra': regra.versao, 'icone': regra.icone,
+        'nome': regra.nome, 'descricao': regra.descricao, 'meta': regra.meta, 'versao_regra': regra.versao, 'icone': regra.icone, 'nivel': regra.nivel,
     })
     if criada:
         registrar('helpdesk.conquista', conquista.pk, 'concedido', {
@@ -50,10 +50,14 @@ def registrar_resolucao(chamado):
     if not criado:
         return []
     novas = []
+    totais = {}
     for regra in regras:
         campo = 'usuario_id' if regra.alvo == 'pessoa' else 'equipe_id'
         destinatario = chamado.tecnico_id if regra.alvo == 'pessoa' else chamado.equipe_id
-        total = eventos_regra(regra).filter(**{campo: destinatario}).count()
+        chave = (campo, destinatario, regra.metrica, regra.inicio_em)
+        if chave not in totais:
+            totais[chave] = eventos_regra(regra).filter(**{campo: destinatario}).count()
+        total = totais[chave]
         if total >= regra.meta:
             conquista = conceder(regra, destinatario, total)
             if conquista:
@@ -72,12 +76,26 @@ def reavaliar_regra(regra):
 def cartoes(regras, *, usuario=None, equipe=None):
     destinatario = {'usuario': usuario} if usuario else {'equipe': equipe}
     recebidas = {c.regra_id: c for c in Conquista.objects.filter(**destinatario)}
-    resultado = []
+    grupos = {}
     for regra in regras:
-        total = eventos_regra(regra).filter(**destinatario).count()
+        chave = ('plano', regra.plano_id) if regra.plano_id else ('regra', regra.pk)
+        grupos.setdefault(chave, []).append(regra)
+    resultado = []
+    totais = {}
+    for niveis in grupos.values():
+        niveis.sort(key=lambda r: r.meta)
+        pendentes = [r for r in niveis if r.pk not in recebidas]
+        regra = pendentes[0] if pendentes else niveis[-1]
+        chave = (regra.metrica, regra.inicio_em)
+        if chave not in totais:
+            totais[chave] = eventos_regra(regra).filter(**destinatario).count()
+        total = totais[chave]
+        conquista = recebidas.get(regra.pk)
         resultado.append({'regra': regra, 'total': total, 'percentual': min(100, total * 100 // regra.meta),
-                          'conquista': recebidas.get(regra.pk), 'visual': (recebidas[regra.pk] if regra.pk in recebidas else regra).visual,
-                          'faltam': max(0, regra.meta - total)})
+                          'conquista': conquista, 'visual': (conquista or regra).visual,
+                          'faltam': max(0, regra.meta-total), 'plano': regra.plano if regra.plano_id else None,
+                          'niveis': [{'regra':r,'conquista':recebidas.get(r.pk)} for r in niveis] if regra.plano_id else [],
+                          'desbloqueadas': sum(r.pk in recebidas for r in niveis), 'total_medalhas':len(niveis)})
     return resultado
 
 
@@ -94,10 +112,10 @@ def minhas_conquistas(request):
             raise Http404
     else:
         equipe = equipes.first()
-    regras = list(RegraConquista.objects.all())
+    regras = list(RegraConquista.objects.select_related('plano').all())
     pessoais = cartoes([r for r in regras if r.alvo == 'pessoa'], usuario=request.user)
     return render(request, 'helpdesk/conquistas/lista.html', {
-        'pessoais': pessoais, 'total_pessoais': len(pessoais), 'desbloqueadas': sum(bool(item['conquista']) for item in pessoais),
+        'pessoais': pessoais, 'total_pessoais': sum(item['total_medalhas'] for item in pessoais), 'desbloqueadas': sum(item['desbloqueadas'] for item in pessoais),
         'coletivas': cartoes([r for r in regras if r.alvo == 'equipe'], equipe=equipe) if equipe else [],
         'equipes': equipes, 'equipe_selecionada': equipe,
     })
@@ -105,6 +123,7 @@ def minhas_conquistas(request):
 
 class RegraConquistaForm(forms.ModelForm):
     versao_atual = forms.IntegerField(min_value=0, widget=forms.HiddenInput)
+    rascunho_versao = forms.IntegerField(min_value=0, required=False, widget=forms.HiddenInput)
 
     class Meta:
         model = RegraConquista
@@ -125,7 +144,8 @@ def gerenciar_conquistas(request):
     if not request.user.is_superuser:
         raise PermissionDenied
     return render(request, 'helpdesk/conquistas/gerenciar.html', {
-        'regras': RegraConquista.objects.all(),
+        'regras': RegraConquista.objects.filter(plano__isnull=True),
+        'planos': PlanoConquista.objects.select_related('regra_origem').order_by('-pk'),
         'recentes': Conquista.objects.select_related('usuario', 'equipe')[:20],
     })
 
@@ -136,28 +156,37 @@ def gerenciar_conquistas(request):
 def editar_conquista(request, regra_id):
     if not request.user.is_superuser:
         raise PermissionDenied
-    regra = get_object_or_404(RegraConquista.objects.select_for_update(), pk=regra_id)
-    antes = {c: getattr(regra, c) for c in ('nome', 'descricao', 'icone', 'meta', 'ativa')}
-    form = RegraConquistaForm(request.POST if request.method == 'POST' else None, instance=regra)
-    status = 200
-    if request.method == 'POST' and form.is_valid():
-        if regra.versao != form.cleaned_data['versao_atual']:
-            form.add_error(None, 'Esta regra foi alterada. Reabra a página antes de salvar.')
-            status = 409
+    regra = get_object_or_404(RegraConquista.objects.select_for_update(no_key=True), pk=regra_id)
+    if regra.plano_id:
+        return redirect('aparencia_plano',plano_id=regra.plano_id)
+    from .construtor_conquistas import rascunho_de_regra, ConflitoRascunho
+    rascunho = PlanoConquista.objects.filter(regra_origem=regra,estado='rascunho').first()
+    antes = {c: getattr(regra,c) for c in ('nome','descricao','icone','meta','ativa')}
+    form = RegraConquistaForm(request.POST if request.method=='POST' else None,instance=regra,
+                            initial={'rascunho_versao':rascunho.versao if rascunho else 0})
+    status=200
+    if request.method=='POST' and form.is_valid():
+        if regra.versao!=form.cleaned_data['versao_atual']:
+            form.add_error(None,'Esta regra foi alterada. Reabra a página antes de salvar.');status=409
         else:
-            campos = {c: form.cleaned_data[c] for c in antes}
-            alterada = RegraConquista.objects.filter(pk=regra.pk, versao=form.cleaned_data['versao_atual']).update(
-                **campos, versao=F('versao') + 1)
-            if not alterada:
-                form.add_error(None, 'Esta regra foi alterada. Reabra a página antes de salvar.')
-                status = 409
+            campos={c:form.cleaned_data[c] for c in antes}
+            criterio_mudou = campos['meta']!=antes['meta'] or (campos['ativa'] and not antes['ativa'])
+            if criterio_mudou:
+                try:
+                    plano=rascunho_de_regra(regra,campos,form.cleaned_data.get('rascunho_versao') or 0)
+                except ConflitoRascunho:
+                    form.add_error(None,'O rascunho foi alterado. Reabra a página antes de salvar.');status=409
+                else:
+                    messages.info(request,'Proposta salva como rascunho. Nenhuma medalha foi concedida. Confira a prévia.')
+                    return redirect('prever_plano',plano_id=plano.pk)
             else:
-                regra.refresh_from_db()
-                registrar('helpdesk.regraconquista', regra.pk, 'alterado', {
-                    c: {'alterado': True} if c in ('nome', 'descricao') else {'antes': antes[c], 'depois': valor}
-                    for c, valor in campos.items() if antes[c] != valor
-                })
-                reavaliar_regra(regra)
-                messages.success(request, 'Regra salva. As resoluções elegíveis desde o início da contagem foram reavaliadas.')
-                return redirect('gerenciar_conquistas')
-    return render(request, 'helpdesk/conquistas/formulario.html', {'form': form, 'regra': regra, 'icones': ICONES}, status=status)
+                atualizado=RegraConquista.objects.filter(pk=regra.pk,versao=form.cleaned_data['versao_atual']).update(**campos,versao=F('versao')+1)
+                if not atualizado:
+                    form.add_error(None,'Esta regra foi alterada. Reabra a página.');status=409
+                else:
+                    registrar('helpdesk.regraconquista',regra.pk,'alterado',{
+                        c:{'alterado':True} if c in ('nome','descricao') else {'antes':antes[c],'depois':valor}
+                        for c,valor in campos.items() if antes[c]!=valor})
+                    messages.success(request,'Aparência ou pausa atualizada. Nenhuma medalha foi concedida ou reescrita.')
+                    return redirect('gerenciar_conquistas')
+    return render(request,'helpdesk/conquistas/formulario.html',{'form':form,'regra':regra,'icones':ICONES,'rascunho':rascunho},status=status)

@@ -3,9 +3,9 @@
 {% block conteudo %}
 <a href="{% url 'gerenciar_conquistas' %}">Voltar à gestão</a><h1 class="h2 mt-3">Editar conquista</h1>
 <p>{{ regra.get_alvo_display }} · {{ regra.get_metrica_display }} · Contagem desde {{ regra.inicio_em|date:'d/m/Y H:i' }}</p>
-<div class="alert alert-info">Salvar uma regra ativa reavalia resoluções elegíveis já registradas desde o início da contagem. Pausar impede novas concessões, mas preserva a contagem e as medalhas existentes. Nome, ícone e meta de medalhas já concedidas não são alterados.</div>
-<div class="card" style="max-width:760px"><div class="card-body p-4"><form method="post">{% csrf_token %}{{ form.versao_atual }}{{ form.versao_atual.errors }}{{ form.non_field_errors }}{% for campo in form.visible_fields %}{% if campo.name != 'icone' %}<div class="mb-3">{{ campo.label_tag }}{{ campo.errors }}{{ campo }}</div>{% endif %}{% endfor %}
+<div class="alert alert-info">Alterações de nome, descrição e ícone são salvas sem conceder medalhas. Mudar a meta ou retomar uma regra pausada cria um rascunho: você confere o impacto e confirma a publicação. As medalhas já recebidas são preservadas.</div>
+{% if rascunho %}<p><a href="{% url 'prever_plano' rascunho.pk %}">Existe uma proposta de critério em rascunho. Conferir prévia.</a></p>{% endif %}<div class="card" style="max-width:760px"><div class="card-body p-4"><form method="post">{% csrf_token %}{{ form.versao_atual }}{{ form.rascunho_versao }}{{ form.versao_atual.errors }}{{ form.non_field_errors }}{% for campo in form.visible_fields %}{% if campo.name != 'icone' %}<div class="mb-3">{{ campo.label_tag }}{{ campo.errors }}{{ campo }}</div>{% endif %}{% endfor %}
 <fieldset class="mb-4"><legend class="h5">Ícone da conquista</legend><p class="text-muted small">Escolha o símbolo das próximas medalhas. As medalhas já recebidas preservam seu ícone.</p>{{ form.icone.errors }}
 <div class="conquista-opcoes">{% for codigo, opcao in icones.items %}<label class="conquista-opcao conquista-{{ opcao.cor }}" for="icone-{{ codigo }}"><input id="icone-{{ codigo }}" type="radio" name="icone" value="{{ codigo }}" {% if form.icone.value == codigo %}checked{% endif %} required><span class="conquista-mini" aria-hidden="true"><i class="bi bi-{{ opcao.simbolo }}"></i></span><span>{{ opcao.nome }}</span></label>{% endfor %}</div></fieldset>
-<button class="btn btn-primary" type="submit">Salvar regra</button></form></div></div>
+<button class="btn btn-primary" type="submit">Salvar alterações</button></form></div></div>
 {% endblock %}
