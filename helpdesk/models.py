@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db import transaction
 from django.db.models.functions import Coalesce, Greatest, Lower
@@ -224,10 +225,16 @@ def caminho_foto_perfil(instance, filename):
 class Perfil(models.Model):
     usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
     foto = models.FileField(upload_to=caminho_foto_perfil, blank=True)
+    foto_x = models.PositiveSmallIntegerField(default=50, validators=[MaxValueValidator(100)])
+    foto_y = models.PositiveSmallIntegerField(default=50, validators=[MaxValueValidator(100)])
+    foto_zoom = models.PositiveSmallIntegerField(default=100, validators=[MinValueValidator(100), MaxValueValidator(300)])
     cargo = models.CharField(max_length=100, blank=True)
     departamento = models.CharField(max_length=100, blank=True)
     ramal = models.CharField(max_length=20, blank=True)
     versao = models.PositiveIntegerField(default=0, editable=False)
+
+    class Meta:
+        constraints = [models.CheckConstraint(condition=models.Q(foto_x__range=(0, 100), foto_y__range=(0, 100), foto_zoom__range=(100, 300)), name='perfil_enquadramento_valido')]
 
     def __str__(self):
         return f'Perfil de {self.usuario.username}'

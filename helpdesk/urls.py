@@ -7,6 +7,7 @@ from . import regras_encaminhamento
 # Define as rotas (URLs) do aplicativo Helpdesk.
 # Cada path vincula um endereço web a uma função específica no arquivo views.py.
 urlpatterns = [
+    path('meu-perfil/foto-base/', perfis.foto_base_perfil, name='foto_base_perfil'),
     path('meu-perfil/', perfis.meu_perfil, name='meu_perfil'),
     path('perfil/foto/<int:usuario_id>/', perfis.foto_perfil, name='foto_perfil'),
     path('equipes/encaminhamento/', regras_encaminhamento.listar_regras, name='listar_regras_encaminhamento'),

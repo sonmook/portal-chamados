@@ -88,7 +88,7 @@ from io import BytesIO
 from PIL import Image
 from django.core.files.base import ContentFile
 foto=BytesIO();Image.new('RGB',(32,32),'blue').save(foto,'PNG')
-perfil=Perfil.objects.create(usuario=user,cargo='Validação')
+perfil=Perfil.objects.create(usuario=user,cargo='Validação',foto_x=75,foto_y=25,foto_zoom=150)
 perfil.foto.save('fixture.png',ContentFile(foto.getvalue()))
 t=Chamado.objects.create(titulo='Restauração isolada',descricao='Fixture',solicitante=user,tecnico=user)
 IntegranteEquipe.objects.create(equipe=t.equipe,usuario=user,coordenador=True)
@@ -118,9 +118,10 @@ regra=RegraEncaminhamento.objects.get(categoria='Rede')
 assert not regra.ativa and regra.versao==7
 perfil=Perfil.objects.get(usuario__username='validation-only')
 assert perfil.cargo=='Validação'
+assert (perfil.foto_x,perfil.foto_y,perfil.foto_zoom)==(75,25,150)
 with perfil.foto.open('rb') as imagem:
     assert imagem.read().startswith(bytes([137, 80, 78, 71]))
-print('PASS: usuário, chamado, comentário, auditoria, anexo, equipe, coordenação, regra personalizada e perfil com foto restaurados em destino separado.')
+print('PASS: usuário, chamado, comentário, auditoria, anexo, equipe, coordenação, regra personalizada e perfil com foto e enquadramento restaurados em destino separado.')
 """,restored=True)
         except Exception:
             subprocess.run([*base,'logs','--tail=60','app','proxy'],env=docker_env,cwd=ROOT)

@@ -1,4 +1,5 @@
 {% extends 'helpdesk/equipes/base.html' %}
+{% load static %}
 {% block titulo %}Meu Perfil{% endblock %}
 {% block conteudo %}
 <div class="mb-4"><h1 class="h2">Meu Perfil</h1><p class="text-muted">Personalize seus dados e sua foto no Portal de TI.</p></div>
@@ -7,10 +8,23 @@
 <form method="post" enctype="multipart/form-data">{% csrf_token %}{{ form.versao }}{{ form.versao.errors }}
 {{ form.non_field_errors }}
 <div class="row g-3">
-{% for campo in form.visible_fields %}{% if campo.name != 'remover_foto' %}
+{% for campo in form.visible_fields %}{% if campo.name != 'remover_foto' and campo.name != 'foto_x' and campo.name != 'foto_y' and campo.name != 'foto_zoom' %}
 <div class="{% if campo.name == 'first_name' or campo.name == 'last_name' %}col-md-6{% else %}col-12{% endif %}">
 {{ campo.label_tag }}{{ campo.errors }}{{ campo }}{% if campo.help_text %}<div class="form-text">{{ campo.help_text }}</div>{% endif %}</div>
 {% endif %}{% endfor %}
+<div class="col-12">
+<fieldset id="editor-foto" class="editor-foto" {% if perfil.foto %}data-source="{% url 'foto_base_perfil' %}?v={{ perfil.versao }}"{% endif %}>
+<legend class="h5">Ajustar enquadramento</legend>
+<p class="text-muted small" id="ajuda-enquadramento">Arraste a foto ou use os controles para ajustar. O enquadramento será aplicado ao salvar o perfil.</p>
+<div class="editor-foto-layout"><div><canvas id="previa-foto" width="256" height="256" aria-label="Prévia circular da foto" aria-describedby="ajuda-enquadramento"></canvas><p id="estado-previa" class="small text-muted mt-2" role="status">Selecione uma foto para visualizar o enquadramento.</p></div>
+<div class="editor-foto-controles">
+<div class="mb-3">{{ form.foto_x.label_tag }} {{ form.foto_x }}{{ form.foto_x.errors }}</div>
+<div class="mb-3">{{ form.foto_y.label_tag }} {{ form.foto_y }}{{ form.foto_y.errors }}</div>
+<div class="mb-3">{{ form.foto_zoom.label_tag }} {{ form.foto_zoom }}{{ form.foto_zoom.errors }}</div>
+<button type="button" id="centralizar-foto" class="btn btn-outline-secondary">Centralizar foto</button>
+</div></div>
+<noscript><p class="text-muted small">A prévia e o arraste precisam de JavaScript. Os controles de posição e zoom continuam funcionando ao salvar.</p></noscript>
+</fieldset></div>
 <div class="col-12"><div class="form-check">{{ form.remover_foto }}{{ form.remover_foto.label_tag }}</div>{{ form.remover_foto.errors }}</div>
 </div><p class="text-muted small mt-3">A foto poderá ser vista por usuários autenticados e aparecerá nas conversas. Os demais campos complementares ficam nesta página, para seu cadastro pessoal.</p>
 <div class="d-flex flex-wrap gap-2 mt-4"><button class="btn btn-primary" type="submit">Salvar perfil</button><a class="btn btn-outline-secondary" href="{% url 'lista_chamados' %}">Voltar aos chamados</a></div>
@@ -20,4 +34,5 @@
 <p class="text-muted small">Login, e-mail e permissões são gerenciados pelo administrador.</p>
 <h2 class="h5 mt-4">Minhas equipes</h2><ul class="list-unstyled">{% for vinculo in vinculos %}<li class="mb-2">{{ vinculo.equipe.nome }}{% if vinculo.coordenador %} <span class="badge bg-primary">Coordenador</span>{% endif %}{% if not vinculo.equipe.ativa %} <span class="badge bg-secondary">Inativa</span>{% endif %}</li>{% empty %}<li class="text-muted">Nenhuma equipe vinculada.</li>{% endfor %}</ul>
 </div></div></aside></div>
+<script defer src="{% static 'helpdesk/js/perfil-foto.js' %}"></script>
 {% endblock %}

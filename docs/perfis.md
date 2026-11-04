@@ -29,3 +29,11 @@ Esta entrega prepara a v1.2.0. Não publica uma nova tag ou Release nem altera a
 Dados fictícios e avatar ilustrativo, sem fotografia de uma pessoa real:
 
 ![Meu Perfil com foto, dados pessoais e informações de conta e equipe](imagens/meu-perfil.png)
+
+## Posição e zoom da foto
+
+No editor **Ajustar enquadramento**, arraste a foto com mouse ou toque, ou use os controles **Posição horizontal**, **Posição vertical** e **Zoom**. Os controles funcionam com teclado. **Centralizar foto** volta à posição central e ao zoom inicial. A prévia circular mostra o enquadramento que será aplicado ao clicar em **Salvar perfil**.
+
+O zoom vai de 100% a 300%. É possível reenquadrar uma foto já cadastrada sem reenviá-la: a fonte normalizada é preservada, e posição/zoom ficam no perfil. O avatar recortado é produzido no servidor e usado no cabeçalho e nas conversas. A fonte sem recorte só pode ser acessada pelo próprio usuário; outros usuários autenticados continuam vendo apenas o avatar enquadrado.
+
+Sem JavaScript, a prévia e o arraste ficam indisponíveis, mas os controles continuam salvando posição e zoom. Remover a foto também restaura o enquadramento padrão. A migração **0018** adiciona os parâmetros com valores centrais para perfis existentes, sem alterar seus arquivos.
