@@ -19,7 +19,7 @@ def foto(nome='foto.jpg', size=(800, 600), formato='JPEG'):
     return SimpleUploadedFile(nome, out.getvalue(), content_type='image/jpeg')
 
 
-class PerfilTests(TestCase):
+class PerfilFixtureMixin:
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
@@ -38,6 +38,8 @@ class PerfilTests(TestCase):
     def salvar(self, **extra):
         return self.client.post(self.url, self.dados(**extra))
 
+
+class PerfilTests(PerfilFixtureMixin, TestCase):
     def test_get_sem_criar_registros_inclui_conta_e_campos_acessiveis(self):
         r = self.client.get(self.url)
         self.assertContains(r, 'Meu Perfil')

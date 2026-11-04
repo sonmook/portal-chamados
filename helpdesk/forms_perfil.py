@@ -15,6 +15,12 @@ class PerfilForm(forms.Form):
     foto = forms.FileField(label='Nova foto', required=False,
                            help_text='JPEG ou PNG de até 2 MB, 4096 px por lado e 4 milhões de pixels. A imagem será ajustada para até 512 px.',
                            widget=forms.ClearableFileInput(attrs={'accept': 'image/png,image/jpeg'}))
+    foto_x = forms.IntegerField(label='Posição horizontal', min_value=0, max_value=100, required=False,
+                                widget=forms.NumberInput(attrs={'type': 'range', 'min': 0, 'max': 100, 'step': 1}))
+    foto_y = forms.IntegerField(label='Posição vertical', min_value=0, max_value=100, required=False,
+                                widget=forms.NumberInput(attrs={'type': 'range', 'min': 0, 'max': 100, 'step': 1}))
+    foto_zoom = forms.IntegerField(label='Zoom', min_value=100, max_value=300, required=False,
+                                   widget=forms.NumberInput(attrs={'type': 'range', 'min': 100, 'max': 300, 'step': 1}))
     remover_foto = forms.BooleanField(label='Remover foto atual', required=False)
     versao = forms.IntegerField(min_value=0, widget=forms.HiddenInput)
 
@@ -23,6 +29,8 @@ class PerfilForm(forms.Form):
         for nome, campo in self.fields.items():
             if nome not in ('versao', 'remover_foto'):
                 campo.widget.attrs['class'] = 'form-control'
+        for nome in ('foto_x', 'foto_y', 'foto_zoom'):
+            self.fields[nome].widget.attrs['class'] = 'form-range'
         self.fields['remover_foto'].widget.attrs['class'] = 'form-check-input'
         self.fields['first_name'].widget.attrs['autocomplete'] = 'given-name'
         self.fields['last_name'].widget.attrs['autocomplete'] = 'family-name'
@@ -57,6 +65,9 @@ class PerfilForm(forms.Form):
 
     def clean(self):
         dados = super().clean()
+        for nome, padrao in [('foto_x', 50), ('foto_y', 50), ('foto_zoom', 100)]:
+            if nome not in self.errors and dados.get(nome) is None:
+                dados[nome] = self.initial.get(nome, padrao)
         if dados.get('foto') and dados.get('remover_foto'):
             self.add_error('remover_foto', 'Escolha uma nova foto ou remova a atual, sem combinar as duas ações.')
         return dados

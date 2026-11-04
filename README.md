@@ -17,7 +17,7 @@ As capturas abaixo mostram o visual da **v1.1.0**, com a marca atual, os novos �
 
 ## Próxima versão: Meu Perfil
 
-A preparação da v1.2.0 inclui **Meu Perfil**, acessível pelo avatar ou nome no cabeçalho: foto, nome, sobrenome, cargo, departamento e ramal. Login, e-mail, permissões e equipes continuam sob administração. As fotos aparecem no cabeçalho e nas conversas e exigem autenticação para acesso. [Detalhes e atualização](docs/perfis.md).
+A preparação da v1.2.0 inclui **Meu Perfil**, acessível pelo avatar ou nome no cabeçalho: foto com ajuste de posição e zoom, nome, sobrenome, cargo, departamento e ramal. Login, e-mail, permissões e equipes continuam sob administração. As fotos aparecem no cabeçalho e nas conversas e exigem autenticação para acesso. [Detalhes e atualização](docs/perfis.md).
 
 ## ✨ Principais Funcionalidades
 

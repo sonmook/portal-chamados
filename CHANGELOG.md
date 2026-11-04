@@ -2,6 +2,8 @@
 
 ## Preparação da v1.2.0 — Meu Perfil
 
+- Enquadramento da foto com prévia circular, arraste por mouse/toque, controles de posição e zoom (100–300%) e centralização. Fonte normalizada preservada para ajustes posteriores; migração 0018 mantém o enquadramento central dos perfis existentes.
+
 - Foto, nome, sobrenome, cargo, departamento e ramal editáveis pelo próprio usuário; conta, permissões e equipes protegidas.
 - Fotos normalizadas em PNG sem metadados, com limites de tamanho/dimensões e acesso autenticado; avatar no cabeçalho e nas mensagens, com iniciais como fallback.
 - Alterações auditadas sem conteúdo pessoal, controle de versão e limpeza de arquivos após confirmação da gravação.
