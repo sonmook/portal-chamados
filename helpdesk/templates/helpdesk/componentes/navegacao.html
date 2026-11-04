@@ -21,7 +21,7 @@
             {% endwith %}
             <div class="portal-account">
                 <span class="portal-version" aria-label="Versão {{ portal_version }}">v{{ portal_version }}</span>
-                <span class="portal-username" title="{{ request.user.username }}">Olá, <strong>{{ request.user.username }}</strong></span>
+                <a class="portal-profile-link" href="{% url 'meu_perfil' %}" aria-label="Meu Perfil">{% include 'helpdesk/componentes/avatar.html' with pessoa=request.user %}<span class="portal-username">{{ request.user.first_name|default:request.user.username }}</span><i class="bi bi-person-gear" aria-hidden="true"></i></a>
                 <form method="post" action="{% url 'logout' %}" class="m-0">{% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-light">Sair</button></form>
             </div>
         </div>

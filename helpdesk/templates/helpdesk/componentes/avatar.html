@@ -1,0 +1,4 @@
+<span class="portal-avatar" aria-hidden="true">
+{% if pessoa.perfil.foto %}<img src="{% url 'foto_perfil' pessoa.pk %}?v={{ pessoa.perfil.versao }}" alt="" width="32" height="32" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span hidden>{{ pessoa.first_name|default:pessoa.username|slice:':1'|upper }}</span>
+{% else %}<span>{{ pessoa.first_name|default:pessoa.username|slice:':1'|upper }}</span>{% endif %}
+</span>

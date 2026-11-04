@@ -47,3 +47,7 @@ Adicionados Gunicorn 25.3.0 e packaging 26.3 para o servidor WSGI. A auditoria
 PyPI do lockfile com 16 dependências não reportou vulnerabilidades conhecidas.
 A imagem Docker foi construída com verificação de hashes/TLS. Este resultado não
 é uma varredura das imagens base Python/Caddy nem dos pacotes do sistema operacional.
+
+## Preparação da v1.2.0 — Fotos de perfil
+
+Pillow 13.0.0 adicionado para decodificar, validar, orientar e normalizar as fotos de perfil. As dependências anteriores foram mantidas; o lockfile foi regenerado com hashes.

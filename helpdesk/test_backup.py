@@ -140,3 +140,14 @@ class BackupTests(SimpleTestCase):
         with self.assertRaisesMessage(ValueError, 'deve ser um diretório'):
             criar_backup(self.db, self.media/'evidencia.pdf', self.backup)
         self.assertFalse(self.backup.exists())
+
+    def test_foto_de_perfil_tambem_precisa_estar_no_backup(self):
+        with sqlite3.connect(self.db) as db:
+            db.execute('CREATE TABLE helpdesk_perfil (id INTEGER PRIMARY KEY, foto TEXT)')
+            db.execute("INSERT INTO helpdesk_perfil(foto) VALUES ('perfis/avatar.png')")
+        with self.assertRaises(ValueError):
+            self.criar()
+        (self.media/'perfis').mkdir()
+        (self.media/'perfis'/'avatar.png').write_bytes(b'\x89PNG fixture')
+        self.criar()
+        restaurar_backup(self.backup,self.root/'restaurado-perfil')

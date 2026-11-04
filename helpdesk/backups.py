@@ -37,9 +37,14 @@ def verificar_anexos(banco, midia):
     presentes = {p.relative_to(midia).as_posix() for p in arquivos(midia)}
     try:
         with closing(sqlite3.connect(banco.as_uri() + '?mode=ro', uri=True)) as db:
-            referencias = db.execute(
+            consulta = (
                 "SELECT anexo FROM helpdesk_chamado WHERE anexo IS NOT NULL AND anexo != '' "
                 "UNION SELECT anexo FROM helpdesk_comentario WHERE anexo IS NOT NULL AND anexo != ''"
+            )
+            if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='helpdesk_perfil'").fetchone():
+                consulta += " UNION SELECT foto FROM helpdesk_perfil WHERE foto IS NOT NULL AND foto != ''"
+            referencias = db.execute(
+                consulta
             )
             for (nome,) in referencias:
                 if (not isinstance(nome, str) or '\\' in nome

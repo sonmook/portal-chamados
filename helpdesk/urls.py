@@ -1,4 +1,5 @@
 from django.urls import path
+from . import perfis
 from . import views
 from . import equipes
 from . import regras_encaminhamento
@@ -6,6 +7,8 @@ from . import regras_encaminhamento
 # Define as rotas (URLs) do aplicativo Helpdesk.
 # Cada path vincula um endereço web a uma função específica no arquivo views.py.
 urlpatterns = [
+    path('meu-perfil/', perfis.meu_perfil, name='meu_perfil'),
+    path('perfil/foto/<int:usuario_id>/', perfis.foto_perfil, name='foto_perfil'),
     path('equipes/encaminhamento/', regras_encaminhamento.listar_regras, name='listar_regras_encaminhamento'),
     path('equipes/encaminhamento/nova/', regras_encaminhamento.editar_regra, name='criar_regra_encaminhamento'),
     path('equipes/encaminhamento/<int:regra_id>/editar/', regras_encaminhamento.editar_regra, name='editar_regra_encaminhamento'),

@@ -214,3 +214,20 @@ class RegraEncaminhamento(models.Model):
 
     def __str__(self):
         return f'{self.get_categoria_display()} → {self.equipe}'
+
+
+def caminho_foto_perfil(instance, filename):
+    from uuid import uuid4
+    return f'perfis/{uuid4().hex}.png'
+
+
+class Perfil(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
+    foto = models.FileField(upload_to=caminho_foto_perfil, blank=True)
+    cargo = models.CharField(max_length=100, blank=True)
+    departamento = models.CharField(max_length=100, blank=True)
+    ramal = models.CharField(max_length=20, blank=True)
+    versao = models.PositiveIntegerField(default=0, editable=False)
+
+    def __str__(self):
+        return f'Perfil de {self.usuario.username}'
