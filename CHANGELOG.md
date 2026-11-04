@@ -1,5 +1,13 @@
 # Histórico de atualizações
 
+## v1.3.0 — Conquistas
+
+- Catálogo inicial de quatro conquistas individuais e por equipe, com progresso, vitrine no perfil e aviso no encerramento.
+- Gestão de nomes, descrições, metas e concessões pelo administrador; reavaliação explícita ao salvar regras ativas.
+- Resoluções elegíveis registradas uma única vez por chamado, sem contagem de histórico, transferências ou chamados próprios.
+- Medalhas preservam critérios e nomes do momento da concessão. Auditoria, controle de versão e isolamento por equipe.
+- Migração 0019 cria o catálogo e inicia a contagem sem alterar os chamados existentes. Notas em `docs/releases/v1.3.0.md`.
+
 ## v1.2.0 — Meu Perfil e enquadramento da foto
 
 - Enquadramento da foto com prévia circular, arraste por mouse/toque, controles de posição e zoom (100–300%) e centralização. Fonte normalizada preservada para ajustes posteriores; migração 0018 mantém o enquadramento central dos perfis existentes.
