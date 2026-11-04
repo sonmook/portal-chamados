@@ -17,7 +17,7 @@ As capturas da galeria principal foram registradas na **v1.1.0**, com a marca at
 
 ## Conquistas
 
-A v1.3.0 adiciona conquistas individuais e por equipe: primeira solução, marcos de resoluções e atendimento dentro do SLA. Acompanhe o progresso em **Conquistas** e veja suas medalhas no perfil. O administrador ajusta nomes, metas e concessões em **Gerenciar conquistas**. A contagem começa na instalação da funcionalidade, sem premiação retroativa. [Critérios e operação](docs/conquistas.md).
+A v1.3.0 adiciona conquistas individuais e por equipe: primeira solução, marcos de resoluções e atendimento dentro do SLA. Acompanhe o progresso em **Conquistas** e veja suas medalhas no perfil. Cada medalha tem símbolo e cor próprios. O administrador ajusta nomes, metas, ícones e concessões em **Gerenciar conquistas**. A contagem começa na instalação da funcionalidade, sem premiação retroativa. [Critérios e operação](docs/conquistas.md).
 
 ![Conquistas individuais e coletivas na v1.3.0, com dados e meta coletiva de demonstração](docs/imagens/conquistas.png)
 

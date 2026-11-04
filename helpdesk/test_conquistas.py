@@ -34,7 +34,7 @@ class ConquistasTests(TestCase):
 
     def regra_dados(self,regra,**extra):
         return {'nome':regra.nome,'descricao':regra.descricao,'meta':regra.meta,
-                'ativa':'on','versao_atual':regra.versao,**extra}
+                'ativa':'on','icone':regra.icone,'versao_atual':regra.versao,**extra}
 
     def test_primeira_solucao_concedida_apenas_uma_vez_no_fluxo_real(self):
         t=self.chamado();r=self.fechar(t)

@@ -27,3 +27,11 @@ Para atualizar, use banco e contas de demonstração separados dos dados reais,
 capture as rotas correspondentes com os recursos visuais carregados e revise
 cada imagem antes de substituir os arquivos. Não exponha informações de usuários
 ou credenciais. Alterações nas imagens seguem o mesmo fluxo de branch e PR.
+
+## Conquistas da v1.3.0
+
+As capturas `conquistas.png`, `gestao-conquistas.png` e `editor-conquista.png`
+ilustram as medalhas e a seleção visual de ícones em uma demonstração isolada.
+As regras iniciais usam metas de 1/20/20/20; a meta coletiva nas capturas foi
+ajustada para 2 apenas para demonstrar uma medalha desbloqueada. O histórico
+anterior e a data de início da contagem são preservados na migração 0020.

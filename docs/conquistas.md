@@ -30,7 +30,7 @@ Somente administradores acessam **Conquistas → Gerenciar conquistas**. A pági
 
 Salvar uma regra ativa reavalia os eventos elegíveis já registrados desde o início de sua contagem; reduzir a meta ou reativar uma regra pode conceder medalhas imediatamente. Pausar impede novas concessões, mas o registro de resoluções continua. Abrir páginas por GET não concede medalhas ou altera dados.
 
-Cada medalha é única por regra e pessoa/equipe. Ela preserva nome, descrição, meta e versão da regra no momento da concessão. Editar uma regra não revoga nem reescreve medalhas anteriores; a conquista não é repetível a cada nova meta. Mudanças e concessões geram auditoria. O controle de versão evita salvar formulários administrativos antigos sobre regras alteradas por outra pessoa.
+Cada medalha é única por regra e pessoa/equipe. Ela preserva nome, descrição, ícone, meta e versão da regra no momento da concessão. Editar uma regra não revoga nem reescreve medalhas anteriores; a conquista não é repetível a cada nova meta. Mudanças e concessões geram auditoria. O controle de versão evita salvar formulários administrativos antigos sobre regras alteradas por outra pessoa.
 
 O técnico vê apenas seu progresso individual e o das equipes acessíveis. Solicitantes não veem dados de equipes; administradores podem consultar todas. Uma medalha coletiva pertence à equipe, não a uma lista permanente de seus antigos integrantes. A vitrine individual permanece com o usuário mesmo se ele mudar de equipe.
 
@@ -49,3 +49,13 @@ Capturas com dados fictícios. A meta coletiva foi ajustada para 2 apenas na dem
 ![Conquistas individuais e da equipe com progresso e medalhas](imagens/conquistas.png)
 
 ![Gestão de metas e histórico de concessões pelo administrador](imagens/gestao-conquistas.png)
+
+## Identidade das medalhas
+
+As conquistas têm medalhas com fitas, cores próprias e ícones diferentes: foguete na Primeira solução, troféu em 20 soluções, cronômetro em No prazo e equipe em União que resolve. O resumo da coleção mostra quantas medalhas individuais foram desbloqueadas; as conquistas coletivas aparecem separadas.
+
+Em **Gerenciar conquistas → Editar**, o administrador escolhe entre oito símbolos: foguete, troféu, cronômetro, equipe, estrela, raio, escudo e alvo. A escolha usa um catálogo fechado, sem upload de arquivos ou classes livres. Os controles são utilizáveis por teclado, e os estados são identificados por texto, além de cor.
+
+A migração **0020** atribui os ícones iniciais às regras e medalhas existentes sem alterar datas, nomes, metas, versão dos critérios, contagem ou concessões. Depois da migração, trocar o ícone de uma regra afeta apenas medalhas futuras; medalhas recebidas preservam seu símbolo.
+
+![Escolha visual do ícone pelo administrador](imagens/editor-conquista.png)

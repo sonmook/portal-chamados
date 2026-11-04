@@ -141,8 +141,6 @@ form label { color: var(--portal-ink); }
 #previa-foto:active { cursor: grabbing; }
 .editor-foto-controles input[type=range] { display: block; width: 100%; min-height: 40px; padding: 0; border: 0; background: transparent; accent-color: var(--portal-blue); }
 @media (max-width: 767.98px) { .editor-foto-layout { grid-template-columns: minmax(0, 1fr); } #previa-foto { margin-inline: auto; } }
-.conquista-icone { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; background: #edf2fa; color: #52647a; font-size: 1.7rem; }
-.conquista-obtida .conquista-icone { background: #e0f3e9; color: #17623c; }
 .conquista-card .progress { height: 8px; }
 @media (max-width: 1399.98px) {
     .portal-navbar .navbar-collapse { padding-top: 18px; }
@@ -150,3 +148,34 @@ form label { color: var(--portal-ink); }
     .portal-account { margin: 12px 0 0; padding-top: 14px; border-top: 1px solid #ffffff26; flex-wrap: wrap; }
     .portal-account form { margin-left: auto !important; }
 }
+/* Medalhas com identidade própria; cores sempre acompanhadas de texto e símbolos. */
+.conquista-violeta { --medalha: #6842b7; --medalha-suave: #f1ebfc; --medalha-clara: #b394ee; }
+.conquista-ouro { --medalha: #946100; --medalha-suave: #fff4d3; --medalha-clara: #f8cc62; }
+.conquista-turquesa { --medalha: #08766d; --medalha-suave: #e0f5ef; --medalha-clara: #65c9b8; }
+.conquista-azul { --medalha: #245cce; --medalha-suave: #e9f0ff; --medalha-clara: #8fb3fa; }
+.conquista-laranja { --medalha: #a44d15; --medalha-suave: #fff0e3; --medalha-clara: #f5ae79; }
+.conquista-card { position: relative; overflow: hidden; border-top: 4px solid var(--medalha-clara) !important; }
+.conquista-card::after { content: ''; position: absolute; width: 110px; height: 110px; border-radius: 50%; background: var(--medalha-suave); right: -50px; top: -55px; pointer-events: none; }
+.conquista-topo { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; position: relative; z-index: 1; }
+.conquista-medalha { position: relative; display: inline-grid; place-items: center; width: 88px; height: 94px; flex-shrink: 0; }
+.conquista-medalha::before, .conquista-medalha::after { content: ''; position: absolute; width: 22px; height: 40px; top: 50px; background: var(--medalha); clip-path: polygon(0 0,100% 0,100% 100%,50% 78%,0 100%); }
+.conquista-medalha::before { left: 19px; transform: rotate(16deg); }
+.conquista-medalha::after { right: 19px; transform: rotate(-16deg); }
+.conquista-medalha-centro { z-index: 1; display: grid; place-items: center; width: 72px; height: 72px; margin-top: -14px; border: 5px solid var(--medalha-clara); outline: 3px solid var(--medalha-suave); border-radius: 50%; background: var(--medalha-suave); color: var(--medalha); font-size: 1.9rem; }
+.conquista-brilho { position: absolute; z-index: 2; right: -1px; top: 0; font-size: .95rem; color: var(--medalha); }
+.conquista-estado { font-size: .75rem; font-weight: 650; color: var(--medalha); background: var(--medalha-suave); border-radius: 24px; padding: 6px 10px; }
+.conquista-chamada { font-size: .75rem; font-weight: 700; letter-spacing: .04em; color: var(--medalha); }
+.conquista-obtida { background: linear-gradient(160deg, white 72%, var(--medalha-suave)); }
+.conquista-card .progress-bar { background-color: var(--medalha); }
+.conquista-celebracao { color: var(--medalha); font-size: .85rem; font-weight: 650; padding: 10px 12px; background: var(--medalha-suave); border-radius: 8px; }
+.conquista-incentivo { font-size: .82rem; color: var(--portal-muted); }
+.conquista-pausada .conquista-medalha { filter: grayscale(1); opacity: .65; }
+.conquista-mini { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--medalha-suave); color: var(--medalha); vertical-align: middle; margin-right: 5px; flex-shrink: 0; }
+.conquista-opcoes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.conquista-opcao { display: flex; align-items: center; gap: 8px; padding: 12px; border: 1px solid var(--portal-line); border-radius: 10px; cursor: pointer; font-size: .9rem; }
+.conquista-opcao:has(input:checked) { border-color: var(--medalha); background: var(--medalha-suave); }
+.conquista-opcao:focus-within { outline: 3px solid #3876df; outline-offset: 2px; }
+@media (max-width: 399.98px) { .conquista-opcoes { grid-template-columns: minmax(0, 1fr); } }
+.conquista-colecao { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 20px 24px; border-radius: 14px; background: #eaf0fc; color: #24446e; }
+.conquista-colecao .conquista-chamada { color: #365b8e; }
+.conquista-colecao strong { font-size: 1.7rem; color: #245cce; }

@@ -130,7 +130,7 @@ assert (perfil.foto_x,perfil.foto_y,perfil.foto_zoom)==(75,25,150)
 with perfil.foto.open('rb') as imagem:
     assert imagem.read().startswith(bytes([137, 80, 78, 71]))
 assert ResolucaoConquista.objects.filter(chamado=t,usuario__username='validation-only',no_prazo=True).exists()
-assert Conquista.objects.filter(usuario__username='validation-only',regra__codigo='primeira-solucao',nome='Primeira solução').exists()
+assert Conquista.objects.filter(usuario__username='validation-only',regra__codigo='primeira-solucao',nome='Primeira solução',icone='foguete').exists()
 print('PASS: usuário, chamado, comentário, auditoria, anexo, equipe, coordenação, regras, perfil com foto, enquadramento e conquistas restaurados em destino separado.')
 """,restored=True)
         except Exception:

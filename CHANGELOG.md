@@ -2,6 +2,8 @@
 
 ## v1.3.0 — Conquistas
 
+- Medalhas com fitas, cores e ícones individuais; coleção pessoal, mensagens de incentivo e seletor administrativo com oito símbolos. Migração 0020 preserva o histórico e aplica os ícones iniciais às medalhas existentes.
+
 - Catálogo inicial de quatro conquistas individuais e por equipe, com progresso, vitrine no perfil e aviso no encerramento.
 - Gestão de nomes, descrições, metas e concessões pelo administrador; reavaliação explícita ao salvar regras ativas.
 - Resoluções elegíveis registradas uma única vez por chamado, sem contagem de histórico, transferências ou chamados próprios.
