@@ -7,7 +7,7 @@ from django.utils import timezone
 
 class MigracaoConquistasTests(TransactionTestCase):
     def tearDown(self):
-        MigrationExecutor(connection).migrate([('helpdesk', '0019_conquistas')])
+        MigrationExecutor(connection).migrate([('helpdesk', '0020_icones_conquistas')])
         super().tearDown()
 
     def test_catalogo_nao_premia_historico_nem_altera_contas_e_chamados(self):

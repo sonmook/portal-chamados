@@ -11,6 +11,7 @@ from django import forms
 from .acesso import equipes_acessiveis, integrante_ativo
 from .audit import registrar
 from .models import Chamado, Conquista, RegraConquista, ResolucaoConquista
+from .visual_conquistas import ICONES
 
 
 def eventos_regra(regra):
@@ -21,12 +22,12 @@ def eventos_regra(regra):
 def conceder(regra, destinatario_id, valor):
     campo = 'usuario_id' if regra.alvo == 'pessoa' else 'equipe_id'
     conquista, criada = Conquista.objects.get_or_create(regra=regra, **{campo: destinatario_id}, defaults={
-        'nome': regra.nome, 'descricao': regra.descricao, 'meta': regra.meta, 'versao_regra': regra.versao,
+        'nome': regra.nome, 'descricao': regra.descricao, 'meta': regra.meta, 'versao_regra': regra.versao, 'icone': regra.icone,
     })
     if criada:
         registrar('helpdesk.conquista', conquista.pk, 'concedido', {
             'regra_id': regra.pk, campo: destinatario_id, 'meta': regra.meta,
-            'versao_regra': regra.versao, 'valor': valor,
+            'versao_regra': regra.versao, 'valor': valor, 'icone': regra.icone,
         })
     return conquista if criada else None
 
@@ -75,7 +76,8 @@ def cartoes(regras, *, usuario=None, equipe=None):
     for regra in regras:
         total = eventos_regra(regra).filter(**destinatario).count()
         resultado.append({'regra': regra, 'total': total, 'percentual': min(100, total * 100 // regra.meta),
-                          'conquista': recebidas.get(regra.pk)})
+                          'conquista': recebidas.get(regra.pk), 'visual': (recebidas[regra.pk] if regra.pk in recebidas else regra).visual,
+                          'faltam': max(0, regra.meta - total)})
     return resultado
 
 
@@ -93,8 +95,9 @@ def minhas_conquistas(request):
     else:
         equipe = equipes.first()
     regras = list(RegraConquista.objects.all())
+    pessoais = cartoes([r for r in regras if r.alvo == 'pessoa'], usuario=request.user)
     return render(request, 'helpdesk/conquistas/lista.html', {
-        'pessoais': cartoes([r for r in regras if r.alvo == 'pessoa'], usuario=request.user),
+        'pessoais': pessoais, 'total_pessoais': len(pessoais), 'desbloqueadas': sum(bool(item['conquista']) for item in pessoais),
         'coletivas': cartoes([r for r in regras if r.alvo == 'equipe'], equipe=equipe) if equipe else [],
         'equipes': equipes, 'equipe_selecionada': equipe,
     })
@@ -105,9 +108,9 @@ class RegraConquistaForm(forms.ModelForm):
 
     class Meta:
         model = RegraConquista
-        fields = ['nome', 'descricao', 'meta', 'ativa']
-        labels = {'nome': 'Nome', 'descricao': 'Descrição', 'meta': 'Meta', 'ativa': 'Concessões ativas'}
-        widgets = {'nome': forms.TextInput(attrs={'class': 'form-control'}),
+        fields = ['nome', 'descricao', 'icone', 'meta', 'ativa']
+        labels = {'nome': 'Nome', 'descricao': 'Descrição', 'meta': 'Meta', 'ativa': 'Concessões ativas', 'icone': 'Ícone da conquista'}
+        widgets = {'icone': forms.Select(attrs={'class': 'form-select'}), 'nome': forms.TextInput(attrs={'class': 'form-control'}),
                    'descricao': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
                    'meta': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 100000})}
 
@@ -134,7 +137,7 @@ def editar_conquista(request, regra_id):
     if not request.user.is_superuser:
         raise PermissionDenied
     regra = get_object_or_404(RegraConquista.objects.select_for_update(), pk=regra_id)
-    antes = {c: getattr(regra, c) for c in ('nome', 'descricao', 'meta', 'ativa')}
+    antes = {c: getattr(regra, c) for c in ('nome', 'descricao', 'icone', 'meta', 'ativa')}
     form = RegraConquistaForm(request.POST if request.method == 'POST' else None, instance=regra)
     status = 200
     if request.method == 'POST' and form.is_valid():
@@ -157,4 +160,4 @@ def editar_conquista(request, regra_id):
                 reavaliar_regra(regra)
                 messages.success(request, 'Regra salva. As resoluções elegíveis desde o início da contagem foram reavaliadas.')
                 return redirect('gerenciar_conquistas')
-    return render(request, 'helpdesk/conquistas/formulario.html', {'form': form, 'regra': regra}, status=status)
+    return render(request, 'helpdesk/conquistas/formulario.html', {'form': form, 'regra': regra, 'icones': ICONES}, status=status)

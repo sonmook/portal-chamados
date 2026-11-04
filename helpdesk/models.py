@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
 from .validators import validar_anexo
+from .visual_conquistas import OPCOES_ICONES, visual
 
 
 def equipe_triagem_id():
@@ -242,6 +243,7 @@ class Perfil(models.Model):
 
 class RegraConquista(models.Model):
     codigo = models.SlugField(max_length=40, unique=True)
+    icone = models.CharField(max_length=20, choices=OPCOES_ICONES, default='trofeu')
     nome = models.CharField(max_length=80)
     descricao = models.CharField(max_length=240)
     alvo = models.CharField(max_length=10, choices=[('pessoa', 'Individual'), ('equipe', 'Equipe')])
@@ -257,6 +259,10 @@ class RegraConquista(models.Model):
 
     def __str__(self):
         return self.nome
+
+    @property
+    def visual(self):
+        return visual(self.icone)
 
 
 class ResolucaoConquista(models.Model):
@@ -274,6 +280,7 @@ class Conquista(models.Model):
     regra = models.ForeignKey(RegraConquista, on_delete=models.PROTECT)
     usuario = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, related_name='conquistas')
     equipe = models.ForeignKey(Equipe, on_delete=models.PROTECT, null=True, blank=True, related_name='conquistas')
+    icone = models.CharField(max_length=20, choices=OPCOES_ICONES, default='trofeu')
     nome = models.CharField(max_length=80)
     descricao = models.CharField(max_length=240)
     meta = models.PositiveIntegerField()
@@ -287,3 +294,7 @@ class Conquista(models.Model):
             models.UniqueConstraint(fields=['regra', 'usuario'], condition=models.Q(usuario__isnull=False), name='conquista_unica_pessoa'),
             models.UniqueConstraint(fields=['regra', 'equipe'], condition=models.Q(equipe__isnull=False), name='conquista_unica_equipe'),
         ]
+
+    @property
+    def visual(self):
+        return visual(self.icone)
