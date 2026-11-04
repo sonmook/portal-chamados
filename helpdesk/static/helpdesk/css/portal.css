@@ -128,3 +128,10 @@ form label { color: var(--portal-ink); }
     .portal-username { max-width: 110px; }
 }
 @media (max-width: 991.98px) { .portal-account { flex-wrap: wrap; justify-content: flex-start; } .portal-account form { margin-left: auto !important; } }
+.portal-profile-link { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; color: #e0e8f3; text-decoration: none; border-radius: 8px; }
+.portal-profile-link:hover { color: white; text-decoration: underline; }
+.portal-avatar { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: #dbe7fd; color: #173f88; font-size: .85rem; font-weight: 700; overflow: hidden; vertical-align: middle; }
+.portal-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.portal-avatar [hidden] { display: none; }
+.perfil-resumo .portal-avatar { width: 80px; height: 80px; font-size: 1.8rem; }
+.portal-profile-link .portal-username { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

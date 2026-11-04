@@ -139,7 +139,7 @@ def lista_chamados(request):
         )
     elif ordenacao == 'interacao_recente':
         chamados_list = chamados_list.order_by(Coalesce('ultima_interacao_em', 'data_criacao').desc(), '-pk')
-    chamados_list = chamados_list.select_related('solicitante', 'tecnico', 'equipe')
+    chamados_list = chamados_list.select_related('solicitante', 'solicitante__perfil', 'tecnico', 'tecnico__perfil', 'equipe')
 
     # Paginação (10 itens por página)
     paginator = Paginator(chamados_list, 10)
@@ -215,7 +215,7 @@ def detalhes_chamado(request, id):
         form = ComentarioForm()
     return render(request, 'helpdesk/detalhes_chamado.html', {
         'chamado': chamado,
-        'comentarios': chamado.comentarios.all().order_by('data_criacao'),
+        'comentarios': chamado.comentarios.select_related('autor', 'autor__perfil').all().order_by('data_criacao'),
         'form': form,
         'ativo': ativo,
         'pode_responder': pode_responder,

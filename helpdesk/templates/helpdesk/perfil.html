@@ -1,0 +1,23 @@
+{% extends 'helpdesk/equipes/base.html' %}
+{% block titulo %}Meu Perfil{% endblock %}
+{% block conteudo %}
+<div class="mb-4"><h1 class="h2">Meu Perfil</h1><p class="text-muted">Personalize seus dados e sua foto no Portal de TI.</p></div>
+<div class="row g-4"><div class="col-lg-8"><div class="card"><div class="card-body p-4">
+<div class="d-flex align-items-center gap-3 mb-4 perfil-resumo">{% include 'helpdesk/componentes/avatar.html' with pessoa=request.user %}<div><h2 class="h5 mb-1">{{ request.user.get_full_name|default:request.user.username }}</h2><span class="text-muted">@{{ request.user.username }}</span></div></div>
+<form method="post" enctype="multipart/form-data">{% csrf_token %}{{ form.versao }}{{ form.versao.errors }}
+{{ form.non_field_errors }}
+<div class="row g-3">
+{% for campo in form.visible_fields %}{% if campo.name != 'remover_foto' %}
+<div class="{% if campo.name == 'first_name' or campo.name == 'last_name' %}col-md-6{% else %}col-12{% endif %}">
+{{ campo.label_tag }}{{ campo.errors }}{{ campo }}{% if campo.help_text %}<div class="form-text">{{ campo.help_text }}</div>{% endif %}</div>
+{% endif %}{% endfor %}
+<div class="col-12"><div class="form-check">{{ form.remover_foto }}{{ form.remover_foto.label_tag }}</div>{{ form.remover_foto.errors }}</div>
+</div><p class="text-muted small mt-3">A foto poderá ser vista por usuários autenticados e aparecerá nas conversas. Os demais campos complementares ficam nesta página, para seu cadastro pessoal.</p>
+<div class="d-flex flex-wrap gap-2 mt-4"><button class="btn btn-primary" type="submit">Salvar perfil</button><a class="btn btn-outline-secondary" href="{% url 'lista_chamados' %}">Voltar aos chamados</a></div>
+</form></div></div></div>
+<aside class="col-lg-4"><div class="card"><div class="card-body p-4"><h2 class="h5">Minha conta</h2>
+<dl><dt>Usuário de login</dt><dd class="text-break">{{ request.user.username }}</dd><dt>E-mail</dt><dd class="text-break">{{ request.user.email|default:'Não informado' }}</dd><dt>Nível de acesso</dt><dd>{% if request.user.is_superuser %}Administrador{% elif request.user.is_staff %}Técnico de TI{% else %}Solicitante{% endif %}</dd></dl>
+<p class="text-muted small">Login, e-mail e permissões são gerenciados pelo administrador.</p>
+<h2 class="h5 mt-4">Minhas equipes</h2><ul class="list-unstyled">{% for vinculo in vinculos %}<li class="mb-2">{{ vinculo.equipe.nome }}{% if vinculo.coordenador %} <span class="badge bg-primary">Coordenador</span>{% endif %}{% if not vinculo.equipe.ativa %} <span class="badge bg-secondary">Inativa</span>{% endif %}</li>{% empty %}<li class="text-muted">Nenhuma equipe vinculada.</li>{% endfor %}</ul>
+</div></div></aside></div>
+{% endblock %}

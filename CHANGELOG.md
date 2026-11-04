@@ -1,5 +1,13 @@
 # Histórico de atualizações
 
+## Preparação da v1.2.0 — Meu Perfil
+
+- Foto, nome, sobrenome, cargo, departamento e ramal editáveis pelo próprio usuário; conta, permissões e equipes protegidas.
+- Fotos normalizadas em PNG sem metadados, com limites de tamanho/dimensões e acesso autenticado; avatar no cabeçalho e nas mensagens, com iniciais como fallback.
+- Alterações auditadas sem conteúdo pessoal, controle de versão e limpeza de arquivos após confirmação da gravação.
+- Migração 0017 cria perfis; backups verificam as fotos sem perder compatibilidade com cópias antigas. Pillow adicionado ao lockfile com hashes.
+- Documentação em `docs/perfis.md`; sem publicação de tag ou Release nesta entrega.
+
 ## v1.1.0 — Equipes, encaminhamento e identidade visual
 
 - Versão centralizada em `VERSION` e exibida no portal e no login.

@@ -82,8 +82,14 @@ import django
 django.setup()
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
-from helpdesk.models import Chamado, Comentario, IntegranteEquipe, RegraEncaminhamento
+from helpdesk.models import Chamado, Comentario, IntegranteEquipe, RegraEncaminhamento, Perfil
 user=User.objects.create_user(username='validation-only',is_staff=True)
+from io import BytesIO
+from PIL import Image
+from django.core.files.base import ContentFile
+foto=BytesIO();Image.new('RGB',(32,32),'blue').save(foto,'PNG')
+perfil=Perfil.objects.create(usuario=user,cargo='Validação')
+perfil.foto.save('fixture.png',ContentFile(foto.getvalue()))
 t=Chamado.objects.create(titulo='Restauração isolada',descricao='Fixture',solicitante=user,tecnico=user)
 IntegranteEquipe.objects.create(equipe=t.equipe,usuario=user,coordenador=True)
 RegraEncaminhamento.objects.filter(categoria='Rede').update(ativa=False,versao=7)
@@ -98,7 +104,7 @@ Comentario.objects.create(chamado=t,autor=user,texto='Fixture',anexo=SimpleUploa
 import django
 django.setup()
 from django.contrib.auth.models import User
-from helpdesk.models import Chamado, Comentario, RegistroAuditoria, IntegranteEquipe, RegraEncaminhamento
+from helpdesk.models import Chamado, Comentario, RegistroAuditoria, IntegranteEquipe, RegraEncaminhamento, Perfil
 assert User.objects.filter(username='validation-only').exists()
 assert Chamado.objects.filter(titulo='Restauração isolada').exists()
 comment=Comentario.objects.get(texto='Fixture')
@@ -110,7 +116,11 @@ assert t.tecnico.username=='validation-only'
 assert IntegranteEquipe.objects.filter(equipe=t.equipe,usuario=t.tecnico,coordenador=True).exists()
 regra=RegraEncaminhamento.objects.get(categoria='Rede')
 assert not regra.ativa and regra.versao==7
-print('PASS: usuário, chamado, comentário, auditoria, anexo, equipe, coordenação e regra personalizada restaurados em destino separado.')
+perfil=Perfil.objects.get(usuario__username='validation-only')
+assert perfil.cargo=='Validação'
+with perfil.foto.open('rb') as imagem:
+    assert imagem.read().startswith(bytes([137, 80, 78, 71]))
+print('PASS: usuário, chamado, comentário, auditoria, anexo, equipe, coordenação, regra personalizada e perfil com foto restaurados em destino separado.')
 """,restored=True)
         except Exception:
             subprocess.run([*base,'logs','--tail=60','app','proxy'],env=docker_env,cwd=ROOT)
