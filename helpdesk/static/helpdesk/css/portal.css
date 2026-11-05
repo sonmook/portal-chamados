@@ -319,3 +319,51 @@ form label { color: var(--portal-ink); }
 .perfil-observacao { display: flex; align-items: baseline; gap: 8px; font-size: .72rem; color: #68778a; }
 @media (max-width: 991.98px) { .perfil-completo { grid-template-columns: minmax(0,220px) minmax(0,1fr); gap: 28px; } .perfil-foto-grande .portal-avatar { width: 190px; height: 190px; } .perfil-painel { padding: 20px; } .perfil-informacoes { grid-template-columns: minmax(0,1fr); gap: 18px; } }
 @media (max-width: 767.98px) { .perfil-completo { grid-template-columns: minmax(0,1fr); gap: 24px; } .perfil-foto-grande .portal-avatar { width: 160px; height: 160px; font-size: 4rem; } .perfil-identidade { max-width: 420px; width: 100%; } .perfil-vitrine-discreta { padding: 18px 0 0; } .perfil-pagina-titulo { margin-bottom: 24px; } }
+/* Coleção discreta: título simples, medalhas pequenas e dados sob demanda. */
+.colecao-discreta { max-width: 1160px; margin-inline: auto; }
+.conquistas-cabecalho { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; padding: 8px 0 22px; }
+.conquistas-cabecalho h1 { font-size: 1.35rem; font-weight: 650; margin: 0 0 7px; }
+.conquistas-cabecalho p { font-size: .83rem; color: #68778a; margin: 0; }
+.conquistas-cabecalho-acoes { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.conquistas-total { font-size: .78rem; color: #52647a; }
+.conquistas-total strong { font-weight: 650; color: #293d57; }
+.conquistas-cabecalho-acoes a { font-size: .73rem; text-decoration: none; }
+.colecao-discreta .conquistas-menu { border: 0; border-bottom: 1px solid var(--portal-line); border-radius: 0; background: transparent; padding: 0 0 8px; margin-bottom: 24px; gap: 8px; }
+.colecao-discreta .conquistas-menu a { background: none; color: #52647a; font-size: .78rem; font-weight: 450; min-height: 38px; padding: 6px 10px; }
+.colecao-discreta .conquistas-menu a:first-child { color: #293d57; font-weight: 650; }
+.colecao-discreta .conquistas-menu a:hover { background: #edf1f6; }
+.colecao-discreta .conquistas-menu a > span { background: #edf1f6; font-size: .65rem; padding: 1px 5px; }
+.colecao-discreta .conquistas-secao h2 { font-size: 1rem; font-weight: 650; margin: 0; }
+.colecao-discreta .conquistas-secao-titulo { margin-bottom: 14px; }
+.colecao-discreta .conquistas-secao-titulo p { font-size: .75rem; margin-top: 5px; }
+.colecao-discreta .conquistas-equipe-form select { font-size: .75rem; min-height: 34px; }
+.colecao-discreta .conquistas-equipe-form .btn { min-height: 34px; font-size: .75rem; padding: 4px 12px; border-color: #cbd6e3; color: #40516a; background: transparent; }
+.conquistas-grade { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-bottom: 28px; }
+.conquista-item { display: flex; flex-direction: column; min-width: 0; padding: 16px; border: 1px solid #e0e6ee; border-radius: 10px; background: #fff; }
+.conquista-item-cabecalho { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 14px; }
+.conquista-item-titulo { flex: 1; min-width: 0; }
+.conquista-item h3 { font-size: .86rem; font-weight: 650; margin: 0 0 5px; overflow-wrap: anywhere; }
+.conquista-item-titulo p { font-size: .69rem; color: #68778a; margin: 0 0 5px; }
+.conquista-item-estado { font-size: .67rem; color: #68778a; }
+.conquista-item-obtida .conquista-item-estado { color: #36684f; }
+.colecao-discreta .medalha-colecao { width: 64px; flex-shrink: 0; }
+.colecao-discreta .medalha-colecao summary { padding: 0; }
+.colecao-discreta .medalha-colecao .medalha-arte { width: 64px; height: 64px; filter: none; }
+.colecao-discreta .medalha-colecao.medalha-pendente .medalha-arte { filter: grayscale(.9); opacity: .65; }
+.colecao-discreta .medalha-ver { font-size: .6rem; margin-top: 2px; }
+.colecao-discreta .medalha-colecao[open] { width: 100%; }
+.colecao-discreta .medalha-ficha { width: 100%; max-width: 100%; font-size: .75rem; padding: 12px; background: #f8fafd; }
+.conquista-item-rodape { margin-top: auto; }
+.conquista-item-progresso { display: flex; justify-content: space-between; gap: 10px; font-size: .7rem; color: #52647a; margin-bottom: 6px; }
+.conquista-item .progress { height: 4px; background: #edf1f6; }
+.conquista-item .progress-bar { background: #7f96b3; }
+.conquista-item-nota, .conquista-item-data { font-size: .66rem; color: #68778a; margin: 8px 0 0; line-height: 1.6; }
+.conquista-item-data { padding-top: 10px; border-top: 1px solid #edf1f6; }
+.conquista-item-nivel { font-size: .75rem; font-weight: 600; }
+.colecao-discreta .trilha-niveis { font-size: .75rem; }
+.colecao-discreta .conquistas-regras { background: transparent; border: 0; border-top: 1px solid var(--portal-line); border-radius: 0; }
+.colecao-discreta .conquistas-regras summary { font-size: .76rem; font-weight: 450; padding-inline: 0; }
+.colecao-discreta .conquistas-regras > div { padding-inline: 0; font-size: .76rem; }
+.colecao-discreta .conquistas-voltar { font-size: .76rem; }
+@media (max-width: 1199.98px) { .conquistas-grade { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 767.98px) { .conquistas-grade { grid-template-columns: minmax(0,1fr); } .conquistas-cabecalho-acoes { align-items: flex-start; } .colecao-discreta .conquistas-menu { gap: 4px; } }

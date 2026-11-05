@@ -1,6 +1,6 @@
 # Conquistas — v1.4.0
 
-Acesse **Conquistas** para acompanhar o progresso individual e das equipes acessíveis. O cabeçalho resume as medalhas recebidas. Use os atalhos **Minha coleção**, **Da equipe** e **Como conquistar** para navegar; os critérios gerais ficam em um painel expansível. A coleção agrupa os níveis de cada conquista e aponta a próxima medalha. A visualização de **Meu Perfil** mostra todas as medalhas individuais do usuário, em miniaturas discretas de 60 px na lateral, abaixo dos dados profissionais. A edição dos dados e da foto fica em **Editar perfil**, separada da coleção. As oito ilustrações SVG são originais e servidas pelo portal. Selecione uma medalha para ver nome, descrição, meta registrada e data da concessão; os detalhes funcionam por toque, mouse e teclado, mesmo sem JavaScript. Na coleção, medalhas pendentes têm aparência discreta, além do estado em texto e do progresso; o encerramento avisa quando um novo nível é desbloqueado.
+Acesse **Conquistas** para acompanhar o progresso individual e das equipes acessíveis. A coleção tem um cabeçalho simples, resumo de medalhas e cards compactos com ilustrações de 64 px. Descrições completas e critérios ficam nos detalhes de cada medalha. Use os atalhos **Minha coleção**, **Da equipe** e **Como conquistar** para navegar; os critérios gerais ficam em um painel expansível. A coleção agrupa os níveis de cada conquista e aponta a próxima medalha. A visualização de **Meu Perfil** mostra todas as medalhas individuais do usuário, em miniaturas discretas de 60 px na lateral, abaixo dos dados profissionais. A edição dos dados e da foto fica em **Editar perfil**, separada da coleção. As oito ilustrações SVG são originais e servidas pelo portal. Selecione uma medalha para ver nome, descrição, meta registrada e data da concessão; os detalhes funcionam por toque, mouse e teclado, mesmo sem JavaScript. Na coleção, medalhas pendentes têm aparência discreta, além do estado em texto e do progresso; o encerramento avisa quando um novo nível é desbloqueado.
 
 ## Catálogo pronto para usar
 
@@ -64,7 +64,7 @@ As medalhas exibidas pertencem somente ao usuário autenticado; a vitrine não t
 
 Capturas com contas e dados fictícios; metas reduzidas apenas para demonstrar a evolução.
 
-![Coleção com resumo, emblemas e atalhos por seção](imagens/conquistas.png)
+![Coleção discreta com medalhas menores e atalhos por seção](imagens/conquistas.png)
 
 ![Prévia da coleção em celular](imagens/conquistas-mobile.png)
 
