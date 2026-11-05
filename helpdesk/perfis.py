@@ -20,7 +20,7 @@ from .models import Perfil, IntegranteEquipe, Conquista
 def meu_perfil(request):
     return render(request, 'helpdesk/perfil.html', {
         'perfil': Perfil.objects.filter(usuario=request.user).first(),
-        'conquistas': list(Conquista.objects.filter(usuario=request.user)),
+        'conquistas': list(Conquista.objects.filter(usuario=request.user).select_related('regra')),
         'vinculos': list(IntegranteEquipe.objects.filter(usuario=request.user).select_related('equipe').order_by('equipe__nome')),
     })
 

@@ -1,5 +1,13 @@
 # Histórico de atualizações
 
+## Detalhes flutuantes nas conquistas e no perfil
+
+- Coleção mostra apenas ícone e nome de cada conquista; informações e progresso ficam no painel flutuante.
+- Mesma interação nas medalhas do perfil, sem alterar seu tamanho ou posição.
+- Abertura por mouse, foco e toque; permanência ao mover para o painel, fechamento por Escape/clique fora e posicionamento ajustado ao espaço disponível.
+- Painel com rolagem e devolução de foco pelo teclado; abertura não aumenta cards nem desloca o perfil.
+- Dados e critérios preservados, sem migração ou novas dependências. Documentação e capturas atualizadas.
+
 ## Coleção de conquistas mais discreta
 
 - Cabeçalho simples substitui o banner; cards compactos, medalhas de 64 px e cores neutras no progresso e na navegação.
