@@ -25,13 +25,18 @@ class ConstrutorTests(ConquistasFixtureMixin, TestCase):
             token=self.client.get(reverse('prever_plano',args=[plano.pk])).context['impacto']['token']
         return self.client.post(reverse('publicar_plano',args=[plano.pk]),{'confirmacao':token})
 
-    def test_criar_e_salvar_rascunho_nao_publica_nem_concede(self):
+    def test_catalogo_nao_permite_criacao_por_get_ou_post(self):
         self.client.force_login(self.admin)
-        r=self.client.post(reverse('criar_plano'),self.dados())
-        self.assertEqual(r.status_code,302)
-        p=PlanoConquista.objects.get();self.assertEqual(p.estado,'rascunho')
-        self.assertEqual(p.versao,1);self.assertFalse(p.niveis.exists())
-        self.assertFalse(Conquista.objects.exists());self.assertEqual(RegraConquista.objects.count(),4)
+        for metodo in ('get','post'):
+            r=getattr(self.client,metodo)(reverse('criar_plano'),self.dados() if metodo=='post' else {})
+            self.assertEqual(r.status_code,403)
+        self.assertFalse(PlanoConquista.objects.exists())
+        self.assertEqual(RegraConquista.objects.count(),4)
+        self.assertFalse(Conquista.objects.exists())
+        r=self.client.get(reverse('gerenciar_conquistas'))
+        self.assertContains(r,'Catálogo de conquistas')
+        self.assertNotContains(r,'Criar conquista')
+        self.assertNotContains(r,'Configurações existentes')
 
     def test_ordem_e_limites_dos_niveis_e_metricas_fechadas(self):
         for extra in [{'prata':1},{'ouro':2},{'bronze':0},{'ouro':100001},{'prata':''},{'ouro':''},
@@ -222,11 +227,13 @@ class ConstrutorTests(ConquistasFixtureMixin, TestCase):
         self.assertEqual(Conquista.objects.filter(regra__plano=p).count(),1)
         self.assertFalse(Conquista.objects.filter(regra__plano=p,usuario=self.outro).exists())
 
-    def test_auditoria_com_falha_reverte_criacao_do_rascunho(self):
-        self.client.force_login(self.admin)
-        with patch('helpdesk.construtor_conquistas.registrar',side_effect=RuntimeError('falha')):
-            with self.assertRaises(RuntimeError):self.client.post(reverse('criar_plano'),self.dados())
-        self.assertFalse(PlanoConquista.objects.exists())
+    def test_configuracoes_anteriores_continuam_acessiveis_sem_criacao(self):
+        p=self.plano();self.publicar(p)
+        r=self.client.get(reverse('gerenciar_conquistas'))
+        self.assertContains(r,'Configurações existentes')
+        self.assertContains(r,p.nome)
+        self.assertNotContains(r,'Criar conquista')
+        self.assertEqual(self.client.get(reverse('prever_plano',args=[p.pk])).status_code,200)
 
     def test_revisao_publicada_pausada_nao_pode_ser_retomada_como_trilha(self):
         p=self.plano(regra_origem=self.regra,base_versao=self.regra.versao,

@@ -2,32 +2,17 @@
 
 Acesse **Conquistas** para acompanhar o progresso individual e das equipes acessíveis. A coleção agrupa os níveis de cada conquista e aponta a próxima medalha. O perfil mostra até três medalhas individuais recentes; o encerramento avisa quando um novo nível é desbloqueado.
 
-## Criar uma conquista
+## Catálogo pronto para usar
 
-Somente administradores acessam **Conquistas → Gerenciar conquistas → Criar conquista**.
+As conquistas já vêm cadastradas. Não é necessário preencher formulários, criar regras ou publicar conquistas para começar: as resoluções elegíveis geram progresso automaticamente.
 
-1. **Defina a regra:** quem recebe (técnico ou equipe), o que conta (resoluções elegíveis ou dentro do SLA) e quando começa a contagem.
-2. **Defina as metas:** Bronze, Prata e Ouro com números crescentes entre 1 e 100.000. Exemplo: 5, 20 e 50 resoluções dentro do SLA. As metas são acumuladas, sem janela mensal.
-3. **Personalize:** nome, descrição e um dos oito símbolos. A descrição explica a conquista; o critério é determinado pelos campos anteriores.
-4. **Salve o rascunho:** isso não cria medalhas nem altera regras publicadas.
-5. **Confira a prévia:** ela mostra os critérios e quantas novas medalhas cada nível concederia. Confirme somente após revisar o impacto.
+**Conquistas → Gerenciar conquistas** permite ao administrador consultar critérios e concessões. O botão de criação foi removido e o endereço antigo recusa GET e POST, inclusive para administradores.
 
-**A partir da publicação** começa do zero, sem eventos anteriores. **Incluir eventos elegíveis já registrados** usa o histórico desde a instalação das conquistas: chamados antigos sem evento não são analisados nem convertidos em progresso.
+As configurações criadas antes desta mudança permanecem acessíveis, com seus níveis e medalhas. Suas revisões continuam passando por prévia e confirmação; nenhuma configuração ou medalha é excluída. Trocar a aparência não concede medalhas. Pausas preservam o progresso, e retomadas exigem confirmação do impacto. Não é possível criar novas conquistas pelo portal.
 
-A confirmação assinada vale por 15 minutos. Se o rascunho, a regra original ou os destinatários elegíveis mudarem, a publicação exige uma nova revisão. Repetir uma publicação concluída não duplica medalhas. Abrir páginas nunca concede medalhas.
+## Conquistas predefinidas
 
-## Após publicar
-
-- **Editar aparência:** muda nome, descrição e ícone para futuras medalhas, sem reavaliar progresso nem reescrever as recebidas.
-- **Pausar concessões:** preserva medalhas e início da contagem. Os eventos de resolução continuam sendo registrados.
-- **Retomar:** exige revisar e confirmar o impacto das resoluções acumuladas durante a pausa.
-- **Mudar critérios ou metas de uma nova conquista:** crie outra conquista. A regra publicada permanece fixa, preservando o significado das medalhas.
-
-Uma conquista pode ser publicada pausada. Seus níveis ficam disponíveis sem concessões até a retomada confirmada.
-
-## Catálogo anterior e migração
-
-As quatro conquistas da v1.3.0 continuam independentes, sem conversão automática em níveis:
+As quatro conquistas iniciais são:
 
 | Conquista | Destinatário | Meta inicial |
 | --- | --- | --- |
@@ -64,9 +49,5 @@ Faça backup, atualize o código, aplique `python manage.py migrate`, colete est
 Capturas com contas e dados fictícios; metas reduzidas apenas para demonstrar a evolução.
 
 ![Coleção e progresso por nível](imagens/conquistas.png)
-
-![Regra, níveis e identidade no construtor](imagens/construtor-conquista.png)
-
-![Prévia do impacto antes da confirmação](imagens/previa-conquista.png)
 
 ![Gestão de conquistas e histórico](imagens/gestao-conquistas.png)
