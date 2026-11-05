@@ -61,8 +61,8 @@ class VisualConquistasTests(TestCase):
     def test_tela_tem_icones_progresso_textual_e_estado_pausado(self):
         self.client.force_login(self.user)
         r=self.client.get(reverse('minhas_conquistas'))
-        self.assertContains(r,'bi-rocket-takeoff-fill');self.assertContains(r,'bi-trophy-fill')
-        self.assertContains(r,'bi-stopwatch-fill');self.assertContains(r,'bi-people-fill')
+        self.assertContains(r,'helpdesk/conquistas/foguete.svg');self.assertContains(r,'helpdesk/conquistas/trofeu.svg')
+        self.assertContains(r,'helpdesk/conquistas/cronometro.svg');self.assertContains(r,'helpdesk/conquistas/equipe.svg')
         self.assertContains(r,'Falta só 1 resolução elegível')
         RegraConquista.objects.filter(pk=self.regra.pk).update(ativa=False)
         self.assertContains(self.client.get(reverse('minhas_conquistas')),'Pausada')
@@ -73,3 +73,19 @@ class VisualConquistasTests(TestCase):
         with patch('helpdesk.conquistas.registrar',side_effect=RuntimeError('falha')):
             with self.assertRaises(RuntimeError):self.client.post(reverse('editar_conquista',args=[self.regra.pk]),self.dados(icone='raio'))
         self.regra.refresh_from_db();self.assertEqual(self.regra.icone,'foguete')
+
+    def test_vitrine_do_perfil_mostra_medalha_e_detalhes_preservados(self):
+        self.resolver()
+        medalha=Conquista.objects.get(usuario=self.user)
+        RegraConquista.objects.filter(pk=self.regra.pk).update(nome='Nome futuro',icone='estrela',meta=9)
+        self.client.force_login(self.user)
+        r=self.client.get(reverse('meu_perfil'))
+        self.assertContains(r,'perfil-vitrine')
+        self.assertContains(r,'helpdesk/conquistas/foguete.svg')
+        self.assertContains(r,medalha.nome)
+        self.assertContains(r,'Conquistada em')
+        self.assertNotContains(r,'Nome futuro')
+        self.client.force_login(self.cliente)
+        r=self.client.get(reverse('meu_perfil'))
+        self.assertContains(r,'Suas medalhas aparecerão aqui')
+        self.assertNotContains(r,'helpdesk/conquistas/foguete.svg')

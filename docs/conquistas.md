@@ -1,6 +1,6 @@
 # Conquistas — v1.4.0
 
-Acesse **Conquistas** para acompanhar o progresso individual e das equipes acessíveis. O cabeçalho resume as medalhas recebidas. Use os atalhos **Minha coleção**, **Da equipe** e **Como conquistar** para navegar; os critérios gerais ficam em um painel expansível. A coleção agrupa os níveis de cada conquista e aponta a próxima medalha. O perfil mostra até três medalhas individuais recentes; o encerramento avisa quando um novo nível é desbloqueado.
+Acesse **Conquistas** para acompanhar o progresso individual e das equipes acessíveis. O cabeçalho resume as medalhas recebidas. Use os atalhos **Minha coleção**, **Da equipe** e **Como conquistar** para navegar; os critérios gerais ficam em um painel expansível. A coleção agrupa os níveis de cada conquista e aponta a próxima medalha. O perfil mostra até três medalhas individuais recentes em uma vitrine abaixo do nome e da foto. As oito ilustrações SVG são originais e servidas pelo portal. Selecione uma medalha para ver nome, descrição, meta registrada e data da concessão; os detalhes funcionam por toque, mouse e teclado, mesmo sem JavaScript. Na coleção, medalhas pendentes têm aparência discreta, além do estado em texto e do progresso; o encerramento avisa quando um novo nível é desbloqueado.
 
 ## Catálogo pronto para usar
 
@@ -53,6 +53,12 @@ O técnico vê seu progresso individual e as equipes acessíveis; solicitantes n
 Mudanças e concessões são auditadas. Formulários antigos são recusados pelo controle de versão. Regras, planos, eventos e medalhas são somente consultáveis no Django Admin, sem edição ou concessão manual. O registro do evento e as medalhas integram a transação do encerramento: falhas revertem toda a operação.
 
 Faça backup, atualize o código, aplique `python manage.py migrate`, colete estáticos em produção e reinicie. O backup inclui planos, níveis, eventos e medalhas; a homologação verifica a restauração em destino separado. [Notas da v1.4.0](releases/v1.4.0.md).
+
+## Vitrine no perfil
+
+As medalhas exibidas pertencem somente ao usuário autenticado; a vitrine não transforma o perfil em uma página pública. A apresentação preserva os metadados da concessão, mesmo após alterações na regra.
+
+![Vitrine de medalhas no perfil com dados fictícios](imagens/perfil-conquistas.png)
 
 ## Demonstração
 
