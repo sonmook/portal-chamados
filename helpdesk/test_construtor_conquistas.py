@@ -31,7 +31,7 @@ class ConstrutorTests(ConquistasFixtureMixin, TestCase):
             r=getattr(self.client,metodo)(reverse('criar_plano'),self.dados() if metodo=='post' else {})
             self.assertEqual(r.status_code,403)
         self.assertFalse(PlanoConquista.objects.exists())
-        self.assertEqual(RegraConquista.objects.count(),4)
+        self.assertEqual(RegraConquista.objects.count(),12)
         self.assertFalse(Conquista.objects.exists())
         r=self.client.get(reverse('gerenciar_conquistas'))
         self.assertContains(r,'Catálogo de conquistas')

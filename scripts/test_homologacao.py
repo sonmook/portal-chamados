@@ -126,6 +126,7 @@ django.setup()
 from django.contrib.auth.models import User
 from helpdesk.models import Chamado, Comentario, RegistroAuditoria, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista
 assert User.objects.filter(username='validation-only').exists()
+assert RegraConquista.objects.filter(codigo='guardiao-sla',meta=50,icone='escudo').exists()
 assert Chamado.objects.filter(titulo='Restauração isolada').exists()
 comment=Comentario.objects.get(texto='Fixture')
 assert comment.anexo.read()==b'%PDF-1.7 fixture'

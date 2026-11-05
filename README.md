@@ -17,7 +17,7 @@ As capturas da galeria principal foram registradas na **v1.1.0**, com a marca at
 
 ## Conquistas
 
-O portal já vem com **quatro conquistas predefinidas**, concedidas automaticamente: Primeira solução, 20 soluções, No prazo e União que resolve. Acompanhe o progresso em **Conquistas** e as medalhas no perfil. Não há opção de criar novas conquistas. O administrador consulta o catálogo e gerencia as configurações existentes sem apagar medalhas recebidas. [Critérios e operação](docs/conquistas.md).
+O portal já vem com **12 conquistas predefinidas**, concedidas automaticamente: marcos individuais de resoluções, atendimento dentro do SLA e resultados coletivos. Entre elas: Missão cumprida, Centurião do suporte, Guardião do SLA e Força-tarefa. Acompanhe o progresso em **Conquistas** e as medalhas no perfil. Não há opção de criar novas conquistas. O administrador consulta o catálogo e gerencia as configurações existentes sem apagar medalhas recebidas. [Critérios e operação](docs/conquistas.md).
 
 ![Coleção de conquistas e progresso com dados fictícios](docs/imagens/conquistas.png)
 

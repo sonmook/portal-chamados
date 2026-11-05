@@ -1,5 +1,11 @@
 # Histórico de atualizações
 
+## Ampliação do catálogo de conquistas
+
+- Oito novas conquistas prontas para uso: marcos individuais, atendimento dentro do SLA e resultados de equipe; catálogo passa a ter 12 conquistas.
+- Migração 0022 inicia a contagem das novas regras na atualização, sem premiação retroativa nem alterações nas medalhas existentes.
+- Criação manual permanece desabilitada.
+
 ## Ajustes após a v1.4.0 — Catálogo predefinido
 
 - Criação de conquistas desabilitada na interface e no servidor, inclusive para administradores.
