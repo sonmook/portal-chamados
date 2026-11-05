@@ -1,5 +1,12 @@
 # Histórico de atualizações
 
+## Refinamento visual — Coleção de conquistas
+
+- Cabeçalho com resumo de medalhas e navegação por coleção pessoal, equipe e critérios.
+- Cards mais compactos, emblemas hexagonais, estados por texto e progresso com leitura mais clara.
+- Regras em painel expansível nativo e navegação por âncoras, sem dependência de JavaScript.
+- Ícone de troféu no menu; critérios, contagem, permissões e medalhas preservados.
+
 ## Ampliação do catálogo de conquistas
 
 - Oito novas conquistas prontas para uso: marcos individuais, atendimento dentro do SLA e resultados de equipe; catálogo passa a ter 12 conquistas.
