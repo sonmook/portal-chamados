@@ -1,5 +1,12 @@
 # Histórico de atualizações
 
+## Coleção de conquistas mais discreta
+
+- Cabeçalho simples substitui o banner; cards compactos, medalhas de 64 px e cores neutras no progresso e na navegação.
+- Descrições completas, critérios e datas de início ficam nos detalhes sob demanda, acessíveis por toque, mouse e teclado sem JavaScript.
+- Estados continuam identificados por texto. Critérios, concessões, permissões e perfil preservados; sem migração.
+- Capturas desktop/mobile e documentação atualizadas.
+
 ## Perfil discreto — Visualização e edição separadas
 
 - Meu Perfil passa a ser uma página de consulta com foto, dados profissionais, conta, equipes e coleção completa de medalhas em miniaturas de 60 px na lateral.
