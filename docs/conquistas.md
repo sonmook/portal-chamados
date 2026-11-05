@@ -12,7 +12,7 @@ As configurações criadas antes desta mudança permanecem acessíveis, com seus
 
 ## Conquistas predefinidas
 
-As quatro conquistas iniciais são:
+O catálogo contém 12 conquistas. As metas abaixo são os valores iniciais; configurações administrativas anteriores são preservadas:
 
 | Conquista | Destinatário | Meta inicial |
 | --- | --- | --- |
@@ -20,6 +20,16 @@ As quatro conquistas iniciais são:
 | 20 soluções | Técnico | 20 resoluções elegíveis |
 | No prazo | Técnico | 20 resoluções dentro do SLA |
 | União que resolve | Equipe | 20 resoluções dentro do SLA |
+| Missão cumprida | Técnico | 5 resoluções elegíveis |
+| Resolvedor de elite | Técnico | 50 resoluções elegíveis |
+| Centurião do suporte | Técnico | 100 resoluções elegíveis |
+| No ritmo certo | Técnico | 5 resoluções dentro do SLA |
+| Guardião do SLA | Técnico | 50 resoluções dentro do SLA |
+| Sintonia de equipe | Equipe | 10 resoluções elegíveis |
+| Força-tarefa | Equipe | 50 resoluções elegíveis |
+| Operação centenária | Equipe | 100 resoluções elegíveis |
+
+A migração **0022** adiciona as oito novas conquistas, cada uma com ícone próprio escolhido do catálogo visual. A contagem dessas conquistas começa na aplicação da migração. Eventos anteriores não geram progresso nem medalhas para elas. As quatro regras anteriores mantêm suas metas, datas, ícones e histórico. A atualização é aditiva e não concede medalhas durante a migração.
 
 Nessas regras, mudar a meta ou reativar concessões salva uma **proposta de revisão**: a regra atual só muda após a prévia e a confirmação. Alterações apenas de aparência e pausas são aplicadas sem conceder medalhas. Uma revisão antiga não pode sobrescrever uma regra alterada por outra pessoa; revise o rascunho novamente.
 

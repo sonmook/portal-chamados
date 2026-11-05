@@ -30,7 +30,7 @@ class VisualConquistasTests(TestCase):
                 'ativa':'on','icone':self.regra.icone,'versao_atual':self.regra.versao,**extra}
 
     def test_icones_iniciais_distintos(self):
-        self.assertEqual(list(RegraConquista.objects.order_by('pk').values_list('icone',flat=True)),
+        self.assertEqual(list(RegraConquista.objects.filter(codigo__in=['primeira-solucao','vinte-solucoes','no-prazo','equipe-no-prazo']).order_by('pk').values_list('icone',flat=True)),
                          ['foguete','trofeu','cronometro','equipe'])
 
     def test_validacao_de_catalogo_fechado(self):
