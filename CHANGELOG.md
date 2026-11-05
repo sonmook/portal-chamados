@@ -1,5 +1,11 @@
 # Histórico de atualizações
 
+## Ajustes após a v1.4.0 — Catálogo predefinido
+
+- Criação de conquistas desabilitada na interface e no servidor, inclusive para administradores.
+- Catálogo inicial pronto para uso; configurações e medalhas anteriores preservadas.
+- Gestão e documentação simplificadas, sem nova migração.
+
 ## v1.4.0 — Construtor de conquistas
 
 - Criação administrativa com destinatário, métrica, início de contagem e níveis Bronze, Prata e Ouro.

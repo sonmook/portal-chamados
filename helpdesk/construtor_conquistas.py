@@ -9,6 +9,7 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import F, Min
 from django.shortcuts import get_object_or_404, redirect, render
+from django.http import HttpResponseForbidden
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
 from .audit import registrar
@@ -159,7 +160,9 @@ def conceder_previa(regra, etapa):
 def editar_plano(request, plano_id=None):
     if not request.user.is_superuser:
         raise PermissionDenied
-    plano = plano_bloqueado(plano_id) if plano_id else PlanoConquista()
+    if plano_id is None:
+        return HttpResponseForbidden('O portal utiliza conquistas predefinidas. A criação de novas conquistas está desabilitada.')
+    plano = plano_bloqueado(plano_id)
     if plano.estado != 'rascunho':
         return redirect('prever_plano', plano_id=plano.pk)
     form = PlanoForm(request.POST if request.method == 'POST' else None, instance=plano)

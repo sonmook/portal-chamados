@@ -1,7 +1,7 @@
 {% extends 'helpdesk/equipes/base.html' %}
 {% block titulo %}Construtor de conquistas{% endblock %}
 {% block conteudo %}
-<a href="{% url 'gerenciar_conquistas' %}">Voltar à gestão</a><h1 class="h2 mt-3">{% if plano.regra_origem_id %}Revisar critério{% else %}Criar conquista com níveis{% endif %}</h1>
+<a href="{% url 'gerenciar_conquistas' %}">Voltar à gestão</a><h1 class="h2 mt-3">{% if plano.regra_origem_id %}Revisar critério{% else %}Revisar configuração existente{% endif %}</h1>
 <p class="text-muted">Defina quem recebe, o que conta e as metas. Salvar rascunho não concede medalhas.</p>
 {% if plano.regra_origem_id %}<div class="alert alert-info">Esta proposta mantém o destinatário, o critério e o início da regra existente. Revise a proposta e salve novamente se a regra original foi alterada.</div>{% endif %}
 <div class="card" style="max-width:900px"><div class="card-body p-4"><form method="post">{% csrf_token %}{{ form.non_field_errors }}{% for hidden in form.hidden_fields %}{{ hidden }}{{ hidden.errors }}{% endfor %}

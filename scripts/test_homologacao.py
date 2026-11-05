@@ -103,10 +103,10 @@ assert response.status_code==302
 assert Conquista.objects.filter(usuario=user,regra__codigo='primeira-solucao').exists()
 admin=User.objects.create_superuser('validation-admin','admin@example.invalid','validation-only-not-production')
 client.force_login(admin)
-response=client.post('/conquistas/nova/',{'nome':'Trilha de validação','descricao':'Fixture','icone':'escudo',
-    'alvo':'pessoa','metrica':'no_prazo','bronze':1,'prata':2,'ouro':3,'contagem':'historico','ativa':'on','versao_atual':0},secure=True,HTTP_HOST='localhost')
-assert response.status_code==302
-plano=PlanoConquista.objects.get(nome='Trilha de validação')
+# Configuração anterior à restrição: permanece publicável e restaurável.
+assert client.post('/conquistas/nova/',{},secure=True,HTTP_HOST='localhost').status_code==403
+plano=PlanoConquista.objects.create(nome='Trilha de validação',descricao='Fixture',icone='escudo',
+    alvo='pessoa',metrica='no_prazo',bronze=1,prata=2,ouro=3,contagem='historico')
 assert plano.estado=='rascunho' and not plano.niveis.exists()
 from helpdesk.construtor_conquistas import previsao
 response=client.post(f'/conquistas/planos/{plano.pk}/publicar/',{'confirmacao':previsao(plano)['token']},secure=True,HTTP_HOST='localhost')

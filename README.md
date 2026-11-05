@@ -17,13 +17,9 @@ As capturas da galeria principal foram registradas na **v1.1.0**, com a marca at
 
 ## Conquistas
 
-A v1.4.0 inclui um **construtor de conquistas**: escolha técnico ou equipe, resoluções totais ou dentro do SLA, metas de **Bronze, Prata e Ouro** e um dos oito ícones. Salve um rascunho, confira os critérios e a quantidade de medalhas previstas e só então publique. A contagem pode começar na publicação ou incluir eventos elegíveis já registrados. As quatro conquistas anteriores e suas medalhas são preservadas. [Critérios e operação](docs/conquistas.md).
+O portal já vem com **quatro conquistas predefinidas**, concedidas automaticamente: Primeira solução, 20 soluções, No prazo e União que resolve. Acompanhe o progresso em **Conquistas** e as medalhas no perfil. Não há opção de criar novas conquistas. O administrador consulta o catálogo e gerencia as configurações existentes sem apagar medalhas recebidas. [Critérios e operação](docs/conquistas.md).
 
-![Conquistas com níveis e progresso, usando dados fictícios](docs/imagens/conquistas.png)
-
-![Construtor com critérios, metas e identidade da conquista](docs/imagens/construtor-conquista.png)
-
-![Prévia administrativa antes da publicação](docs/imagens/previa-conquista.png)
+![Coleção de conquistas e progresso com dados fictícios](docs/imagens/conquistas.png)
 
 ## Meu Perfil
 
