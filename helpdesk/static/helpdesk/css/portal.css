@@ -274,3 +274,48 @@ form label { color: var(--portal-ink); }
 .conquistas-page .conquista-estado { margin-top: 18px; }
 .medalha-colecao[open] { width: 100%; }
 @media (max-width: 575.98px) { .perfil-vitrine { padding: 16px; } .perfil-vitrine-medalhas { grid-template-columns: minmax(0,1fr); gap: 8px; } .medalha-perfil summary { display: grid; grid-template-columns: 88px minmax(0,1fr); text-align: left; justify-items: start; column-gap: 12px; } .medalha-perfil .medalha-arte { width: 88px; grid-row: 1/4; } .medalha-perfil summary > span { grid-column: 2; } .medalha-perfil .medalha-ver { justify-content: start; } }
+/* Perfil de consulta separado da edição, com medalhas discretas na lateral. */
+.perfil-pagina-titulo { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin: 8px 0 30px; padding-bottom: 18px; border-bottom: 1px solid var(--portal-line); }
+.perfil-pagina-titulo h1 { margin: 0; font-size: 1.1rem; }
+.perfil-pagina-titulo a { font-size: .8rem; text-decoration: none; }
+.perfil-completo { display: grid; grid-template-columns: minmax(0,260px) minmax(0,1fr); gap: 46px; align-items: start; max-width: 1160px; margin: 0 auto; }
+.perfil-identidade { min-width: 0; padding-bottom: 12px; }
+.perfil-foto-grande { margin-bottom: 20px; }
+.perfil-foto-grande .portal-avatar { width: 220px; height: 220px; max-width: 100%; font-size: 5rem; border: 1px solid #d1d9e4; background: #e3eaf5; }
+.perfil-foto-grande .portal-avatar img { width: 100%; height: 100%; }
+.perfil-identidade > h2 { font-size: 1.25rem; font-weight: 700; margin: 0 0 3px; overflow-wrap: anywhere; }
+.perfil-login { color: #68778a; font-size: .95rem; margin-bottom: 16px; overflow-wrap: anywhere; }
+.perfil-editar-btn { width: 100%; font-size: .8rem; min-height: 34px !important; padding: 6px 12px; background: #fafbfd; border-color: #d0d9e5; color: #334760; }
+.perfil-dados-rapidos { margin: 22px 0; }
+.perfil-dados-rapidos li { display: flex; gap: 10px; align-items: baseline; margin: 9px 0; font-size: .8rem; color: #40516a; overflow-wrap: anywhere; }
+.perfil-dados-rapidos .bi { flex-shrink: 0; color: #65758b; }
+.perfil-vitrine-discreta { border: 0; border-top: 1px solid var(--portal-line); border-radius: 0; background: none; margin: 0; padding: 18px 0 0; }
+.perfil-vitrine-discreta .perfil-vitrine-titulo { margin-bottom: 12px; }
+.perfil-vitrine-discreta h2 { font-size: .87rem; font-weight: 650; margin: 0; }
+.perfil-vitrine-discreta h2 > span { display: inline-block; color: #68778a; font-size: .72rem; font-weight: 450; margin-left: 6px; }
+.perfil-medalhas-compactas { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 6px; }
+.medalha-discreta { width: 60px; }
+.medalha-discreta summary { width: 60px; height: 60px; border-radius: 50%; }
+.medalha-discreta summary:hover, .medalha-discreta[open] summary { background: #e9eff8; }
+.medalha-discreta .medalha-arte { width: 60px; height: 60px; }
+.medalha-discreta[open] { width: 100%; }
+.medalha-discreta .medalha-ficha { margin: 8px 0; font-size: .75rem; padding: 12px; }
+.perfil-colecao-link { display: inline-flex; gap: 6px; align-items: center; font-size: .72rem; margin-top: 13px; text-decoration: none; }
+.perfil-conteudo { min-width: 0; padding-top: 5px; }
+.perfil-painel { border: 1px solid var(--portal-line); border-radius: 12px; background: #fff; margin-bottom: 22px; padding: 24px; }
+.perfil-painel-titulo { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.perfil-painel h2 { font-size: 1rem; font-weight: 650; margin: 0; }
+.perfil-painel-titulo > span { color: #68778a; font-size: .7rem; }
+.perfil-painel-descricao { color: #68778a; font-size: .8rem; margin: 10px 0 25px; }
+.perfil-informacoes { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 22px 30px; margin: 0; }
+.perfil-informacoes dt { color: #68778a; font-size: .72rem; font-weight: 450; margin-bottom: 5px; }
+.perfil-informacoes dd { color: #293d57; font-size: .87rem; margin: 0; overflow-wrap: anywhere; }
+.perfil-equipes { margin: 16px 0 0; }
+.perfil-equipes li { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #edf1f6; font-size: .83rem; }
+.perfil-equipes li:last-child { border: 0; padding-bottom: 0; }
+.perfil-equipe-icone { display: grid; place-items: center; background: #edf2f9; color: #526c8e; width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0; }
+.perfil-equipes strong { display: block; font-weight: 600; overflow-wrap: anywhere; }
+.perfil-equipes div > span { color: #68778a; font-size: .73rem; }
+.perfil-observacao { display: flex; align-items: baseline; gap: 8px; font-size: .72rem; color: #68778a; }
+@media (max-width: 991.98px) { .perfil-completo { grid-template-columns: minmax(0,220px) minmax(0,1fr); gap: 28px; } .perfil-foto-grande .portal-avatar { width: 190px; height: 190px; } .perfil-painel { padding: 20px; } .perfil-informacoes { grid-template-columns: minmax(0,1fr); gap: 18px; } }
+@media (max-width: 767.98px) { .perfil-completo { grid-template-columns: minmax(0,1fr); gap: 24px; } .perfil-foto-grande .portal-avatar { width: 160px; height: 160px; font-size: 4rem; } .perfil-identidade { max-width: 420px; width: 100%; } .perfil-vitrine-discreta { padding: 18px 0 0; } .perfil-pagina-titulo { margin-bottom: 24px; } }

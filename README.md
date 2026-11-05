@@ -17,7 +17,7 @@ As capturas da galeria principal foram registradas na **v1.1.0**, com a marca at
 
 ## Conquistas
 
-O portal já vem com **12 conquistas predefinidas**, concedidas automaticamente: marcos individuais de resoluções, atendimento dentro do SLA e resultados coletivos. Entre elas: Missão cumprida, Centurião do suporte, Guardião do SLA e Força-tarefa. Acompanhe o progresso em **Conquistas** e veja as três medalhas mais recentes em uma vitrine ilustrada no perfil. Selecione uma medalha para consultar seus detalhes. Não há opção de criar novas conquistas. O administrador consulta o catálogo e gerencia as configurações existentes sem apagar medalhas recebidas. [Critérios e operação](docs/conquistas.md).
+O portal já vem com **12 conquistas predefinidas**, concedidas automaticamente: marcos individuais de resoluções, atendimento dentro do SLA e resultados coletivos. Entre elas: Missão cumprida, Centurião do suporte, Guardião do SLA e Força-tarefa. Acompanhe o progresso em **Conquistas** e veja suas medalhas em uma vitrine discreta na lateral do perfil. Selecione uma medalha para consultar seus detalhes. Não há opção de criar novas conquistas. O administrador consulta o catálogo e gerencia as configurações existentes sem apagar medalhas recebidas. [Critérios e operação](docs/conquistas.md).
 
 ![Coleção de conquistas com navegação por seção, emblemas e progresso; dados fictícios](docs/imagens/conquistas.png)
 
@@ -25,7 +25,7 @@ O portal já vem com **12 conquistas predefinidas**, concedidas automaticamente:
 
 ## Meu Perfil
 
-A v1.2.0 inclui **Meu Perfil**, acessível pelo avatar ou nome no cabeçalho: foto com ajuste de posição e zoom, nome, sobrenome, cargo, departamento e ramal. Login, e-mail, permissões e equipes continuam sob administração. As fotos aparecem no cabeçalho e nas conversas e exigem autenticação para acesso. [Detalhes e atualização](docs/perfis.md).
+Acesse **Meu Perfil** pelo avatar ou nome no cabeçalho para visualizar foto, dados profissionais, equipes e medalhas discretas. Use **Editar perfil** para alterar nome, sobrenome, cargo, departamento, ramal e foto, com ajuste de posição e zoom, em uma tela separada. Ao salvar, você retorna à visualização. Login, e-mail, permissões e equipes continuam sob administração. As fotos aparecem no cabeçalho e nas conversas e exigem autenticação para acesso. [Detalhes e atualização](docs/perfis.md).
 
 ## ✨ Principais Funcionalidades
 
