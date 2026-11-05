@@ -17,9 +17,9 @@ As capturas da galeria principal foram registradas na **v1.1.0**, com a marca at
 
 ## Conquistas
 
-O portal já vem com **12 conquistas predefinidas**, concedidas automaticamente: marcos individuais de resoluções, atendimento dentro do SLA e resultados coletivos. Entre elas: Missão cumprida, Centurião do suporte, Guardião do SLA e Força-tarefa. Acompanhe o progresso em **Conquistas** e veja suas medalhas em uma vitrine discreta na lateral do perfil. Selecione uma medalha para consultar seus detalhes. Não há opção de criar novas conquistas. O administrador consulta o catálogo e gerencia as configurações existentes sem apagar medalhas recebidas. [Critérios e operação](docs/conquistas.md).
+O portal já vem com **12 conquistas predefinidas**, concedidas automaticamente: marcos individuais de resoluções, atendimento dentro do SLA e resultados coletivos. Entre elas: Missão cumprida, Centurião do suporte, Guardião do SLA e Força-tarefa. Acompanhe o progresso em **Conquistas** e veja suas medalhas em uma vitrine discreta na lateral do perfil. Na coleção, cada conquista mostra apenas ícone e nome. Passe o mouse sobre a conquista para consultar os detalhes flutuantes; no celular, toque. O mesmo comportamento está disponível nas medalhas do perfil. Não há opção de criar novas conquistas. O administrador consulta o catálogo e gerencia as configurações existentes sem apagar medalhas recebidas. [Critérios e operação](docs/conquistas.md).
 
-![Coleção discreta com medalhas pequenas, progresso e detalhes sob demanda; dados fictícios](docs/imagens/conquistas.png)
+![Coleção discreta com ícone e nome de cada conquista; dados fictícios](docs/imagens/conquistas.png)
 
 ![Vitrine ilustrada no perfil de um técnico fictício](docs/imagens/perfil-conquistas.png)
 

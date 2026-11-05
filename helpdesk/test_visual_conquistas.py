@@ -89,3 +89,21 @@ class VisualConquistasTests(TestCase):
         r=self.client.get(reverse('meu_perfil'))
         self.assertContains(r,'Suas medalhas aparecerão aqui')
         self.assertNotContains(r,'helpdesk/conquistas/foguete.svg')
+
+    def test_paineis_flutuantes_tem_associacao_unica_com_cada_medalha(self):
+        from html.parser import HTMLParser
+        class Associacoes(HTMLParser):
+            def __init__(self):
+                super().__init__();self.controles=[];self.paineis=[]
+            def handle_starttag(self,tag,attrs):
+                dados=dict(attrs)
+                if tag=='summary' and 'aria-controls' in dados:self.controles.append(dados['aria-controls'])
+                if dados.get('role')=='tooltip':self.paineis.append(dados['id'])
+        self.resolver();self.client.force_login(self.user)
+        for rota in ['minhas_conquistas','meu_perfil']:
+            r=self.client.get(reverse(rota));parser=Associacoes();parser.feed(r.content.decode())
+            self.assertTrue(parser.paineis)
+            self.assertEqual(len(parser.paineis),len(set(parser.paineis)))
+            self.assertEqual(set(parser.controles),set(parser.paineis))
+            self.assertContains(r,'helpdesk/js/conquistas-popover.js')
+            self.assertNotContains(r,'class="medalha-ficha"')

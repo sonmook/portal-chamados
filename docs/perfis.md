@@ -1,6 +1,6 @@
 # Meu Perfil
 
-Usuários autenticados acessam **Meu Perfil** pelo nome ou avatar no canto superior direito. A página `/meu-perfil/` é somente para visualização: foto, dados profissionais, conta, equipes e coleção completa de medalhas individuais em miniaturas discretas na lateral. O perfil permanece restrito ao próprio usuário.
+Usuários autenticados acessam **Meu Perfil** pelo nome ou avatar no canto superior direito. A página `/meu-perfil/` é somente para visualização: foto, dados profissionais, conta, equipes e coleção completa de medalhas individuais em miniaturas discretas na lateral. O perfil permanece restrito ao próprio usuário. Passe o mouse sobre uma medalha para consultar seus detalhes em um painel flutuante, sem deslocar a página; também é possível abrir por foco do teclado ou toque e fechar com Escape, novo toque ou toque fora.
 
 Clique em **Editar perfil** para abrir `/meu-perfil/editar/`. Nessa tela você pode alterar nome, sobrenome, cargo, departamento e ramal, além de incluir, trocar, remover e enquadrar a foto. **Salvar perfil** retorna à visualização com os dados atualizados; **Cancelar** volta sem gravar. A consulta não contém campos de edição e recusa POST.
 
