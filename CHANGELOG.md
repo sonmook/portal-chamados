@@ -1,5 +1,12 @@
 # Histórico de atualizações
 
+## Perfil discreto — Visualização e edição separadas
+
+- Meu Perfil passa a ser uma página de consulta com foto, dados profissionais, conta, equipes e coleção completa de medalhas em miniaturas de 60 px na lateral.
+- Editar perfil tem rota própria; salvar retorna à consulta, e cancelar volta sem gravar.
+- Consulta autenticada do próprio usuário, sem gravações por GET e sem POST; edição mantém CSRF, auditoria, controle de versão e enquadramento da foto.
+- Sem nova migração. Documentação e capturas atualizadas para desktop e celular.
+
 ## Medalhas ilustradas e vitrine no perfil
 
 - Oito ilustrações SVG originais, com símbolos e cores próprios. Medalhas pendentes têm apresentação discreta na coleção.

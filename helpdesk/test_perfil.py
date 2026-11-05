@@ -29,7 +29,7 @@ class PerfilFixtureMixin:
         self.u = User.objects.create_user('pessoa', email='pessoa@example.invalid', first_name='Nome')
         self.outro = User.objects.create_user('outro')
         self.client.force_login(self.u)
-        self.url = reverse('meu_perfil')
+        self.url = reverse('editar_perfil')
 
     def dados(self, **extra):
         return {'first_name':'Maria', 'last_name':'Silva', 'cargo':'Analista',
@@ -42,7 +42,7 @@ class PerfilFixtureMixin:
 class PerfilTests(PerfilFixtureMixin, TestCase):
     def test_get_sem_criar_registros_inclui_conta_e_campos_acessiveis(self):
         r = self.client.get(self.url)
-        self.assertContains(r, 'Meu Perfil')
+        self.assertContains(r, 'Editar perfil')
         self.assertContains(r, 'pessoa@example.invalid')
         self.assertContains(r, 'for="id_first_name"')
         self.assertFalse(Perfil.objects.exists())
@@ -55,7 +55,7 @@ class PerfilTests(PerfilFixtureMixin, TestCase):
     def test_campos_permitidos_e_redacao_na_auditoria(self):
         r = self.salvar(usuario_id=self.outro.pk, is_superuser='1', is_staff='1', is_active='',
                         username='alterado', email='novo@example.invalid', password='senha', groups='1')
-        self.assertRedirects(r, self.url)
+        self.assertRedirects(r, reverse('meu_perfil'))
         self.u.refresh_from_db();self.outro.refresh_from_db()
         self.assertEqual(self.u.first_name, 'Maria')
         self.assertEqual(self.u.last_name, 'Silva')
@@ -165,3 +165,52 @@ class PerfilTests(PerfilFixtureMixin, TestCase):
         self.assertNotContains(self.client.get(reverse('detalhes_chamado',args=[t.pk])),reverse('foto_perfil',args=[self.u.pk]))
         self.salvar(foto=foto())
         self.assertContains(self.client.get(reverse('detalhes_chamado',args=[t.pk])),reverse('foto_perfil',args=[self.u.pk]))
+
+
+class VisualizacaoPerfilTests(PerfilFixtureMixin, TestCase):
+    def test_consulta_sem_formulario_sem_mutacao_e_edicao_separada(self):
+        auditorias=RegistroAuditoria.objects.count()
+        r=self.client.get(reverse('meu_perfil'))
+        self.assertContains(r,'Informações do perfil')
+        self.assertContains(r,reverse('editar_perfil'))
+        self.assertNotContains(r,'name="first_name"')
+        self.assertNotContains(r,'perfil-foto.js')
+        self.assertNotContains(r,'Ajustar enquadramento')
+        self.assertFalse(Perfil.objects.exists())
+        self.assertEqual(RegistroAuditoria.objects.count(),auditorias)
+        self.assertEqual(self.client.post(reverse('meu_perfil'),self.dados()).status_code,405)
+        self.assertFalse(Perfil.objects.exists())
+        r=self.client.get(reverse('editar_perfil'))
+        self.assertContains(r,'Ajustar enquadramento')
+        self.assertNotContains(r,'perfil-vitrine')
+
+    def test_consulta_privada_exige_login_e_ignora_outro_usuario(self):
+        Perfil.objects.create(usuario=self.outro,cargo='Cargo privado de outra pessoa')
+        r=self.client.get(reverse('meu_perfil'),{'usuario_id':self.outro.pk})
+        self.assertContains(r,self.u.email)
+        self.assertNotContains(r,'Cargo privado de outra pessoa')
+        self.client.logout()
+        self.assertEqual(self.client.get(reverse('meu_perfil')).status_code,302)
+        self.assertEqual(self.client.get(reverse('editar_perfil')).status_code,302)
+
+    def test_salvar_edicao_redireciona_a_consulta_com_dados_atualizados(self):
+        r=self.salvar()
+        self.assertRedirects(r,reverse('meu_perfil'))
+        r=self.client.get(reverse('meu_perfil'))
+        self.assertContains(r,'Maria Silva')
+        self.assertContains(r,'Analista')
+        self.assertContains(r,'Operações')
+        self.assertContains(r,'Ramal 204')
+
+    def test_consulta_exibe_colecao_completa_sem_medalhas_de_outras_pessoas(self):
+        from .models import Conquista, RegraConquista
+        regras=list(RegraConquista.objects.filter(alvo='pessoa')[:4])
+        for regra in regras:
+            Conquista.objects.create(regra=regra,usuario=self.u,nome=regra.nome,
+                descricao=regra.descricao,meta=regra.meta,icone=regra.icone,versao_regra=regra.versao)
+        Conquista.objects.create(regra=regras[0],usuario=self.outro,nome='Medalha de outra pessoa',
+            descricao='Privada',meta=1,versao_regra=0)
+        r=self.client.get(reverse('meu_perfil'))
+        self.assertEqual(len(r.context['conquistas']),4)
+        self.assertContains(r,'class="medalha-arte"',count=4)
+        self.assertNotContains(r,'Medalha de outra pessoa')

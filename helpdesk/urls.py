@@ -19,6 +19,7 @@ urlpatterns = [
     path('conquistas/gerenciar/', conquistas.gerenciar_conquistas, name='gerenciar_conquistas'),
     path('conquistas/gerenciar/<int:regra_id>/', conquistas.editar_conquista, name='editar_conquista'),
     path('meu-perfil/foto-base/', perfis.foto_base_perfil, name='foto_base_perfil'),
+    path('meu-perfil/editar/', perfis.editar_perfil, name='editar_perfil'),
     path('meu-perfil/', perfis.meu_perfil, name='meu_perfil'),
     path('perfil/foto/<int:usuario_id>/', perfis.foto_perfil, name='foto_perfil'),
     path('equipes/encaminhamento/', regras_encaminhamento.listar_regras, name='listar_regras_encaminhamento'),

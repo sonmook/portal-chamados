@@ -16,8 +16,18 @@ from .models import Perfil, IntegranteEquipe, Conquista
 
 
 @login_required
-@require_http_methods(['GET', 'POST'])
+@require_GET
 def meu_perfil(request):
+    return render(request, 'helpdesk/perfil.html', {
+        'perfil': Perfil.objects.filter(usuario=request.user).first(),
+        'conquistas': list(Conquista.objects.filter(usuario=request.user)),
+        'vinculos': list(IntegranteEquipe.objects.filter(usuario=request.user).select_related('equipe').order_by('equipe__nome')),
+    })
+
+
+@login_required
+@require_http_methods(['GET', 'POST'])
+def editar_perfil(request):
     perfil = Perfil.objects.filter(usuario=request.user).first()
     inicial = {nome: getattr(perfil, nome, '') for nome in ('cargo', 'departamento', 'ramal')}
     inicial.update({nome: getattr(perfil, nome, padrao) for nome, padrao in [('foto_x', 50), ('foto_y', 50), ('foto_zoom', 100)]})
@@ -35,7 +45,7 @@ def meu_perfil(request):
                 atual, _ = Perfil.objects.get_or_create(usuario=usuario)
                 atual = Perfil.objects.select_for_update().get(pk=atual.pk)
                 if atual.versao != form.cleaned_data['versao']:
-                    form.add_error(None, 'Seu perfil foi alterado em outra página. Reabra Meu Perfil antes de salvar.')
+                    form.add_error(None, 'Seu perfil foi alterado em outra página. Reabra a edição do perfil antes de salvar.')
                     status = 409
                     transaction.set_rollback(True)
                 else:
@@ -74,14 +84,14 @@ def meu_perfil(request):
         except ConflitoPerfil:
             if novo_arquivo:
                 storage.delete(novo_arquivo)
-            form.add_error(None, 'Seu perfil foi alterado em outra página. Reabra Meu Perfil antes de salvar.')
+            form.add_error(None, 'Seu perfil foi alterado em outra página. Reabra a edição do perfil antes de salvar.')
             status = 409
         except Exception:
             if novo_arquivo:
                 storage.delete(novo_arquivo)
             raise
-    return render(request, 'helpdesk/perfil.html', {
-        'form': form, 'perfil': perfil, 'conquistas': Conquista.objects.filter(usuario=request.user)[:3],
+    return render(request, 'helpdesk/perfil_editar.html', {
+        'form': form, 'perfil': perfil,
         'vinculos': IntegranteEquipe.objects.filter(usuario=request.user).select_related('equipe').order_by('equipe__nome'),
     }, status=status)
 

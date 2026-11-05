@@ -1,6 +1,8 @@
-# Meu Perfil — v1.2.0
+# Meu Perfil
 
-Usuários autenticados acessam **Meu Perfil** pelo nome ou avatar no canto superior direito. Podem editar nome, sobrenome, cargo, departamento e ramal, além de incluir, trocar ou remover sua foto.
+Usuários autenticados acessam **Meu Perfil** pelo nome ou avatar no canto superior direito. A página `/meu-perfil/` é somente para visualização: foto, dados profissionais, conta, equipes e coleção completa de medalhas individuais em miniaturas discretas na lateral. O perfil permanece restrito ao próprio usuário.
+
+Clique em **Editar perfil** para abrir `/meu-perfil/editar/`. Nessa tela você pode alterar nome, sobrenome, cargo, departamento e ramal, além de incluir, trocar, remover e enquadrar a foto. **Salvar perfil** retorna à visualização com os dados atualizados; **Cancelar** volta sem gravar. A consulta não contém campos de edição e recusa POST.
 
 Login, e-mail, senha, permissões e vínculos com equipes não são alterados por esse formulário. Equipes e papéis continuam sob administração; vínculos existentes aparecem somente para consulta. O mesmo formulário atende contas locais e contas autenticadas por Google SSO.
 
@@ -22,13 +24,17 @@ Instale `requirements.txt`, execute `python manage.py migrate`, colete estático
 
 Os backups passam a conferir também os caminhos de fotos referenciados no banco. Backups antigos, anteriores à tabela de perfis, continuam aceitos. Pare escritores conforme as instruções de operação antes de copiar banco e arquivos.
 
-Esta funcionalidade faz parte da v1.2.0. O registro oficial da tag e da Release segue o fluxo descrito em [versionamento](versionamento.md), após o merge. A tag v1.1.0 é preservada.
+A funcionalidade foi introduzida na v1.2.0. A separação entre consulta e edição não exige nova migração. O registro oficial da tag e da Release segue o fluxo descrito em [versionamento](versionamento.md), após o merge. A tag v1.1.0 é preservada.
 
 ## Tela de demonstração
 
 Dados fictícios e avatar ilustrativo, sem fotografia de uma pessoa real:
 
-![Meu Perfil com foto, dados pessoais e informações de conta e equipe](imagens/meu-perfil.png)
+![Visualização do perfil com dados, equipes e medalhas discretas](imagens/meu-perfil.png)
+
+![Visualização em celular](imagens/perfil-mobile.png)
+
+![Tela separada para editar dados e enquadrar a foto](imagens/perfil-editar.png)
 
 ## Posição e zoom da foto
 
