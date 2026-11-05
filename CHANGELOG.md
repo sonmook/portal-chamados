@@ -1,5 +1,12 @@
 # Histórico de atualizações
 
+## Medalhas ilustradas e vitrine no perfil
+
+- Oito ilustrações SVG originais, com símbolos e cores próprios. Medalhas pendentes têm apresentação discreta na coleção.
+- Vitrine com as três medalhas mais recentes abaixo do nome e da foto, com detalhes de critério, meta e data por toque, mouse e teclado.
+- Detalhes nativos, sem JavaScript; critérios, permissões e dados históricos preservados. Sem nova migração ou dependência.
+- Capturas e documentação atualizadas.
+
 ## Refinamento visual — Coleção de conquistas
 
 - Cabeçalho com resumo de medalhas e navegação por coleção pessoal, equipe e critérios.
