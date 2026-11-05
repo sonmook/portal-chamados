@@ -186,3 +186,60 @@ form label { color: var(--portal-ink); }
 .nivel-unico { color: #245cce; background: #e9f0ff; }
 .trilha-niveis li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-block: 10px; }
 .conquista-card h3, .conquista-card p, .trilha-niveis { overflow-wrap: anywhere; }
+/* Coleção de conquistas: navegação por seção e cartões compactos. */
+.conquistas-page { --colecao-ink: #20334d; --colecao-muted: #596c83; }
+.conquistas-hero { display: flex; justify-content: space-between; align-items: center; gap: 32px; padding: 36px 40px; border-radius: 22px; background: radial-gradient(ellipse at 85% 0, #30547a 0, transparent 65%), #172c46; color: #fff; }
+.conquistas-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: .68rem; font-weight: 750; letter-spacing: .12em; color: #526b8d; }
+.conquistas-hero .conquistas-eyebrow { color: #b6d0f3; }
+.conquistas-hero h1 { color: #fff; font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 750; letter-spacing: -.04em; margin: 12px 0; }
+.conquistas-hero-texto > p { color: #d2dfee; line-height: 1.65; margin-bottom: 22px; }
+.conquistas-hero-acoes { display: flex; align-items: center; flex-wrap: wrap; gap: 20px; }
+.conquistas-hero-acoes .btn { font-size: .85rem; font-weight: 650; padding: 10px 16px; border-radius: 9px; }
+.conquistas-gerenciar { color: #e1edfc; font-size: .85rem; text-underline-offset: 4px; }
+.conquistas-gerenciar:hover { color: #fff; }
+.conquistas-resumo { display: flex; align-items: center; gap: 22px; padding: 24px; border: 1px solid #ffffff29; border-radius: 16px; background: #ffffff08; max-width: 420px; }
+.conquistas-emblema { width: 80px; height: 90px; display: grid; place-items: center; flex-shrink: 0; color: #f8cf71; background: linear-gradient(145deg, #ffffff1c, #ffffff05); clip-path: polygon(50% 0, 95% 23%, 95% 75%, 50% 100%, 5% 75%, 5% 23%); font-size: 2.2rem; }
+.conquistas-resumo-numero { display: block; font-size: 2.8rem; font-weight: 750; line-height: 1.1; letter-spacing: -.04em; }
+.conquistas-resumo-numero > span { color: #bacce2; font-size: 1.3rem; font-weight: 450; }
+.conquistas-resumo p { font-size: .83rem; color: #d2dfee; margin: 8px 0; }
+.conquistas-resumo-legenda { font-size: .72rem; color: #b9cde6; }
+.conquistas-menu { display: flex; flex-wrap: wrap; gap: 6px; padding: 7px; border: 1px solid var(--portal-line); border-radius: 12px; background: #fff; margin-bottom: 30px; }
+.conquistas-menu a { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; padding: 8px 14px; border-radius: 8px; color: #334d6e; font-size: .86rem; font-weight: 650; text-decoration: none; }
+.conquistas-menu a:first-child { background: #edf3fd; color: #2455ad; }
+.conquistas-menu a:hover { background: #edf3fd; }
+.conquistas-menu a > span { background: #e3eaf4; padding: 2px 7px; border-radius: 6px; font-size: .72rem; }
+.conquistas-menu .conquistas-ajuda { margin-left: auto; font-weight: 450; }
+.conquistas-secao, .conquistas-regras { scroll-margin-top: 24px; }
+.conquistas-secao-titulo { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 18px; }
+.conquistas-secao h2 { font-size: 1.4rem; font-weight: 700; color: var(--colecao-ink); margin: 5px 0; letter-spacing: -.025em; }
+.conquistas-secao-titulo p { font-size: .84rem; color: var(--colecao-muted); margin: 0; }
+.conquistas-contador { display: inline-flex; gap: 8px; font-size: .8rem; color: var(--colecao-muted); }
+.conquistas-equipe-form { display: flex; gap: 8px; max-width: 100%; }
+.conquistas-equipe-form select { min-width: 0; max-width: 280px; font-size: .85rem; }
+.conquistas-page .conquista-card { border: 1px solid #dce4ee !important; border-radius: 16px; box-shadow: 0 3px 12px #17334e04; background: #fff; }
+.conquistas-page .conquista-card::after { display: none; }
+.conquistas-page .conquista-card .card-body { padding: 22px; }
+.conquistas-page .conquista-topo { margin-bottom: 18px !important; }
+.conquistas-page .conquista-medalha { width: 58px; height: 64px; }
+.conquistas-page .conquista-medalha::before, .conquistas-page .conquista-medalha::after, .conquistas-page .conquista-brilho { display: none; }
+.conquistas-page .conquista-medalha-centro { width: 58px; height: 64px; margin: 0; border: 0; outline: 0; border-radius: 0; clip-path: polygon(50% 0, 96% 23%, 96% 76%, 50% 100%, 4% 76%, 4% 23%); font-size: 1.6rem; background: var(--medalha-suave); }
+.conquistas-page .conquista-obtida { border-color: #a8c5b8 !important; }
+.conquistas-page .conquista-obtida .conquista-medalha-centro { color: #fff; background: var(--medalha); }
+.conquistas-page .conquista-estado { background: #f2f5f9; color: #52657a; font-size: .68rem; padding: 5px 9px; }
+.conquistas-page .conquista-obtida .conquista-estado { color: #256048; background: #e9f5ee; }
+.conquistas-page .conquista-chamada { font-size: .65rem; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 7px !important; }
+.conquistas-page .conquista-card h3 { font-size: 1.05rem; color: var(--colecao-ink); letter-spacing: -.015em; }
+.conquistas-page .conquista-card h3 + p { font-size: .8rem; line-height: 1.6; margin-bottom: 20px; }
+.conquistas-page .conquista-card .progress { height: 6px; background: #edf1f6; }
+.conquistas-page .conquista-incentivo { font-size: .73rem; }
+.conquistas-page .conquista-data { font-size: .68rem; padding-top: 12px; border-top: 1px solid #edf1f6; }
+.conquistas-page .conquista-celebracao { font-size: .78rem; background: #edf7f1; color: #256048; }
+.conquistas-regras { border: 1px solid var(--portal-line); background: #fff; border-radius: 12px; margin: 8px 0 24px; }
+.conquistas-regras summary { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 18px 20px; color: #344d6d; font-size: .85rem; font-weight: 650; cursor: pointer; list-style: none; }
+.conquistas-regras summary::-webkit-details-marker { display: none; }
+.conquistas-regras summary > span { display: inline-flex; align-items: center; gap: 10px; }
+.conquistas-regras[open] summary > .bi-chevron-down { transform: rotate(180deg); }
+.conquistas-regras > div { padding: 0 20px 20px; font-size: .84rem; line-height: 1.7; color: var(--colecao-muted); }
+.conquistas-voltar { display: inline-flex; gap: 8px; align-items: center; font-size: .85rem; text-underline-offset: 4px; }
+@media (max-width: 991.98px) { .conquistas-hero { padding: 28px; gap: 24px; } .conquistas-resumo { max-width: 300px; padding: 20px; gap: 14px; } .conquistas-emblema { width: 56px; height: 64px; font-size: 1.7rem; } }
+@media (max-width: 767.98px) { .conquistas-hero { flex-direction: column; align-items: stretch; padding: 24px; border-radius: 16px; } .conquistas-resumo { max-width: none; } .conquistas-menu a { flex: 1 1 auto; padding-inline: 10px; } .conquistas-menu .conquistas-ajuda { margin-left: 0; } .conquistas-secao-titulo { align-items: flex-start; } .conquistas-equipe-form { width: 100%; } .conquistas-equipe-form select { flex: 1; max-width: none; } }

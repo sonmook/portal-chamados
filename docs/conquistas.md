@@ -1,6 +1,6 @@
 # Conquistas — v1.4.0
 
-Acesse **Conquistas** para acompanhar o progresso individual e das equipes acessíveis. A coleção agrupa os níveis de cada conquista e aponta a próxima medalha. O perfil mostra até três medalhas individuais recentes; o encerramento avisa quando um novo nível é desbloqueado.
+Acesse **Conquistas** para acompanhar o progresso individual e das equipes acessíveis. O cabeçalho resume as medalhas recebidas. Use os atalhos **Minha coleção**, **Da equipe** e **Como conquistar** para navegar; os critérios gerais ficam em um painel expansível. A coleção agrupa os níveis de cada conquista e aponta a próxima medalha. O perfil mostra até três medalhas individuais recentes; o encerramento avisa quando um novo nível é desbloqueado.
 
 ## Catálogo pronto para usar
 
@@ -58,6 +58,8 @@ Faça backup, atualize o código, aplique `python manage.py migrate`, colete est
 
 Capturas com contas e dados fictícios; metas reduzidas apenas para demonstrar a evolução.
 
-![Coleção e progresso por nível](imagens/conquistas.png)
+![Coleção com resumo, emblemas e atalhos por seção](imagens/conquistas.png)
+
+![Prévia da coleção em celular](imagens/conquistas-mobile.png)
 
 ![Gestão de conquistas e histórico](imagens/gestao-conquistas.png)
