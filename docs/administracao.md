@@ -12,7 +12,7 @@ A central reúne as ferramentas existentes:
 | Conquistas | Configurações das conquistas existentes |
 | Auditoria | Consulta do histórico de alterações; sem edição ou exclusão |
 
-As telas de gestão mantêm seus endereços e mostram um caminho de retorno à central. A seção Administração fica destacada durante a gestão; Conquistas no menu continua abrindo a coleção pessoal.
+As telas de gestão mantêm seus endereços e mostram um único caminho de retorno à central, pelo link Administração acima do conteúdo. Links antigos de volta a equipes, conquistas, regras e gerenciamento de usuários foram removidos dessas telas. A seção Administração fica destacada durante a gestão; Conquistas no menu continua abrindo a coleção pessoal.
 
 A central exige conta ativa com papel de administrador (superusuário), tanto no menu quanto na rota `/administracao/`. Técnicos, coordenadores e solicitantes não ganham permissões administrativas. A Auditoria abre a consulta protegida já existente no painel administrativo, exigindo também os requisitos de acesso desse painel. Os fluxos operacionais de coordenadores permanecem nos chamados.
 

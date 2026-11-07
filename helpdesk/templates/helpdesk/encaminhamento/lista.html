@@ -1,7 +1,6 @@
 {% extends 'helpdesk/equipes/base.html' %}
 {% block titulo %}Encaminhamento por categoria{% endblock %}
 {% block conteudo %}
-<a href="{% url 'gerenciar_equipes' %}">Voltar às equipes</a>
 <div class="d-flex justify-content-between flex-wrap gap-3 mt-3 mb-4">
 <div><h1 class="h2">Encaminhamento por categoria</h1><p class="text-muted">Defina a equipe que recebe cada tipo de chamado novo.</p></div>
 {% if pode_criar %}<div><a class="btn btn-primary" href="{% url 'criar_regra_encaminhamento' %}">Nova regra</a></div>{% endif %}
