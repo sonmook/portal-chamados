@@ -2,7 +2,7 @@
 
 ![Marca do Portal de TI](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.4.0** · [Notas da versão](docs/releases/v1.4.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.5.0** · [Notas da versão](docs/releases/v1.5.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -14,6 +14,12 @@ Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django*
 As capturas da galeria principal foram registradas na **v1.1.0**, com a marca atual, os novos ícones e **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
 
 ---
+
+## Notificações
+
+A **v1.5.0** adiciona um sino no cabeçalho, com contador de avisos não lidos, e uma central de notificações pessoais. Receba avisos de atribuição, nova resposta, transferência e resolução; abra o chamado pelo aviso ou marque uma/todas como lidas. Só aparecem notificações de chamados aos quais você ainda tem acesso. O contador é atualizado ao navegar ou recarregar a página. [Funcionamento e destinatários](docs/notificacoes.md).
+
+![Central de notificações com dados fictícios](docs/imagens/notificacoes.png)
 
 ## Conquistas
 

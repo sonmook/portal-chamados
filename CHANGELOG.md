@@ -1,5 +1,14 @@
 # Histórico de atualizações
 
+## v1.5.0 — Notificações no portal
+
+- Sino com contador pessoal e central paginada, com filtro de não lidas.
+- Avisos transacionais de atribuição, resposta, transferência de equipe e resolução; sem avisos sobre a própria ação ou duplicação por evento/destinatário.
+- Abrir um aviso marca como lido e leva ao chamado; marcação individual ou em lote protegida por POST e CSRF.
+- Acesso atual ao chamado é revalidado na listagem, no contador e na leitura. Avisos de chamados sem acesso deixam de aparecer.
+- Migração 0023 adiciona a tabela sem alertas retroativos. Backup/restauração inclui avisos e estado de leitura.
+- Sem nova dependência; notas em `docs/releases/v1.5.0.md`.
+
 ## v1.4.0 — Catálogo de conquistas e perfil completo
 
 - Catálogo com 12 conquistas predefinidas, individuais e de equipe, com marcos de resoluções e atendimento dentro do SLA; criação manual desabilitada.

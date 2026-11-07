@@ -82,7 +82,7 @@ import django
 django.setup()
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
-from helpdesk.models import Chamado, Comentario, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista
+from helpdesk.models import Chamado, Comentario, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista, Notificacao
 user=User.objects.create_user(username='validation-only',is_staff=True)
 from io import BytesIO
 from PIL import Image
@@ -98,9 +98,16 @@ cliente=User.objects.create_user(username='validation-client')
 t.solicitante=cliente;t.save(update_fields=['solicitante'])
 from django.test import Client
 client=Client();client.force_login(user)
+response=client.post(f'/chamado/{t.pk}/',{'texto':'Atualização de validação para o solicitante.'},secure=True,HTTP_HOST='localhost')
+assert response.status_code==302
+aviso=Notificacao.objects.get(destinatario=cliente,tipo='resposta')
+client.force_login(cliente)
+assert client.post(f'/notificacoes/{aviso.pk}/ler/',{},secure=True,HTTP_HOST='localhost').status_code==302
+client.force_login(user)
 response=client.post(f'/chamado/{t.pk}/fechar/',{'resolucao':'Configuração corrigida e validada.'},secure=True,HTTP_HOST='localhost')
 assert response.status_code==302
 assert Conquista.objects.filter(usuario=user,regra__codigo='primeira-solucao').exists()
+assert Notificacao.objects.filter(destinatario=cliente,tipo='resolucao',lida_em__isnull=True).exists()
 admin=User.objects.create_superuser('validation-admin','admin@example.invalid','validation-only-not-production')
 client.force_login(admin)
 # Configuração anterior à restrição: permanece publicável e restaurável.
@@ -124,7 +131,7 @@ assert Conquista.objects.filter(regra__plano=plano,usuario=user,nivel='bronze').
 import django
 django.setup()
 from django.contrib.auth.models import User
-from helpdesk.models import Chamado, Comentario, RegistroAuditoria, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista
+from helpdesk.models import Chamado, Comentario, RegistroAuditoria, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista, Notificacao
 assert User.objects.filter(username='validation-only').exists()
 assert RegraConquista.objects.filter(codigo='guardiao-sla',meta=50,icone='escudo').exists()
 assert Chamado.objects.filter(titulo='Restauração isolada').exists()
@@ -147,7 +154,9 @@ assert Conquista.objects.filter(usuario__username='validation-only',regra__codig
 plano=PlanoConquista.objects.get(nome='Trilha de validação',estado='publicada')
 assert plano.niveis.count()==3
 assert Conquista.objects.filter(regra__plano=plano,usuario__username='validation-only',nivel='bronze',meta=1).exists()
-print('PASS: usuário, chamado, comentário, auditoria, anexos, equipes, perfil e conquistas com plano e níveis restaurados em destino separado.')
+assert Notificacao.objects.filter(destinatario__username='validation-client',chamado=t,tipo='resposta',lida_em__isnull=False).exists()
+assert Notificacao.objects.filter(destinatario__username='validation-client',chamado=t,tipo='resolucao',lida_em__isnull=True).exists()
+print('PASS: usuário, chamado, comentário, auditoria, anexos, equipes, perfil, conquistas e notificações com estado de leitura restaurados em destino separado.')
 """,restored=True)
         except Exception:
             subprocess.run([*base,'logs','--tail=60','app','proxy'],env=docker_env,cwd=ROOT)

@@ -8,6 +8,7 @@ from django.db.models.functions import Coalesce
 from .user_security import bloquear_administradores, validar_pendencias
 from .audit import registrar
 from .encaminhamento import criar_chamado_encaminhado
+from .notificacoes import notificar_atribuicao, notificar_resposta, notificar_resolucao
 from .acesso import chamados_acessiveis, equipes_acessiveis, integrante_ativo, pode_distribuir, filtrar_equipe
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -219,6 +220,7 @@ def detalhes_chamado(request, id):
             comentario.chamado = chamado
             comentario.autor = request.user
             comentario.save()
+            notificar_resposta(comentario)
             return redirect('detalhes_chamado', id=chamado.id)
     else:
         form = ComentarioForm()
@@ -277,6 +279,7 @@ def fechar_chamado(request, id):
     from .conquistas import registrar_resolucao
     for conquista in registrar_resolucao(chamado):
         messages.success(request, f'Conquista desbloqueada: {conquista.nome}{" · "+conquista.get_nivel_display() if conquista.nivel else ""}!')
+    notificar_resolucao(chamado, request.user.pk)
     return redirect('detalhes_chamado', id=chamado.id)
 
 
@@ -294,6 +297,7 @@ def assumir_chamado(request, chamado_id):
     ).update(tecnico=request.user, data_atualizacao=timezone.now(), versao_atribuicao=F('versao_atribuicao') + 1)
     if atualizado:
         registrar('helpdesk.chamado', chamado.pk, 'alterado', {'tecnico_id': {'antes': None, 'depois': request.user.pk}})
+        notificar_atribuicao(chamado, request.user.pk, None, chamado.equipe_id)
         messages.success(request, "Você assumiu o chamado.")
     return redirect('detalhes_chamado', id=chamado.id)
 
@@ -342,6 +346,7 @@ def redistribuir_chamado(request, id):
                 if chamado.equipe_id != destino.pk:
                     alteracoes['equipe_id'] = {'antes': chamado.equipe_id, 'depois': destino.pk}
                 registrar('helpdesk.chamado', id, 'redistribuido', alteracoes)
+                notificar_atribuicao(chamado, request.user.pk, anterior, chamado.equipe_id)
                 messages.success(request, 'Chamado redistribuído e registrado na auditoria.')
                 # O coordenador pode deixar de ter acesso após encaminhar a outra equipe.
                 return redirect('lista_chamados')
@@ -360,9 +365,11 @@ def devolver_chamado(request, chamado_id):
     _exigir_responsavel(request.user, chamado)
     if chamado.status in FINALIZADOS:
         raise PermissionDenied
+    tecnico_anterior = chamado.tecnico_id
     chamado.tecnico = None
     chamado.versao_atribuicao += 1
     chamado.save()
+    notificar_atribuicao(chamado, request.user.pk, tecnico_anterior, chamado.equipe_id)
     messages.warning(request, "Chamado devolvido para a fila.")
     return redirect('detalhes_chamado', id=chamado.id)
 

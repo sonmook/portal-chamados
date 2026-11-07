@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 
-from .models import Chamado, Comentario, RegistroAuditoria, Equipe, IntegranteEquipe, RegraEncaminhamento, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista
+from .models import Chamado, Comentario, RegistroAuditoria, Equipe, IntegranteEquipe, RegraEncaminhamento, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista, Notificacao
 from .encaminhamento import criar_chamado_encaminhado
 from .user_security import bloquear_administradores, validar_administrador, validar_pendencias
 from .acesso import chamados_acessiveis
@@ -183,3 +183,9 @@ class ResolucaoConquistaAdmin(ConsultaEquipeAdmin):
 @admin.register(PlanoConquista)
 class PlanoConquistaAdmin(ConsultaEquipeAdmin):
     list_display = ('nome', 'estado', 'alvo', 'metrica', 'ativa')
+
+
+@admin.register(Notificacao)
+class NotificacaoAdmin(ConsultaEquipeAdmin):
+    list_display = ['destinatario', 'chamado', 'tipo', 'criada_em', 'lida_em']
+    list_filter = ['tipo']
