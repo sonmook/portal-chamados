@@ -1,61 +1,14 @@
 # Histórico de atualizações
 
-## Detalhes flutuantes nas conquistas e no perfil
+## v1.4.0 — Catálogo de conquistas e perfil completo
 
-- Coleção mostra apenas ícone e nome de cada conquista; informações e progresso ficam no painel flutuante.
-- Mesma interação nas medalhas do perfil, sem alterar seu tamanho ou posição.
-- Abertura por mouse, foco e toque; permanência ao mover para o painel, fechamento por Escape/clique fora e posicionamento ajustado ao espaço disponível.
-- Painel com rolagem e devolução de foco pelo teclado; abertura não aumenta cards nem desloca o perfil.
-- Dados e critérios preservados, sem migração ou novas dependências. Documentação e capturas atualizadas.
-
-## Coleção de conquistas mais discreta
-
-- Cabeçalho simples substitui o banner; cards compactos, medalhas de 64 px e cores neutras no progresso e na navegação.
-- Descrições completas, critérios e datas de início ficam nos detalhes sob demanda, acessíveis por toque, mouse e teclado sem JavaScript.
-- Estados continuam identificados por texto. Critérios, concessões, permissões e perfil preservados; sem migração.
-- Capturas desktop/mobile e documentação atualizadas.
-
-## Perfil discreto — Visualização e edição separadas
-
-- Meu Perfil passa a ser uma página de consulta com foto, dados profissionais, conta, equipes e coleção completa de medalhas em miniaturas de 60 px na lateral.
-- Editar perfil tem rota própria; salvar retorna à consulta, e cancelar volta sem gravar.
-- Consulta autenticada do próprio usuário, sem gravações por GET e sem POST; edição mantém CSRF, auditoria, controle de versão e enquadramento da foto.
-- Sem nova migração. Documentação e capturas atualizadas para desktop e celular.
-
-## Medalhas ilustradas e vitrine no perfil
-
-- Oito ilustrações SVG originais, com símbolos e cores próprios. Medalhas pendentes têm apresentação discreta na coleção.
-- Vitrine com as três medalhas mais recentes abaixo do nome e da foto, com detalhes de critério, meta e data por toque, mouse e teclado.
-- Detalhes nativos, sem JavaScript; critérios, permissões e dados históricos preservados. Sem nova migração ou dependência.
-- Capturas e documentação atualizadas.
-
-## Refinamento visual — Coleção de conquistas
-
-- Cabeçalho com resumo de medalhas e navegação por coleção pessoal, equipe e critérios.
-- Cards mais compactos, emblemas hexagonais, estados por texto e progresso com leitura mais clara.
-- Regras em painel expansível nativo e navegação por âncoras, sem dependência de JavaScript.
-- Ícone de troféu no menu; critérios, contagem, permissões e medalhas preservados.
-
-## Ampliação do catálogo de conquistas
-
-- Oito novas conquistas prontas para uso: marcos individuais, atendimento dentro do SLA e resultados de equipe; catálogo passa a ter 12 conquistas.
-- Migração 0022 inicia a contagem das novas regras na atualização, sem premiação retroativa nem alterações nas medalhas existentes.
-- Criação manual permanece desabilitada.
-
-## Ajustes após a v1.4.0 — Catálogo predefinido
-
-- Criação de conquistas desabilitada na interface e no servidor, inclusive para administradores.
-- Catálogo inicial pronto para uso; configurações e medalhas anteriores preservadas.
-- Gestão e documentação simplificadas, sem nova migração.
-
-## v1.4.0 — Construtor de conquistas
-
-- Criação administrativa com destinatário, métrica, início de contagem e níveis Bronze, Prata e Ouro.
-- Rascunhos sem concessão; prévia assinada por 15 minutos e publicação explícita com revisão obrigatória se o impacto mudar.
-- Alterações de aparência não concedem medalhas; pausa e retomada preservam progresso, datas e histórico.
-- Regras anteriores mantidas; mudar sua meta ou reativá-las passa por rascunho e confirmação.
-- Migração 0021 adiciona planos e níveis sem reescrever medalhas existentes. Versão do portal atualizada; publicação oficial após merge e validação.
-- Notas e atualização em `docs/releases/v1.4.0.md`.
+- Catálogo com 12 conquistas predefinidas, individuais e de equipe, com marcos de resoluções e atendimento dentro do SLA; criação manual desabilitada.
+- Oito ilustrações SVG originais; coleção compacta com ícone e nome e painel de detalhes por mouse, foco ou toque, sem expandir os cards.
+- Meu Perfil separado de Editar perfil, com dados profissionais, equipes e coleção completa de medalhas discretas na lateral.
+- Aparência não concede medalhas; alterações de meta e retomadas usam prévia assinada e confirmação explícita. Configurações e medalhas existentes preservadas.
+- Migrações 0021 e 0022 adicionam planos, níveis e oito novas conquistas. As novas contagens começam na atualização, sem premiação retroativa.
+- Documentação e capturas atualizadas; publicação permite recuperar a v1.3.0 no commit histórico e publicar a versão atual após validar cada commit.
+- Notas e atualização em `docs/releases/v1.4.0.md`. A tag só passa a existir após a execução bem-sucedida da ação de publicação.
 
 ## v1.3.0 — Conquistas
 

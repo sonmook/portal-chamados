@@ -1,17 +1,51 @@
 name: Publicar versão
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: Versão a publicar (atual usa VERSION da main)
+        type: choice
+        required: true
+        default: atual
+        options:
+          - atual
+          - v1.3.0
 permissions:
   contents: read
 concurrency:
   group: publicar-versao-main
   cancel-in-progress: false
 jobs:
+  prepare:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.target.outputs.sha }}
+      version: ${{ steps.target.outputs.version }}
+      tag: ${{ steps.target.outputs.tag }}
+      latest: ${{ steps.target.outputs.latest }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - name: Resolver commit da versão
+        id: target
+        env:
+          PORTAL_RELEASE: ${{ inputs.version }}
+        run: |
+          python scripts/check_release.py
+          python scripts/resolve_release.py "$PORTAL_RELEASE" >> "$GITHUB_OUTPUT"
   validation:
+    needs: prepare
     if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/ci.yml
+    with:
+      ref: ${{ needs.prepare.outputs.sha }}
   release:
-    needs: validation
+    needs: [prepare, validation]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
@@ -20,34 +54,43 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ needs.prepare.outputs.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version-file: .python-version
-      - name: Validar versão e main
-        id: version
+      - name: Validar versão e vínculo com main
+        env:
+          PORTAL_VERSION: ${{ needs.prepare.outputs.version }}
+          PORTAL_SHA: ${{ needs.prepare.outputs.sha }}
+          PORTAL_LATEST: ${{ needs.prepare.outputs.latest }}
         run: |
           version=$(python scripts/check_release.py)
+          test "$version" = "$PORTAL_VERSION"
+          test "$(git rev-parse HEAD)" = "$PORTAL_SHA"
           git fetch origin main --tags
-          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" || { echo 'A main avançou. Execute novamente para validar o novo commit.'; exit 1; }
-          echo "value=$version" >> "$GITHUB_OUTPUT"
+          git merge-base --is-ancestor HEAD origin/main || { echo 'O commit não pertence à main.'; exit 1; }
+          if test "$PORTAL_LATEST" = true; then
+            test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" || { echo 'A main avançou. Execute novamente para validar o novo commit.'; exit 1; }
+          fi
       - name: Criar tag oficial e release
         env:
           GH_TOKEN: ${{ github.token }}
-          PORTAL_VERSION: ${{ steps.version.outputs.value }}
+          PORTAL_TAG: ${{ needs.prepare.outputs.tag }}
+          PORTAL_LATEST: ${{ needs.prepare.outputs.latest }}
           GIT_COMMITTER_NAME: Emerson Franco
           GIT_COMMITTER_EMAIL: 132287925+sonmook@users.noreply.github.com
         run: |
-          tag="v$PORTAL_VERSION"
+          tag="$PORTAL_TAG"
           if git show-ref --verify --quiet "refs/tags/$tag"; then
             test "$(git rev-list -n 1 "$tag")" = "$(git rev-parse HEAD)" || { echo 'A tag já aponta para outro commit; não será sobrescrita.'; exit 1; }
           else
             git tag -a "$tag" -m "Portal de TI $tag"
             git push origin "$tag"
           fi
-          # A repetição após uma falha de publicação reaproveita a tag, sem movê-la.
+          # Repetir a ação não move tags nem reescreve Releases existentes.
           releases=$(gh api "repos/$GITHUB_REPOSITORY/releases" --paginate --jq '.[].tag_name')
           if printf '%s\n' "$releases" | grep -Fxq "$tag"; then
             echo 'Release já publicada.'
           else
-            gh release create "$tag" --verify-tag --title "Portal de TI $tag" --notes-file "docs/releases/$tag.md" --latest
+            gh release create "$tag" --verify-tag --title "Portal de TI $tag" --notes-file "docs/releases/$tag.md" --latest="$PORTAL_LATEST"
           fi
