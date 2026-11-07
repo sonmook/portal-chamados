@@ -43,7 +43,7 @@ class EquipesTests(TestCase):
         self.assertEqual(Client().get(self.lista).status_code, 302)
 
     def test_menu_listagem_e_criacao_auditada(self):
-        self.assertContains(self.client.get(reverse('lista_chamados')), 'Gerenciar Equipes')
+        self.assertContains(self.client.get(reverse('lista_chamados')), 'Administração')
         self.assertContains(self.client.get(self.lista), self.equipe.nome)
         resposta = self.client.post(self.nova, self.dados(nome='Nova equipe', versao_atual=0))
         self.assertRedirects(resposta, self.lista)

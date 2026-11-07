@@ -12,7 +12,7 @@ Usamos `MAJOR.MINOR.PATCH`: mudanças incompatíveis incrementam MAJOR; funciona
 
 ## Publicar a versão atual
 
-Após o merge, abra **Actions → Publicar versão → Run workflow**, escolha a branch **main** e a opção **atual**. O fluxo lê `VERSION` e publica a versão do código validado; nesta preparação, **v1.6.0**.
+Após o merge, abra **Actions → Publicar versão → Run workflow**, escolha a branch **main** e a opção **atual**. O fluxo lê `VERSION` e publica a versão do código validado; nesta preparação, **v1.7.0**.
 
 As versões **v1.3.0 e v1.4.0 já foram registradas**. As opções `v1.3.0` e `v1.5.0` permitem recuperar versões históricas anteriores à atual. São resolvidas pelo histórico principal, não recebem Latest e não alteram tags ou Releases existentes. A v1.3.0 corresponde ao commit e97932d e a v1.5.0 ao commit 421fed7.
 
@@ -20,9 +20,11 @@ Na homologação, o certificado público é copiado temporariamente para dentro 
 
 Cada publicação repete os três jobs do CI (testes, dependências e homologação) com checkout do SHA escolhido, e publica o mesmo commit. A ação não instala a atualização em servidores ou no Windows automaticamente.
 
-## Registrar as versões pendentes v1.5.0 e v1.6.0
+## Registro histórico das versões v1.5.0 e v1.6.0
 
-A main já contém a v1.6.0. Publicar somente **atual** não cria a Release intermediária de notificações. Depois do merge deste ajuste e dos três checks aprovados:
+As tags v1.5.0 e v1.6.0 já foram registradas. O procedimento abaixo documenta a publicação realizada quando a main estava em 1.6.0; a opção **atual** sempre lê VERSION e nesta preparação publica 1.7.0. Não a use para recriar uma versão anterior.
+
+Procedimento histórico:
 
 1. Abra **Actions → Publicar versão → Run workflow** na branch **main** e selecione **v1.5.0**. A ação valida o commit histórico `421fed7` (notificações), cria a tag oficial e publica as notas da v1.5.0 sem marcar Latest.
 2. Aguarde a conclusão dessa execução. Confira a Release em **Releases → Portal de TI v1.5.0**.

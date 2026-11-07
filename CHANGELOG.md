@@ -1,5 +1,14 @@
 # Histórico de atualizações
 
+## v1.7.0 — Central de Administração
+
+- Acesso único Administração no cabeçalho substitui Gerenciar Usuários e Gerenciar Equipes.
+- Central com Usuários, Equipes, Encaminhamento, Conquistas e Auditoria, reutilizando as telas existentes.
+- Acesso exclusivo para administradores, verificado no servidor; permissões de técnicos e coordenadores preservadas.
+- Navegação destaca Administração nas telas de gestão e mantém Conquistas para a coleção pessoal.
+- Caminho de retorno à central nas telas administrativas. Auditoria continua somente consultável.
+- Sem migração, nova dependência ou alteração de dados. Notas em `docs/releases/v1.7.0.md`.
+
 ## v1.6.0 — Alertas de SLA e filtros de prazo
 
 - Publicação permite registrar a v1.5.0 histórica (notificações) antes da versão atual, sem mover tags existentes ou atribuir Latest à versão histórica.
