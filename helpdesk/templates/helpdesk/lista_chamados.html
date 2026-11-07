@@ -41,6 +41,13 @@
                     <input type="text" name="q" aria-label="Buscar chamado por assunto ou descrição" class="form-control border-start-0 ps-0" placeholder="Buscar chamado..." value="{{ query|default_if_none:'' }}">
                 </div>
 
+                {% if request.user.is_staff or request.user.is_superuser %}
+                <select name="fila" aria-label="Filtrar por fila" class="form-select form-select-sm" style="width: auto;">
+                    <option value="">Todas as filas acessíveis</option>
+                    <option value="minha" {% if fila_filter == 'minha' %}selected{% endif %}>Minha fila (ativos)</option>
+                </select>
+                {% endif %}
+
                 <select aria-label="Filtrar por status" name="status" class="form-select form-select-sm shadow-sm" style="width: auto; min-width: 150px;">
                     <option value="">Todos os Status</option>
                     <option value="Aberto" {% if status_filter == 'Aberto' %}selected{% endif %}>🔴 Aberto</option>
@@ -63,7 +70,7 @@
                 {% endif %}
                 <button type="submit" class="btn btn-sm btn-dark shadow-sm px-3 fw-bold">Filtrar</button>
 
-                {% if query or status_filter or categoria_filter or equipe_filter or ordenacao != 'novos' %}
+                {% if query or status_filter or categoria_filter or equipe_filter or fila_filter or ordenacao != 'novos' %}
                     <a href="{% url 'lista_chamados' %}" class="btn btn-sm btn-outline-danger shadow-sm px-3 fw-bold d-flex align-items-center gap-1" title="Remover todos os filtros">
                         <i class="bi bi-x-circle-fill"></i> Limpar
                     </a>
@@ -77,10 +84,13 @@
             </form>
         </div>
 
-        {% if query or status_filter %}
+        {% if query or status_filter or fila_filter %}
         <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
             <span class="text-muted small fw-bold"><i class="bi bi-funnel-fill"></i> Filtros aplicados:</span>
             
+            {% if fila_filter == 'minha' %}
+            <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 fw-normal">Minha fila: chamados ativos atribuídos a você</span>
+            {% endif %}
             {% if query %}
             <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 fw-normal">
                 Busca: <span class="text-muted fst-italic">"{{ query }}"</span>
@@ -202,7 +212,7 @@
                             <td colspan="10" class="text-center py-5 text-muted">
                                 <div class="d-flex flex-column align-items-center justify-content-center w-100">
                                     <i class="bi bi-search fs-1 d-block mb-3 opacity-25"></i>
-                                    <h6 class="fw-bold">Nenhum chamado encontrado.</h6>
+                                    <h6 class="fw-bold">{% if fila_filter == 'minha' %}Nenhum chamado ativo atribuído a você com os filtros atuais.{% else %}Nenhum chamado encontrado.{% endif %}</h6>
                                     <p class="small mb-0">Tente limpar os filtros ou buscar por outro termo.</p>
                                 </div>
                             </td>
