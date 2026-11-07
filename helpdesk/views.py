@@ -115,6 +115,14 @@ def lista_chamados(request):
     query = request.GET.get('q')
     status_filter = request.GET.get('status')
     categoria_filter = request.GET.get('categoria')
+    fila_filter = request.GET.get('fila', '')
+    if fila_filter not in ('', 'minha'):
+        fila_filter = ''
+    if fila_filter == 'minha':
+        if request.user.is_staff or request.user.is_superuser:
+            chamados_list = chamados_list.filter(tecnico_id=request.user.pk).exclude(status__in=FINALIZADOS)
+        else:
+            chamados_list = chamados_list.none()
     equipe_filter = request.GET.get('equipe', '')
     chamados_list = filtrar_equipe(chamados_list, equipe_filter)
     ordenacao = request.GET.get('ordenacao', 'novos')
@@ -151,6 +159,7 @@ def lista_chamados(request):
         'query': query,
         'status_filter': status_filter,
         'categoria_filter': categoria_filter,
+        'fila_filter': fila_filter,
         'ordenacao': ordenacao,
         'equipes_filtro': equipes_acessiveis(request.user), 'equipe_filter': equipe_filter,
     }

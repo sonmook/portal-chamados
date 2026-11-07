@@ -23,3 +23,6 @@ staticfiles/
 # Cópias privadas de homologação
 backups/
 *.sqlite3
+
+# Certificado temporário do build, montado somente como secret do BuildKit.
+.build-ca-*
