@@ -60,3 +60,29 @@ class ResolveReleaseTests(TestCase):
         self.commit('versao-invalida', 'invalida')
         with self.assertRaises(ValueError):
             resolve_release('atual', self.repo)
+
+    def test_historica_150_escolhe_integracao_correta_sem_receber_latest(self):
+        original = self.commit('1.4.0', 'catalogo')
+        self.git('tag', 'v1.4.0')
+        self.commit('1.5.0', 'notificacoes')
+        historico = self.commit('1.5.0', 'integracao-notificacoes')
+        self.commit('1.6.0', 'alertas')
+        atual = self.commit('1.6.0', 'ajuste-publicacao')
+        self.assertEqual(resolve_release('v1.5.0', self.repo),
+            {'sha': historico, 'version': '1.5.0', 'tag': 'v1.5.0', 'latest': 'false'})
+        self.assertEqual(resolve_release('atual', self.repo),
+            {'sha': atual, 'version': '1.6.0', 'tag': 'v1.6.0', 'latest': 'true'})
+        self.assertEqual(self.git('rev-parse', 'v1.4.0'), original)
+        self.assertEqual(self.git('tag', '--list'), 'v1.4.0')
+
+    def test_150_ausente_lateral_ou_ainda_atual_nao_e_publicada_como_historica(self):
+        base = self.commit('1.4.0', 'base')
+        self.git('checkout', '-qb', 'lateral150')
+        self.commit('1.5.0', 'apenas lateral')
+        self.git('checkout', '-q', base)
+        self.commit('1.6.0', 'main')
+        with self.assertRaisesRegex(ValueError, 'v1.5.0'):
+            resolve_release('v1.5.0', self.repo)
+        self.commit('1.5.0', 'atual150')
+        with self.assertRaisesRegex(ValueError, 'anterior'):
+            resolve_release('v1.5.0', self.repo)

@@ -14,11 +14,22 @@ Usamos `MAJOR.MINOR.PATCH`: mudanças incompatíveis incrementam MAJOR; funciona
 
 Após o merge, abra **Actions → Publicar versão → Run workflow**, escolha a branch **main** e a opção **atual**. O fluxo lê `VERSION` e publica a versão do código validado; nesta preparação, **v1.6.0**.
 
-As versões **v1.3.0 e v1.4.0 já foram registradas**. A opção `v1.3.0` permanece disponível apenas para recuperação histórica: resolve o commit e97932d, não recebe Latest e não altera tags ou Releases existentes.
+As versões **v1.3.0 e v1.4.0 já foram registradas**. As opções `v1.3.0` e `v1.5.0` permitem recuperar versões históricas anteriores à atual. São resolvidas pelo histórico principal, não recebem Latest e não alteram tags ou Releases existentes. A v1.3.0 corresponde ao commit e97932d e a v1.5.0 ao commit 421fed7.
 
 Na homologação, o certificado público é copiado temporariamente para dentro do contexto permitido pelo Docker Bake e montado como secret. A pasta é excluída da imagem e removida ao final, inclusive em falhas.
 
 Cada publicação repete os três jobs do CI (testes, dependências e homologação) com checkout do SHA escolhido, e publica o mesmo commit. A ação não instala a atualização em servidores ou no Windows automaticamente.
+
+## Registrar as versões pendentes v1.5.0 e v1.6.0
+
+A main já contém a v1.6.0. Publicar somente **atual** não cria a Release intermediária de notificações. Depois do merge deste ajuste e dos três checks aprovados:
+
+1. Abra **Actions → Publicar versão → Run workflow** na branch **main** e selecione **v1.5.0**. A ação valida o commit histórico `421fed7` (notificações), cria a tag oficial e publica as notas da v1.5.0 sem marcar Latest.
+2. Aguarde a conclusão dessa execução. Confira a Release em **Releases → Portal de TI v1.5.0**.
+3. Execute o mesmo workflow novamente na **main**, agora com **atual**. O fluxo valida o commit atual e publica **v1.6.0** como Latest.
+4. Confira as duas Releases e seus commits. A v1.4.0 e as tags anteriores permanecem intactas.
+
+Cada execução valida testes, dependências e homologação no próprio commit da versão. Se alguma etapa falhar, corrija a causa antes de tentar novamente. A versão atual pode ser conferida antes de publicar com `python scripts/resolve_release.py atual`.
 
 ## Proteções da publicação
 
@@ -28,7 +39,7 @@ Cada publicação repete os três jobs do CI (testes, dependências e homologaç
 - Para a versão atual, se a main avançar durante a validação, a ação termina sem publicar: execute-a novamente para validar o novo commit.
 - Se a tag foi enviada, mas a criação da Release falhou, é possível repetir para o mesmo commit. Não reutilize uma versão para outro commit.
 
-A resolução pode ser inspecionada sem alterações locais ou remotas com `python scripts/resolve_release.py atual` ou `python scripts/resolve_release.py v1.3.0`. Esses comandos exibem SHA, versão, tag e indicação de Latest; não criam tags.
+A resolução pode ser inspecionada sem alterações locais ou remotas com `python scripts/resolve_release.py atual`, `python scripts/resolve_release.py v1.3.0` ou `python scripts/resolve_release.py v1.5.0`. Esses comandos exibem SHA, versão, tag e indicação de Latest; não criam tags.
 
 A versão exibida no portal e no login é carregada ao iniciar o processo. Depois de atualizar o código, reinicie a aplicação; no desenvolvimento, pare o `runserver` com Ctrl+C e inicie-o novamente.
 
