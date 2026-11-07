@@ -17,6 +17,8 @@ Depois do merge do fluxo de publicação, abra **Actions → Publicar versão �
 1. Selecione **v1.3.0** e execute. O fluxo encontra o último commit do histórico principal que ainda contém `VERSION=1.3.0`, valida esse código e publica a tag e a Release históricas. No histórico atual, o commit é **e97932d**, anterior à integração da v1.4.0. A Release histórica não recebe o marcador Latest.
 2. Aguarde a conclusão. Execute novamente selecionando **atual**. O fluxo lê `VERSION` na main, valida esse commit e publica a **v1.4.0** como Latest.
 
+Na homologação, o certificado público é copiado temporariamente para dentro do contexto permitido pelo Docker Bake e montado como secret. A pasta é excluída do contexto enviado à imagem e removida ao final, inclusive em falhas. Isso também permite validar versões históricas com o Bake atual, sem conceder leitura geral ao diretório `/etc`.
+
 Cada execução repete os três jobs do CI (testes, dependências e homologação) com checkout do SHA exato escolhido. A validação da v1.3.0 usa seu próprio código e suas próprias notas, sem marcar o código atual com uma versão antiga. A v1.4.0 pode ser instalada diretamente sobre a v1.2.0: não é necessário instalar a v1.3.0 primeiro.
 
 ## Proteções da publicação

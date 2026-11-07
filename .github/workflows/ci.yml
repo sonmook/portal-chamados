@@ -69,5 +69,16 @@ jobs:
           python-version-file: .python-version
       - name: HTTPS local e restauração isolada
         env:
-          COMPOSE_BAKE: "false"
-        run: python scripts/test_homologacao.py
+          COMPOSE_BAKE: "true"
+        run: |
+          set -euo pipefail
+          # Bake só precisa ler o certificado dentro do contexto permitido.
+          build_ca_dir=$(mktemp -d "$GITHUB_WORKSPACE/.build-ca-XXXXXX")
+          trap 'rm -rf -- "$build_ca_dir"' EXIT
+          cp "${BUILD_CA_BUNDLE:-/etc/ssl/certs/ca-certificates.crt}" "$build_ca_dir/ca.pem"
+          chmod 600 "$build_ca_dir/ca.pem"
+          # Também protege o checkout histórico, anterior a esta regra de exclusão.
+          if ! grep -Fxq '.build-ca-*' .dockerignore; then
+            printf '\n.build-ca-*\n' >> .dockerignore
+          fi
+          BUILD_CA_BUNDLE="$build_ca_dir/ca.pem" python scripts/test_homologacao.py
