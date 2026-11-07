@@ -12,7 +12,7 @@ Usamos `MAJOR.MINOR.PATCH`: mudanças incompatíveis incrementam MAJOR; funciona
 
 ## Publicar a versão atual
 
-Após o merge, abra **Actions → Publicar versão → Run workflow**, escolha a branch **main** e a opção **atual**. O fluxo lê `VERSION` e publica a versão do código validado; nesta preparação, **v1.5.0**.
+Após o merge, abra **Actions → Publicar versão → Run workflow**, escolha a branch **main** e a opção **atual**. O fluxo lê `VERSION` e publica a versão do código validado; nesta preparação, **v1.6.0**.
 
 As versões **v1.3.0 e v1.4.0 já foram registradas**. A opção `v1.3.0` permanece disponível apenas para recuperação histórica: resolve o commit e97932d, não recebe Latest e não altera tags ou Releases existentes.
 

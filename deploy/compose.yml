@@ -1,6 +1,6 @@
 name: portal-homologacao
 services:
-  app:
+  app: &app
     build:
       context: ..
       secrets:
@@ -30,6 +30,20 @@ services:
       interval: 15s
       timeout: 10s
       retries: 5
+      start_period: 30s
+  alertas_sla:
+    <<: *app
+    command: ['python', 'manage.py', 'processar_alertas_sla', '--continuo']
+    volumes:
+      - data:/data
+    depends_on:
+      app:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'python', '-c', 'import pathlib,tempfile,time; p=pathlib.Path(tempfile.gettempdir())/"portal-sla-heartbeat"; raise SystemExit(0 if p.exists() and time.time()-p.stat().st_mtime < 180 else 1)']
+      interval: 15s
+      timeout: 5s
+      retries: 3
       start_period: 30s
   proxy:
     image: caddy:2.10.2-alpine

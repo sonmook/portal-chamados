@@ -37,7 +37,7 @@ SQLite segue sem validação de carga concorrente real de produção.
 
 ## Atendimento por equipes — segunda etapa da v1.1.0
 
-Antes de atualizar, faça backup do banco/uploads e interrompa todos os escritores.
+Antes de atualizar, faça backup do banco/uploads e interrompa todos os escritores, incluindo o serviço `alertas_sla` (ou o comando contínuo no segundo terminal). Reinicie-o depois da migração, junto da aplicação. Veja [Alertas de SLA](alertas-sla.md).
 Execute `python manage.py migrate` antes de iniciar a versão nova. A migração 0015
 acrescenta a equipe obrigatória e a versão de atribuição dos chamados. Ela aponta os
 registros existentes para Central de Serviços — N1, preservando status, datas,

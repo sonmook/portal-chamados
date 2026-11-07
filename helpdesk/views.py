@@ -9,6 +9,7 @@ from .user_security import bloquear_administradores, validar_pendencias
 from .audit import registrar
 from .encaminhamento import criar_chamado_encaminhado
 from .notificacoes import notificar_atribuicao, notificar_resposta, notificar_resolucao
+from .sla import filtrar_sla
 from .acesso import chamados_acessiveis, equipes_acessiveis, integrante_ativo, pode_distribuir, filtrar_equipe
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -124,6 +125,10 @@ def lista_chamados(request):
             chamados_list = chamados_list.filter(tecnico_id=request.user.pk).exclude(status__in=FINALIZADOS)
         else:
             chamados_list = chamados_list.none()
+    sla_filter = request.GET.get('sla', '')
+    if sla_filter not in ('', 'proximos', 'vencidos'):
+        sla_filter = ''
+    chamados_list = filtrar_sla(chamados_list, sla_filter)
     equipe_filter = request.GET.get('equipe', '')
     chamados_list = filtrar_equipe(chamados_list, equipe_filter)
     ordenacao = request.GET.get('ordenacao', 'novos')
@@ -161,6 +166,7 @@ def lista_chamados(request):
         'status_filter': status_filter,
         'categoria_filter': categoria_filter,
         'fila_filter': fila_filter,
+        'sla_filter': sla_filter,
         'ordenacao': ordenacao,
         'equipes_filtro': equipes_acessiveis(request.user), 'equipe_filter': equipe_filter,
     }

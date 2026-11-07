@@ -7,7 +7,7 @@ VPS, domínio, SMTP ou serviços externos e não publica um site automaticamente
 Sem servidor/domínio/acesso ao provedor, OAuth público e entrega real de e-mail
 continuam pendentes. Não usar dados reais antes de concluir as verificações abaixo.
 
-O conjunto usa SQLite persistente e um worker síncrono, adequado apenas a uma
+O conjunto usa SQLite persistente, um worker web síncrono e um processo de alertas, adequado apenas a uma
 homologação de baixo volume, sem garantia de capacidade/concorrência de produção.
 Docker Engine e Compose V2 devem estar disponíveis no servidor. Uma VPS com IP público,
 disco persistente e portas TCP 80/443 liberadas é um caminho compatível; dimensionar
@@ -50,6 +50,8 @@ No build da nuvem, a CA do proxy é fornecida por segredo BuildKit; nunca é cop
 para a imagem. Em Linux comum usa-se o bundle do host; BUILD_CA_BUNDLE pode indicar
 um bundle corporativo aprovado. Nunca desative TLS para contornar falhas.
 
+O serviço `alertas_sla` inicia após o app ficar saudável e verifica os prazos a cada minuto. Veja [Alertas de SLA](alertas-sla.md). Pare esse serviço junto do app antes de backup, migração ou restauração.
+
 ## Google OAuth
 
 - Criar cliente OAuth separado para homologação e cadastrar o callback HTTPS:
@@ -82,12 +84,12 @@ volumes. O comando exige confirmação explícita: ele não detecta todos os esc
 Manter o proxy em manutenção ou interromper acesso durante a janela. Não há backup
 online coerente de banco + arquivos enquanto uploads mudam.
 
-Exemplo com o app parado e nenhuma outra instância escrevendo:
+Exemplo com o app e o processo de alertas parados e nenhuma outra instância escrevendo:
 
 ```bash
-docker compose --env-file .env.homologacao -f deploy/compose.yml stop app
+docker compose --env-file .env.homologacao -f deploy/compose.yml stop alertas_sla app
 docker compose --env-file .env.homologacao -f deploy/compose.yml run --rm --no-deps --entrypoint python app manage.py backup_homologacao /data/backups/ID_NOVO --confirmar-escritores-parados
-docker compose --env-file .env.homologacao -f deploy/compose.yml up -d app
+docker compose --env-file .env.homologacao -f deploy/compose.yml up -d app alertas_sla
 ```
 
 A cópia inclui SQLite (com usuários, chamados, comentários e auditoria), uploads e

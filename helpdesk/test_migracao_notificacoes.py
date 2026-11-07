@@ -5,7 +5,7 @@ from django.test import TransactionTestCase
 
 class MigracaoNotificacoesTests(TransactionTestCase):
     def tearDown(self):
-        MigrationExecutor(connection).migrate([('helpdesk','0023_notificacoes')])
+        MigrationExecutor(connection).migrate([('helpdesk','0024_alertas_sla')])
         super().tearDown()
 
     def test_adiciona_tabela_sem_gerar_alertas_retroativos_ou_alterar_chamado(self):
