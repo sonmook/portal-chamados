@@ -1,7 +1,6 @@
 {% extends 'helpdesk/equipes/base.html' %}
 {% block titulo %}Configurar encaminhamento{% endblock %}
 {% block conteudo %}
-<a href="{% url 'listar_regras_encaminhamento' %}">Voltar às regras</a>
 <h1 class="h2 mt-3">{% if regra.pk %}Editar regra{% else %}Nova regra{% endif %}</h1>
 <p class="text-muted">A alteração vale para novos chamados. Os já abertos mantêm suas equipes.</p>
 <div class="card"><div class="card-body"><form method="post">{% csrf_token %}

@@ -2,6 +2,8 @@
 
 ## v1.7.0 — Central de Administração
 
+- Retorno das telas de gestão unificado no caminho Administração; removidos links antigos duplicados de volta a equipes, conquistas, regras e gerenciamento de usuários.
+
 - Acesso único Administração no cabeçalho substitui Gerenciar Usuários e Gerenciar Equipes.
 - Central com Usuários, Equipes, Encaminhamento, Conquistas e Auditoria, reutilizando as telas existentes.
 - Acesso exclusivo para administradores, verificado no servidor; permissões de técnicos e coordenadores preservadas.
