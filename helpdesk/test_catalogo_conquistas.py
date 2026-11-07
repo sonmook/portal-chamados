@@ -36,7 +36,7 @@ class CatalogoConquistasTests(ConquistasFixtureMixin, TestCase):
 
 class MigracaoCatalogoTests(TransactionTestCase):
     def tearDown(self):
-        MigrationExecutor(connection).migrate([('helpdesk','0022_ampliar_catalogo_conquistas')])
+        MigrationExecutor(connection).migrate([('helpdesk','0023_notificacoes')])
         super().tearDown()
 
     def test_migracao_aditiva_idempotente_sem_concessao_e_sem_modificar_regra_existente(self):

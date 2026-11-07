@@ -3,6 +3,7 @@
 <nav class="navbar navbar-expand-xxl navbar-dark portal-navbar mb-4" aria-label="Navegação principal">
     <div class="container">
         <a class="navbar-brand fw-bold" href="{% url 'lista_chamados' %}"><img class="portal-brand-mark" src="{% static 'helpdesk/brand/simbolo.svg' %}" width="34" height="34" alt=""> Portal de TI</a>
+        <div class="d-flex d-xxl-none ms-auto me-2">{% include 'helpdesk/componentes/sino.html' %}</div>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir ou fechar menu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -21,6 +22,7 @@
             </ul>
             {% endwith %}
             <div class="portal-account">
+                {% include 'helpdesk/componentes/sino.html' with classe='d-none d-xxl-inline-flex' %}
                 <span class="portal-version" aria-label="Versão {{ portal_version }}">v{{ portal_version }}</span>
                 <a class="portal-profile-link" href="{% url 'meu_perfil' %}" aria-label="Meu Perfil">{% include 'helpdesk/componentes/avatar.html' with pessoa=request.user %}<span class="portal-username">{{ request.user.first_name|default:request.user.username }}</span><i class="bi bi-person-circle" aria-hidden="true"></i></a>
                 <form method="post" action="{% url 'logout' %}" class="m-0">{% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-light">Sair</button></form>

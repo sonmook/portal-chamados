@@ -92,8 +92,8 @@ class DashboardTests(TestCase):
         self.assertTrue(all(p['count'] == 0 for p in contexto['produtividade_equipe']))
 
     def test_numero_de_consultas_independe_da_equipe_e_do_volume(self):
-        # O avatar do usuário adiciona uma consulta fixa, sem depender do volume.
-        with self.assertNumQueries(7):
+        # Avatar e contador de notificações adicionam consultas fixas, sem depender do volume.
+        with self.assertNumQueries(8):
             resposta = self.client.get(reverse('dashboard'))
             self.assertEqual(resposta.status_code, 200)
         User.objects.bulk_create([User(username=f'extra-{i}', is_staff=True) for i in range(20)])
@@ -104,7 +104,7 @@ class DashboardTests(TestCase):
                     status='Resolvido', fechado_por=self.outro, data_fechamento=self.agora)
             for i in range(40)
         ])
-        with self.assertNumQueries(7):
+        with self.assertNumQueries(8):
             resposta = self.client.get(reverse('dashboard'))
             self.assertEqual(len(resposta.context['produtividade_equipe']), 24)
             self.assertEqual(len(resposta.context['ultimos_chamados']), 5)

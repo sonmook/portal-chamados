@@ -334,3 +334,27 @@ class Conquista(models.Model):
     @property
     def visual(self):
         return visual(self.icone)
+
+
+class Notificacao(models.Model):
+    TIPOS = [('atribuicao', 'Atribuição atualizada'), ('resposta', 'Nova resposta'),
+             ('transferencia', 'Equipe alterada'), ('resolucao', 'Chamado resolvido')]
+    destinatario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notificacoes')
+    chamado = models.ForeignKey(Chamado, on_delete=models.CASCADE, related_name='notificacoes')
+    tipo = models.CharField(max_length=15, choices=TIPOS)
+    evento = models.CharField(max_length=100)
+    criada_em = models.DateTimeField(auto_now_add=True)
+    lida_em = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-criada_em', '-pk']
+        constraints = [
+            models.UniqueConstraint(fields=['destinatario', 'evento'], name='notificacao_dest_evento_unico'),
+            models.CheckConstraint(condition=models.Q(tipo__in=['atribuicao', 'resposta', 'transferencia', 'resolucao']), name='notificacao_tipo_valido'),
+        ]
+        indexes = [models.Index(fields=['destinatario', 'lida_em', '-criada_em'], name='notificacao_dest_lida_data')]
+
+    @property
+    def icone(self):
+        return {'atribuicao': 'person-check', 'resposta': 'chat-left-text',
+                'transferencia': 'arrow-left-right', 'resolucao': 'check-circle'}.get(self.tipo, 'bell')

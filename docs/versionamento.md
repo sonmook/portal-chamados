@@ -10,16 +10,15 @@ Usamos `MAJOR.MINOR.PATCH`: mudanças incompatíveis incrementam MAJOR; funciona
 2. Atualize `VERSION`, a entrada do `CHANGELOG.md`, as notas em `docs/releases/vX.Y.Z.md` e a indicação no README.
 3. Execute `python scripts/check_release.py` e a validação do projeto. Abra um PR e confirme os três checks antes do merge.
 
-## Registrar as versões pendentes
+## Publicar a versão atual
 
-Depois do merge do fluxo de publicação, abra **Actions → Publicar versão → Run workflow**, sempre na branch **main**.
+Após o merge, abra **Actions → Publicar versão → Run workflow**, escolha a branch **main** e a opção **atual**. O fluxo lê `VERSION` e publica a versão do código validado; nesta preparação, **v1.5.0**.
 
-1. Selecione **v1.3.0** e execute. O fluxo encontra o último commit do histórico principal que ainda contém `VERSION=1.3.0`, valida esse código e publica a tag e a Release históricas. No histórico atual, o commit é **e97932d**, anterior à integração da v1.4.0. A Release histórica não recebe o marcador Latest.
-2. Aguarde a conclusão. Execute novamente selecionando **atual**. O fluxo lê `VERSION` na main, valida esse commit e publica a **v1.4.0** como Latest.
+As versões **v1.3.0 e v1.4.0 já foram registradas**. A opção `v1.3.0` permanece disponível apenas para recuperação histórica: resolve o commit e97932d, não recebe Latest e não altera tags ou Releases existentes.
 
-Na homologação, o certificado público é copiado temporariamente para dentro do contexto permitido pelo Docker Bake e montado como secret. A pasta é excluída do contexto enviado à imagem e removida ao final, inclusive em falhas. Isso também permite validar versões históricas com o Bake atual, sem conceder leitura geral ao diretório `/etc`.
+Na homologação, o certificado público é copiado temporariamente para dentro do contexto permitido pelo Docker Bake e montado como secret. A pasta é excluída da imagem e removida ao final, inclusive em falhas.
 
-Cada execução repete os três jobs do CI (testes, dependências e homologação) com checkout do SHA exato escolhido. A validação da v1.3.0 usa seu próprio código e suas próprias notas, sem marcar o código atual com uma versão antiga. A v1.4.0 pode ser instalada diretamente sobre a v1.2.0: não é necessário instalar a v1.3.0 primeiro.
+Cada publicação repete os três jobs do CI (testes, dependências e homologação) com checkout do SHA escolhido, e publica o mesmo commit. A ação não instala a atualização em servidores ou no Windows automaticamente.
 
 ## Proteções da publicação
 
