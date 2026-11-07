@@ -34,7 +34,7 @@ Capturas da v1.7.0 com conta fictícia de demonstração.
 
 Em Administração → Auditoria, filtre o período pelas datas inicial e final (inclusive), tipo de registro, ação e origem. A busca aceita o nome de usuário do responsável, ID do registro de auditoria ou ID do item alterado. Datas seguem o fuso horário configurado no portal. A lista mostra 20 registros por página, dos mais recentes para os mais antigos; filtros são preservados ao paginar. **Limpar** restaura a consulta completa. Filtros inválidos mostram erro, sem retornar uma lista ampla.
 
-**Ver detalhes** mostra data, responsável, origem, item e alterações, com antes/depois quando esses valores existem no histórico. Campos cujo conteúdo não foi armazenado mostram apenas a alteração registrada; informações antigas não são reconstruídas. Registros sem responsável são identificados como Sistema.
+**Ver detalhes** mostra data, responsável, origem, item e alterações, com blocos Antes e Depois quando esses valores existem no histórico. Campos que registram apenas a mudança mostram uma mensagem única, sem colunas vazias. Campos cujo conteúdo não foi armazenado mostram apenas a alteração registrada; informações antigas não são reconstruídas. Registros sem responsável são identificados como Sistema.
 
 O link Administração no topo é o único retorno. A consulta não permite criar, editar ou excluir registros e não produz novos eventos ao ser aberta. A consulta antiga do painel administrativo permanece protegida, mas não é mais o destino do card.
 
@@ -43,3 +43,5 @@ Capturas com histórico fictício de demonstração:
 ![Auditoria dentro do portal](imagens/auditoria-portal.png)
 
 ![Detalhes de um registro no celular](imagens/auditoria-detalhe-mobile.png)
+
+![Alteração de foto apresentada sem colunas vazias; dados fictícios](imagens/auditoria-foto.png)

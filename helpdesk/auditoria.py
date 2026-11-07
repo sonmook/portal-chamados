@@ -113,17 +113,18 @@ def detalhar(alteracoes):
     if not alteracoes:
         return []
     if not isinstance(alteracoes, dict):
-        return [{'campo': 'Detalhes', 'antes': '—', 'depois': formatar(alteracoes)}]
+        return [{'campo': 'Detalhes', 'tipo': 'informacao', 'antes': '—', 'depois': formatar(alteracoes)}]
     linhas = []
     for campo, valor in alteracoes.items():
-        antes, depois = '—', formatar(valor)
+        antes, depois, tipo = '—', formatar(valor), 'informacao'
         if isinstance(valor, dict):
             if 'antes' in valor or 'depois' in valor:
                 antes, depois = formatar(valor.get('antes')), formatar(valor.get('depois'))
+                tipo = 'comparacao'
             elif valor == {'alterado': True}:
-                antes, depois = 'Não armazenado', 'Alteração registrada'
+                tipo = 'marcador'
         linhas.append({'campo': CAMPOS.get(campo, campo.replace('_', ' ').capitalize()),
-                       'antes': antes, 'depois': depois})
+                       'tipo': tipo, 'antes': antes, 'depois': depois})
     return linhas
 
 

@@ -2,6 +2,8 @@
 
 ## v1.7.0 — Central de Administração
 
+- Detalhes de auditoria com resumo alinhado e alterações em blocos: comparação Antes/Depois ou indicação única de campo alterado sem valores armazenados.
+
 - Auditoria nativa do portal, com filtros por período/responsável/ID/tipo/ação/origem, paginação e detalhes protegidos. Sem edição ou exclusão, preservando o histórico existente.
 
 - Retorno das telas de gestão unificado no caminho Administração; removidos links antigos duplicados de volta a equipes, conquistas, regras e gerenciamento de usuários.
