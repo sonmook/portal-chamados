@@ -40,6 +40,7 @@ Acesse **Meu Perfil** pelo avatar ou nome no cabeçalho para visualizar foto, da
 ### 🎫 Gestão de Tickets
 ![Fila de chamados com busca, filtros, status, prioridade e prazo de SLA](docs/imagens/chamados.png)
 
+* **Minha fila:** técnicos e administradores filtram chamados ativos atribuídos à própria conta. O filtro combina com busca, status, equipe e ordenação e permanece na paginação. [Como usar](docs/minha-fila.md).
 * **Fila de Chamados:** Listagem responsiva com filtros combinados (Busca por texto + Status + Categoria).
 * **Última Interação:** Data e tempo desde a última mensagem/solução, com ordenação por interações recentes ou por chamados ativos sem interação há mais tempo. Essa ordenação mede inatividade da conversa; não identifica quem deve responder.
 * **Responsável pelo Atendimento:** Apenas o técnico responsável responde como equipe e encerra o chamado; o solicitante também pode comentar enquanto ele estiver ativo.
