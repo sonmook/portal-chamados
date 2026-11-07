@@ -427,3 +427,26 @@ form label { color: var(--portal-ink); }
 .notificacoes-vazio p, .notificacoes-vazio a { font-size: .8rem; }
 @media (max-width: 767.98px) { .notificacao { align-items: flex-start; flex-wrap: wrap; gap: 12px; padding: 16px; } .notificacao-marcar { flex-basis: 100%; padding-left: 48px; } .notificacoes-cabecalho { align-items: flex-start; } }
 @media (max-width: 399.98px) { .portal-navbar .navbar-brand { margin-right: 4px; font-size: 1rem; } }
+
+/* Central de Administração */
+.administracao-pagina { max-width: 1080px; margin: 2rem auto; }
+.administracao-cabecalho { margin-bottom: 2rem; }
+.administracao-selo { display: inline-flex; align-items: center; gap: .5rem; color: var(--portal-muted); font-size: .8rem; margin-bottom: .7rem; }
+.administracao-cabecalho h1 { font-size: clamp(1.7rem, 4vw, 2rem); font-weight: 700; letter-spacing: -.04em; }
+.administracao-cabecalho p { color: var(--portal-muted); margin: .5rem 0 0; }
+.administracao-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.administracao-card { display: flex; align-items: flex-start; gap: 1rem; padding: 1.5rem; color: var(--portal-ink); background: white; border: 1px solid var(--portal-line); border-radius: 14px; text-decoration: none; transition: border-color .15s, box-shadow .15s; }
+.administracao-card:hover, .administracao-card:focus-visible { color: var(--portal-ink); border-color: var(--portal-blue); box-shadow: 0 4px 16px rgb(23 43 69 / 6%); }
+.administracao-card:focus-visible { outline: 2px solid var(--portal-blue); outline-offset: 3px; }
+.administracao-icone { display: grid; place-items: center; flex: 0 0 42px; height: 42px; border-radius: 12px; background: #edf3fc; color: var(--portal-blue); font-size: 1.2rem; }
+.administracao-card h2 { font-size: 1rem; font-weight: 650; margin: .1rem 0 .5rem; }
+.administracao-card p { font-size: .875rem; color: var(--portal-muted); margin: 0; }
+.administracao-seta { margin-left: auto; color: var(--portal-muted); font-size: .8rem; }
+.administracao-rodape { display: flex; gap: .5rem; align-items: center; color: var(--portal-muted); font-size: .8rem; margin-top: 1.5rem; }
+.administracao-caminho { display: flex; gap: .65rem; font-size: .8rem; color: var(--portal-muted); margin-bottom: 1.25rem; }
+.administracao-caminho a { text-decoration: none; }
+@media (max-width: 575.98px) {
+    .administracao-pagina { margin: 1rem auto; }
+    .administracao-grade { grid-template-columns: minmax(0, 1fr); }
+    .administracao-card { padding: 1.15rem; gap: .8rem; }
+}

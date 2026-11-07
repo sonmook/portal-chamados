@@ -1,0 +1,13 @@
+{% extends 'helpdesk/equipes/base.html' %}
+{% block titulo %}Administração{% endblock %}
+{% block conteudo %}
+<div class="administracao-pagina">
+<header class="administracao-cabecalho"><span class="administracao-selo"><i class="bi bi-gear" aria-hidden="true"></i> Gestão do portal</span><h1>Administração</h1><p>Organize pessoas, equipes e configurações em um só lugar.</p></header>
+<section class="administracao-grade" aria-label="Ferramentas de administração">
+{% for ferramenta in ferramentas %}
+<a class="administracao-card" href="{% url ferramenta.url %}"><span class="administracao-icone"><i class="bi bi-{{ ferramenta.icone }}" aria-hidden="true"></i></span><div><h2>{{ ferramenta.nome }}</h2><p>{{ ferramenta.descricao }}</p></div><i class="bi bi-arrow-up-right administracao-seta" aria-hidden="true"></i></a>
+{% endfor %}
+</section>
+<p class="administracao-rodape"><i class="bi bi-shield-lock" aria-hidden="true"></i> Área exclusiva para administradores.</p>
+</div>
+{% endblock %}

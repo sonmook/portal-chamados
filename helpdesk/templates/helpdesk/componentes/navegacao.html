@@ -14,11 +14,10 @@
                 {% if request.user.is_staff %}
                 <li class="nav-item"><a class="nav-link{% if pagina == 'dashboard' %} active" aria-current="page{% endif %}" href="{% url 'dashboard' %}"><i class="bi bi-bar-chart" aria-hidden="true"></i> Dashboard</a></li>
                 {% endif %}
+                <li class="nav-item"><a class="nav-link{% if pagina == 'minhas_conquistas' %} active" aria-current="page{% endif %}" href="{% url 'minhas_conquistas' %}"><i class="bi bi-trophy" aria-hidden="true"></i> Conquistas</a></li>
                 {% if request.user.is_superuser %}
-                <li class="nav-item"><a class="nav-link{% if pagina == 'gerenciar_usuarios' or pagina == 'criar_usuario' or pagina == 'editar_usuario' %} active" aria-current="page{% endif %}" href="{% url 'gerenciar_usuarios' %}"><i class="bi bi-people" aria-hidden="true"></i> Gerenciar Usuários</a></li>
-                <li class="nav-item"><a class="nav-link{% if pagina == 'gerenciar_equipes' or pagina == 'criar_equipe' or pagina == 'editar_equipe' or pagina == 'listar_regras_encaminhamento' or pagina == 'criar_regra_encaminhamento' or pagina == 'editar_regra_encaminhamento' %} active" aria-current="page{% endif %}" href="{% url 'gerenciar_equipes' %}"><i class="bi bi-diagram-3" aria-hidden="true"></i> Gerenciar Equipes</a></li>
+                <li class="nav-item"><a class="nav-link{% if secao_administrativa %} active" aria-current="page{% endif %}" href="{% url 'central_administracao' %}"><i class="bi bi-gear" aria-hidden="true"></i> Administração</a></li>
                 {% endif %}
-                <li class="nav-item"><a class="nav-link{% if pagina == 'minhas_conquistas' or pagina == 'gerenciar_conquistas' or pagina == 'editar_conquista' or pagina == 'criar_plano' or pagina == 'editar_plano' or pagina == 'prever_plano' or pagina == 'aparencia_plano' %} active" aria-current="page{% endif %}" href="{% url 'minhas_conquistas' %}"><i class="bi bi-trophy" aria-hidden="true"></i> Conquistas</a></li>
             </ul>
             {% endwith %}
             <div class="portal-account">
@@ -30,3 +29,7 @@
         </div>
     </div>
 </nav>
+
+{% if request.user.is_superuser and secao_administrativa and not central_administrativa %}
+<nav class="container administracao-caminho" aria-label="Localização na administração"><a href="{% url 'central_administracao' %}">Administração</a><span aria-hidden="true">/</span><span>{{ secao_administrativa }}</span></nav>
+{% endif %}
