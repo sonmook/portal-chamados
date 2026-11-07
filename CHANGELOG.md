@@ -2,6 +2,8 @@
 
 ## v1.6.0 — Alertas de SLA e filtros de prazo
 
+- Publicação permite registrar a v1.5.0 histórica (notificações) antes da versão atual, sem mover tags existentes ou atribuir Latest à versão histórica.
+
 - Avisos de prazo próximo (até 1 hora) e vencido ao responsável; sem responsável, os coordenadores recebem os avisos de prazo e de fila sem dono.
 - Processamento periódico por comando Django, com serviço automático no Docker; não depende de abrir páginas.
 - Deduplicação por prazo, situação e destinatário; leitura não reinicia avisos. Novo ciclo de atribuição permite novo aviso de chamado sem responsável.

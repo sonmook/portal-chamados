@@ -1,10 +1,11 @@
-"""Resolve a versão atual ou a v1.3.0 histórica, sem criar ou mover tags."""
+"""Resolve a versão atual ou versões históricas autorizadas, sem criar ou mover tags."""
 from pathlib import Path
 import re
 import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parent.parent
+HISTORICAS = ('v1.3.0', 'v1.5.0')
 SEMVER = re.compile(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)')
 
 
@@ -21,8 +22,8 @@ def version_at(repository, sha):
 
 
 def resolve_release(selection='atual', repository=ROOT):
-    if selection not in ('atual', 'v1.3.0'):
-        raise ValueError('Selecione atual ou v1.3.0.')
+    if selection not in ('atual', *HISTORICAS):
+        raise ValueError('Selecione atual, v1.3.0 ou v1.5.0.')
     head = git(repository, 'rev-parse', 'HEAD')
     current = version_at(repository, head)
     if not current or not SEMVER.fullmatch(current):
@@ -36,12 +37,12 @@ def resolve_release(selection='atual', repository=ROOT):
     for sha in git(repository, 'rev-list', '--first-parent', head).splitlines():
         if version_at(repository, sha) == wanted:
             return {'sha': sha, 'version': wanted, 'tag': selection, 'latest': 'false'}
-    raise ValueError('A v1.3.0 não foi encontrada no histórico principal; nenhuma tag será criada.')
+    raise ValueError(f'A {selection} não foi encontrada no histórico principal; nenhuma tag será criada.')
 
 
 if __name__ == '__main__':
     if len(sys.argv) > 2:
-        raise SystemExit('Uso: python scripts/resolve_release.py [atual|v1.3.0]')
+        raise SystemExit('Uso: python scripts/resolve_release.py [atual|v1.3.0|v1.5.0]')
     try:
         result = resolve_release(sys.argv[1] if len(sys.argv) == 2 else 'atual')
     except (ValueError, subprocess.CalledProcessError) as error:
