@@ -56,6 +56,12 @@
                     <option value="Resolvido" {% if status_filter == 'Resolvido' %}selected{% endif %}>🟢 Resolvido</option>
                 </select>
 
+                <select name="sla" aria-label="Filtrar por prazo SLA" class="form-select form-select-sm" style="width: auto;">
+                    <option value="">Todos os prazos</option>
+                    <option value="proximos" {% if sla_filter == 'proximos' %}selected{% endif %}>Próximos do prazo (até 1h)</option>
+                    <option value="vencidos" {% if sla_filter == 'vencidos' %}selected{% endif %}>SLA vencido</option>
+                </select>
+
                 {% if categoria_filter %}<input type="hidden" name="categoria" value="{{ categoria_filter }}">{% endif %}
                 <select name="ordenacao" aria-label="Ordenação dos chamados" class="form-select form-select-sm shadow-sm" style="width: auto;">
                     <option value="novos" {% if ordenacao == 'novos' %}selected{% endif %}>Aberturas mais recentes</option>
@@ -70,7 +76,7 @@
                 {% endif %}
                 <button type="submit" class="btn btn-sm btn-dark shadow-sm px-3 fw-bold">Filtrar</button>
 
-                {% if query or status_filter or categoria_filter or equipe_filter or fila_filter or ordenacao != 'novos' %}
+                {% if query or status_filter or categoria_filter or equipe_filter or fila_filter or sla_filter or ordenacao != 'novos' %}
                     <a href="{% url 'lista_chamados' %}" class="btn btn-sm btn-outline-danger shadow-sm px-3 fw-bold d-flex align-items-center gap-1" title="Remover todos os filtros">
                         <i class="bi bi-x-circle-fill"></i> Limpar
                     </a>
@@ -84,10 +90,11 @@
             </form>
         </div>
 
-        {% if query or status_filter or fila_filter %}
+        {% if query or status_filter or fila_filter or sla_filter %}
         <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
             <span class="text-muted small fw-bold"><i class="bi bi-funnel-fill"></i> Filtros aplicados:</span>
             
+            {% if sla_filter %}<span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 fw-normal">{% if sla_filter == 'proximos' %}Prazo: próximos do vencimento (até 1h){% else %}Prazo: SLA vencido{% endif %}</span>{% endif %}
             {% if fila_filter == 'minha' %}
             <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 fw-normal">Minha fila: chamados ativos atribuídos a você</span>
             {% endif %}

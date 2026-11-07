@@ -10,10 +10,12 @@ O sino no cabeçalho abre **Notificações**. Ele mostra a quantidade de avisos 
 | Nova resposta | Solicitante e responsável atual. Sem responsável, coordenadores ativos da equipe. |
 | Transferência de equipe | Participantes acima, considerando o destino. O responsável anterior só recebe se ainda tiver acesso. |
 | Resolução | Solicitante e responsável atual. |
+| SLA próximo (até 1h) ou vencido | Responsável ativo e integrante da equipe; sem responsável, coordenadores ativos da equipe. |
+| Chamado sem responsável | Coordenadores ativos da equipe, enquanto o chamado estiver ativo. |
 
-A pessoa que realizou a ação e contas inativas são excluídas. Outros técnicos e administradores não envolvidos não recebem cópias gerais. Uma solução gera somente o aviso de resolução, sem aviso de resposta duplicado. Novos chamados ainda sem interação não geram aviso nesta etapa.
+Nos avisos de ações, a pessoa que realizou a ação é excluída. Contas inativas nunca recebem avisos. Alertas automáticos de SLA não têm autor e podem avisar quem abriu o próprio chamado, se essa pessoa for o responsável ou coordenador destinatário. Outros técnicos e administradores não envolvidos não recebem cópias gerais. Uma solução gera somente o aviso de resolução, sem aviso de resposta duplicado. Novos chamados sem responsável podem gerar aviso aos coordenadores na próxima verificação periódica.
 
-Somente ações bem-sucedidas pelos fluxos do portal geram notificações. Edições diretas no ORM/Admin, GETs, formulários inválidos e conflitos de atribuição não geram avisos. A migração não analisa o histórico para criar notificações antigas.
+Os avisos de atribuição, resposta, transferência e resolução são gerados somente por ações bem-sucedidas pelos fluxos do portal. Edições diretas no ORM/Admin, GETs, formulários inválidos e conflitos de atribuição não geram esses quatro avisos. A migração não cria avisos antigos. O processo de SLA analisa os chamados ativos existentes, inclusive os já vencidos, na primeira execução; não reconstitui avisos de chamados finalizados. [Execução e deduplicação](alertas-sla.md).
 
 ## Ler e acompanhar
 
@@ -34,7 +36,7 @@ Os avisos integram a transação da ação do chamado. Falhas revertem a ação 
 
 ## Atualização
 
-Faça backup, atualize o código, execute `python manage.py migrate` para aplicar a **0023**, colete estáticos em produção e reinicie. As notificações e datas de leitura ficam no banco SQLite e são incluídas no backup/restauração existente. Não há nova dependência ou credencial externa.
+Faça backup, atualize o código, execute `python manage.py migrate` para aplicar a **0024**, colete estáticos em produção e reinicie. As notificações e datas de leitura ficam no banco SQLite e são incluídas no backup/restauração existente. Não há nova dependência ou credencial externa.
 
 ![Central com avisos fictícios](imagens/notificacoes.png)
 

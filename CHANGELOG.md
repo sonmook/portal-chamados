@@ -1,5 +1,15 @@
 # Histórico de atualizações
 
+## v1.6.0 — Alertas de SLA e filtros de prazo
+
+- Avisos de prazo próximo (até 1 hora) e vencido ao responsável; sem responsável, os coordenadores recebem os avisos de prazo e de fila sem dono.
+- Processamento periódico por comando Django, com serviço automático no Docker; não depende de abrir páginas.
+- Deduplicação por prazo, situação e destinatário; leitura não reinicia avisos. Novo ciclo de atribuição permite novo aviso de chamado sem responsável.
+- Filtros de prazo combinam com Minha fila, busca, equipes e paginação, respeitando permissões atuais e excluindo finalizados.
+- Migração 0024 amplia os tipos de notificação e adiciona índice de status/prazo; preserva dados e não cria avisos durante a migração.
+- Backup com aplicação e processo de alertas parados; validação de restauração inclui os novos tipos.
+- Sem nova dependência. Operação e atualização em `docs/alertas-sla.md` e `docs/releases/v1.6.0.md`.
+
 ## v1.5.0 — Notificações no portal
 
 - Sino com contador pessoal e central paginada, com filtro de não lidas.

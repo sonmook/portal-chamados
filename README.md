@@ -2,7 +2,7 @@
 
 ![Marca do Portal de TI](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.5.0** · [Notas da versão](docs/releases/v1.5.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.6.0** · [Notas da versão](docs/releases/v1.6.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -14,6 +14,12 @@ Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django*
 As capturas da galeria principal foram registradas na **v1.1.0**, com a marca atual, os novos ícones e **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
 
 ---
+
+## Alertas de SLA
+
+A **v1.6.0** avisa o responsável quando faltar até **1 hora** para o prazo ou quando o SLA vencer. Chamados sem responsável são sinalizados aos coordenadores da equipe, sem repetir o mesmo aviso. Use **Próximos do prazo (até 1h)** e **SLA vencido** junto de **Minha fila** para priorizar o atendimento. O Docker inicia a verificação automaticamente; no Windows, execute o comando contínuo em um segundo terminal. [Configuração e critérios](docs/alertas-sla.md).
+
+![Minha fila com filtro de proximidade do SLA; dados fictícios](docs/imagens/fila-sla.png)
 
 ## Notificações
 

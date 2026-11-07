@@ -78,6 +78,9 @@ class Chamado(models.Model):
     equipe = models.ForeignKey('Equipe', on_delete=models.PROTECT, related_name='chamados', default=equipe_triagem_id)
     versao_atribuicao = models.PositiveIntegerField(default=0, editable=False)
 
+    class Meta:
+        indexes = [models.Index(fields=['status', 'data_vencimento'], name='chamado_status_prazo_idx')]
+
     def save(self, *args, **kwargs):
         """
         Sobrescreve o método de salvamento para calcular o SLA automaticamente 
@@ -338,7 +341,9 @@ class Conquista(models.Model):
 
 class Notificacao(models.Model):
     TIPOS = [('atribuicao', 'Atribuição atualizada'), ('resposta', 'Nova resposta'),
-             ('transferencia', 'Equipe alterada'), ('resolucao', 'Chamado resolvido')]
+             ('transferencia', 'Equipe alterada'), ('resolucao', 'Chamado resolvido'),
+             ('sla_proximo', 'SLA próximo do vencimento'), ('sla_vencido', 'SLA vencido'),
+             ('sem_responsavel', 'Chamado sem responsável')]
     destinatario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notificacoes')
     chamado = models.ForeignKey(Chamado, on_delete=models.CASCADE, related_name='notificacoes')
     tipo = models.CharField(max_length=15, choices=TIPOS)
@@ -350,11 +355,13 @@ class Notificacao(models.Model):
         ordering = ['-criada_em', '-pk']
         constraints = [
             models.UniqueConstraint(fields=['destinatario', 'evento'], name='notificacao_dest_evento_unico'),
-            models.CheckConstraint(condition=models.Q(tipo__in=['atribuicao', 'resposta', 'transferencia', 'resolucao']), name='notificacao_tipo_valido'),
+            models.CheckConstraint(condition=models.Q(tipo__in=['atribuicao', 'resposta', 'transferencia', 'resolucao', 'sla_proximo', 'sla_vencido', 'sem_responsavel']), name='notificacao_tipo_valido'),
         ]
         indexes = [models.Index(fields=['destinatario', 'lida_em', '-criada_em'], name='notificacao_dest_lida_data')]
 
     @property
     def icone(self):
         return {'atribuicao': 'person-check', 'resposta': 'chat-left-text',
-                'transferencia': 'arrow-left-right', 'resolucao': 'check-circle'}.get(self.tipo, 'bell')
+                'transferencia': 'arrow-left-right', 'resolucao': 'check-circle',
+                'sla_proximo': 'hourglass-split', 'sla_vencido': 'alarm',
+                'sem_responsavel': 'person-exclamation'}.get(self.tipo, 'bell')

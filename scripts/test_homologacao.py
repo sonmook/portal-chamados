@@ -41,6 +41,8 @@ def main():
         try:
             compose('config','--quiet')
             compose('up','-d','--build','--wait','--wait-timeout','120')
+            logs = compose('logs', 'alertas_sla', capture_output=True, text=True)
+            assert 'Verificação de SLA' in logs.stdout, 'O processo de SLA não iniciou.'
             for _ in range(30):
                 cert = subprocess.run([*base,'exec','-T','proxy','cat','/data/caddy/pki/authorities/local/root.crt'],
                     env=docker_env,capture_output=True)
@@ -119,10 +121,23 @@ from helpdesk.construtor_conquistas import previsao
 response=client.post(f'/conquistas/planos/{plano.pk}/publicar/',{'confirmacao':previsao(plano)['token']},secure=True,HTTP_HOST='localhost')
 assert response.status_code==302
 assert Conquista.objects.filter(regra__plano=plano,usuario=user,nivel='bronze').exists()
-
-
+from datetime import timedelta
+from django.utils import timezone
+from helpdesk.sla import processar_alertas_sla
+agora=timezone.now()
+for titulo,delta,tecnico in [('SLA próximo',30,user),('SLA vencido',-5,user),('Fila sem responsável',2880,None)]:
+    Chamado.objects.create(titulo=titulo,descricao='Fixture SLA',solicitante=cliente,equipe=t.equipe,
+        tecnico=tecnico,data_vencimento=agora+timedelta(minutes=delta))
+processar_alertas_sla(agora)
+quantidade=Notificacao.objects.count()
+processar_alertas_sla(agora)
+assert Notificacao.objects.count()==quantidade
+for tipo in ('sla_proximo','sla_vencido','sem_responsavel'):
+    assert Notificacao.objects.filter(destinatario=user,tipo=tipo).count()==1, tipo
+assert not Notificacao.objects.filter(destinatario=cliente,tipo__in=['sla_proximo','sla_vencido','sem_responsavel']).exists()
+print('PASS: processo periódico iniciado; três tipos de alertas gerados sem duplicação.')
 """)
-            compose('stop','app')
+            compose('stop','alertas_sla','app')
             compose('run','--rm','--no-deps','--entrypoint','python','app','manage.py','backup_homologacao',
                 '/data/backups/validation','--confirmar-escritores-parados')
             compose('run','--rm','--no-deps','--entrypoint','python','app','manage.py','backup_homologacao',
@@ -156,10 +171,12 @@ assert plano.niveis.count()==3
 assert Conquista.objects.filter(regra__plano=plano,usuario__username='validation-only',nivel='bronze',meta=1).exists()
 assert Notificacao.objects.filter(destinatario__username='validation-client',chamado=t,tipo='resposta',lida_em__isnull=False).exists()
 assert Notificacao.objects.filter(destinatario__username='validation-client',chamado=t,tipo='resolucao',lida_em__isnull=True).exists()
+for tipo in ('sla_proximo','sla_vencido','sem_responsavel'):
+    assert Notificacao.objects.filter(destinatario__username='validation-only',tipo=tipo,lida_em__isnull=True).count()==1
 print('PASS: usuário, chamado, comentário, auditoria, anexos, equipes, perfil, conquistas e notificações com estado de leitura restaurados em destino separado.')
 """,restored=True)
         except Exception:
-            subprocess.run([*base,'logs','--tail=60','app','proxy'],env=docker_env,cwd=ROOT)
+            subprocess.run([*base,'logs','--tail=60','app','alertas_sla','proxy'],env=docker_env,cwd=ROOT)
             raise
         finally:
             compose('down','--volumes','--remove-orphans')

@@ -36,9 +36,12 @@ def gerar(chamado, ator_id, tipo, evento, candidatos):
         equipe__ativa=True).values('usuario_id')
     aptos = User.objects.filter(is_active=True, pk__in=candidatos).exclude(pk=ator_id).filter(
         Q(pk=chamado.solicitante_id) | Q(is_superuser=True) | Q(is_staff=True, pk__in=membros))
+    total = 0
     for destinatario in aptos.values_list('pk', flat=True):
-        Notificacao.objects.get_or_create(destinatario_id=destinatario, evento=evento,
+        _, criada = Notificacao.objects.get_or_create(destinatario_id=destinatario, evento=evento,
             defaults={'chamado_id': chamado.pk, 'tipo': tipo})
+        total += int(criada)
+    return total
 
 
 def notificar_atribuicao(chamado, ator_id, tecnico_anterior, equipe_anterior):
