@@ -89,7 +89,7 @@ class AuditoriaPortalTests(TestCase):
         self.r.save(update_fields=['alteracoes'])
         r=self.client.get(self.detalhe)
         self.assertContains(r,'Conta ativa');self.assertContains(r,'Não');self.assertContains(r,'Sim')
-        self.assertContains(r,'Alteração registrada');self.assertContains(r,'Não armazenado')
+        self.assertContains(r,'Os valores anterior e novo não foram armazenados.')
         self.assertNotContains(r,'<script>alert(1)</script>')
         self.assertContains(r,'&lt;script&gt;alert(1)&lt;/script&gt;')
         self.r.alteracoes={};self.r.ator=None;self.r.save(update_fields=['alteracoes','ator'])

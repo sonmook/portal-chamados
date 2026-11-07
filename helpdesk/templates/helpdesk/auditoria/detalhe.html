@@ -2,6 +2,21 @@
 {% block titulo %}Registro de auditoria #{{ registro.pk }}{% endblock %}
 {% block conteudo %}
 <header class="mb-4"><h1 class="h2">Registro #{{ registro.pk }}</h1><p class="text-muted mb-0">Detalhes da alteração registrada. Somente consulta.</p></header>
-<div class="card card-body mb-4"><dl class="row g-3 mb-0"><div class="col-12 col-md-4"><dt>Data e hora</dt><dd class="mb-0">{{ registro.criado_em|date:'d/m/Y H:i:s' }}</dd></div><div class="col-12 col-md-4"><dt>Responsável</dt><dd class="mb-0">{{ registro.ator.username|default:'Sistema' }}</dd></div><div class="col-12 col-md-4"><dt>Origem</dt><dd class="mb-0">{{ registro.origem_legivel }}</dd></div><div class="col-12 col-md-6"><dt>Registro</dt><dd class="mb-0">{{ registro.tipo_legivel }} #{{ registro.objeto_id }}</dd></div><div class="col-12 col-md-6"><dt>Ação</dt><dd class="mb-0">{{ registro.acao_legivel }}</dd></div></dl></div>
-<section class="card card-body"><h2 class="h5">Alterações registradas</h2><p class="small text-muted">“Antes” e “depois” mostram os valores preservados no histórico. Campos marcados como alterados não guardam o conteúdo original.</p><p class="small text-muted d-md-none">Deslize a tabela para ver antes e depois.</p><div class="table-responsive" role="region" aria-label="Detalhes das alterações" tabindex="0"><table class="table auditoria-detalhes mb-0"><thead><tr><th scope="col">Campo</th><th scope="col">Antes</th><th scope="col">Depois / informação</th></tr></thead><tbody>{% for alteracao in alteracoes %}<tr><th scope="row">{{ alteracao.campo }}</th><td><pre>{{ alteracao.antes }}</pre></td><td><pre>{{ alteracao.depois }}</pre></td></tr>{% empty %}<tr><td colspan="3" class="text-muted">Não há detalhes adicionais neste registro.</td></tr>{% endfor %}</tbody></table></div></section>
+<div class="card card-body mb-4"><dl class="auditoria-resumo mb-0">
+<div><dt>Data e hora</dt><dd>{{ registro.criado_em|date:'d/m/Y H:i:s' }}</dd></div>
+<div><dt>Responsável</dt><dd>{{ registro.ator.username|default:'Sistema' }}</dd></div>
+<div><dt>Origem</dt><dd>{{ registro.origem_legivel }}</dd></div>
+<div><dt>Registro</dt><dd>{{ registro.tipo_legivel }} #{{ registro.objeto_id }}</dd></div>
+<div><dt>Ação</dt><dd>{{ registro.acao_legivel }}</dd></div>
+</dl></div>
+<section class="card card-body"><h2 class="h5">Alterações registradas</h2><p class="small text-muted mb-0">Campos afetados por esta ação.</p>
+<div class="auditoria-mudancas">{% for alteracao in alteracoes %}
+<article class="auditoria-mudanca"><h3>{{ alteracao.campo }}</h3>
+{% if alteracao.tipo == 'comparacao' %}
+<dl class="auditoria-valores mb-0"><div><dt>Antes</dt><dd><pre>{{ alteracao.antes }}</pre></dd></div><div><dt>Depois</dt><dd><pre>{{ alteracao.depois }}</pre></dd></div></dl>
+{% elif alteracao.tipo == 'marcador' %}
+<p class="auditoria-sem-valores"><i class="bi bi-info-circle" aria-hidden="true"></i><span>Campo alterado. Os valores anterior e novo não foram armazenados.</span></p>
+{% else %}<p class="small text-muted mb-1">Informação registrada</p><pre>{{ alteracao.depois }}</pre>{% endif %}
+</article>{% empty %}<p class="text-muted mt-3 mb-0">Não há detalhes adicionais neste registro.</p>{% endfor %}</div>
+</section>
 {% endblock %}
