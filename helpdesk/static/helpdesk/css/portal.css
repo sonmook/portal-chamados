@@ -450,3 +450,12 @@ form label { color: var(--portal-ink); }
     .administracao-grade { grid-template-columns: minmax(0, 1fr); }
     .administracao-card { padding: 1.15rem; gap: .8rem; }
 }
+
+/* Consulta de auditoria no portal. */
+.auditoria-tabela { min-width: 800px; font-size: .875rem; }
+.auditoria-tabela th { background: #f7f9fc; color: var(--portal-muted); font-size: .75rem; }
+.auditoria-tabela td, .auditoria-tabela th { padding: 1rem; }
+.auditoria-filtros .errorlist { font-size: .8rem; color: #b42318; padding-left: 1rem; margin: .35rem 0 0; }
+.auditoria-detalhes { min-width: 540px; table-layout: fixed; }
+.auditoria-detalhes th { color: var(--portal-muted); font-size: .85rem; }
+.auditoria-detalhes pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; font-size: .85rem; margin: 0; }

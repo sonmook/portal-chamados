@@ -6,6 +6,8 @@ from django.views.decorators.http import require_GET
 
 SECOES = {
     'central_administracao': 'Administração',
+    'listar_auditoria': 'Auditoria',
+    'detalhe_auditoria': 'Auditoria',
     **dict.fromkeys(('gerenciar_usuarios', 'criar_usuario', 'editar_usuario'), 'Usuários'),
     **dict.fromkeys(('gerenciar_equipes', 'criar_equipe', 'editar_equipe'), 'Equipes'),
     **dict.fromkeys(('listar_regras_encaminhamento', 'criar_regra_encaminhamento', 'editar_regra_encaminhamento'), 'Encaminhamento'),
@@ -21,7 +23,7 @@ FERRAMENTAS = [
      'descricao': 'Defina a equipe de destino para cada categoria de chamado.'},
     {'nome': 'Conquistas', 'icone': 'trophy', 'url': 'gerenciar_conquistas',
      'descricao': 'Revise as configurações das conquistas existentes.'},
-    {'nome': 'Auditoria', 'icone': 'clock-history', 'url': 'admin:helpdesk_registroauditoria_changelist',
+    {'nome': 'Auditoria', 'icone': 'clock-history', 'url': 'listar_auditoria',
      'descricao': 'Consulte o histórico de alterações e seus responsáveis.'},
 ]
 

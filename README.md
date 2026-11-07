@@ -17,7 +17,7 @@ As capturas da galeria principal foram registradas na **v1.1.0**, com a marca at
 
 ## Administração
 
-A **v1.7.0** reúne a gestão em um único acesso **Administração** no cabeçalho. Administradores encontram Usuários, Equipes, Encaminhamento, Conquistas e Auditoria em uma central discreta, com acesso protegido também pelo servidor. As telas de gestão mostram o caminho de volta à central. [Funcionamento](docs/administracao.md).
+A **v1.7.0** reúne a gestão em um único acesso **Administração** no cabeçalho. Administradores encontram Usuários, Equipes, Encaminhamento, Conquistas e Auditoria em uma central discreta, com acesso protegido também pelo servidor. A Auditoria abre no próprio portal, com filtros e detalhes somente para consulta. As telas de gestão mostram o caminho de volta à central. [Funcionamento](docs/administracao.md).
 
 ![Central de Administração com conta fictícia](docs/imagens/administracao.png)
 
