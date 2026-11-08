@@ -119,42 +119,50 @@
 
 
         <p class="table-hint d-lg-none">Toque no número para abrir. Deslize a tabela para ver os demais dados.</p>
+        <div id="colunas-chamados" data-salvar-url="{% url 'salvar_ordem_colunas' %}">
+        <div class="colunas-controles" hidden>
+            {% csrf_token %}
+            <span class="colunas-dica">Arraste os títulos para reorganizar.</span>
+            <span class="colunas-estado" role="status" aria-live="polite"></span>
+            <button type="button" class="colunas-repetir" hidden>Tentar salvar novamente</button>
+            <button type="button" class="colunas-restaurar">Restaurar ordem padrão</button>
+        </div>
         <div class="card border-0 shadow-sm overflow-hidden">
             <div class="table-responsive" role="region" aria-label="Lista de chamados" tabindex="0">
                 <table class="table table-hover align-middle mb-0 ticket-table">
                     <thead class="bg-light">
                         <tr>
-                            <th scope="col" class="ps-4 border-0 text-muted small text-uppercase">Ticket</th>
-                            <th scope="col" class="border-0 text-muted small text-uppercase">Assunto / Categoria</th>
-                            <th scope="col" class="border-0 text-muted small text-uppercase">Abertura</th>
-                            <th scope="col" class="border-0 text-muted small text-uppercase text-center">Status</th>
-                            <th scope="col" class="border-0 text-muted small text-uppercase text-center">Prioridade</th>
-                            <th scope="col" class="border-0 text-muted small text-uppercase">Prazo SLA</th>
-                            <th scope="col" class="border-0 text-muted small text-uppercase">Última interação</th>
-                            <th scope="col" class="border-0 text-muted small text-uppercase">Solicitante</th>
-                            <th scope="col" class="border-0 text-muted small text-uppercase text-center">Técnico</th>
-                            <th scope="col" class="pe-4 border-0 text-end">Ações</th>
+                            <th data-coluna="ticket" scope="col" class="border-0 text-muted small text-uppercase">Ticket</th>
+                            <th data-coluna="assunto" scope="col" class="border-0 text-muted small text-uppercase">Assunto / Categoria</th>
+                            <th data-coluna="abertura" scope="col" class="border-0 text-muted small text-uppercase">Abertura</th>
+                            <th data-coluna="status" scope="col" class="border-0 text-muted small text-uppercase text-center">Status</th>
+                            <th data-coluna="prioridade" scope="col" class="border-0 text-muted small text-uppercase text-center">Prioridade</th>
+                            <th data-coluna="sla" scope="col" class="border-0 text-muted small text-uppercase">Prazo SLA</th>
+                            <th data-coluna="interacao" scope="col" class="border-0 text-muted small text-uppercase">Última interação</th>
+                            <th data-coluna="solicitante" scope="col" class="border-0 text-muted small text-uppercase">Solicitante</th>
+                            <th data-coluna="tecnico" scope="col" class="border-0 text-muted small text-uppercase text-center">Técnico</th>
+                            <th data-coluna="acoes" scope="col" class="border-0 text-end">Ações</th>
                         </tr>
                     </thead>
                     <tbody class="border-top-0">
                         {% for chamado in page_obj %}
                         <tr style="transition: all 0.2s;">
-                            <td class="ps-4">
+                            <td data-coluna="ticket" >
                                 <a class="ticket-number fw-bold text-primary" href="{% url 'detalhes_chamado' chamado.id %}" aria-label="Abrir chamado {{ chamado.id }}: {{ chamado.titulo }}">#{{ chamado.id }}</a>
                             </td>
                             
-                            <td class="ticket-subject">
+                            <td data-coluna="assunto" class="ticket-subject">
                                 <div class="fw-bold text-dark">{{ chamado.titulo }}</div>
                                 <span class="badge bg-light text-dark border fw-normal" style="font-size: 0.7rem;">{{ chamado.categoria }}</span>
                                 <div class="small text-muted mt-1">{{ chamado.equipe.nome }}</div>
                             </td>
 
-                            <td>
+                            <td data-coluna="abertura">
                                 <div class="text-dark small fw-bold">{{ chamado.data_criacao|date:"d/m/Y" }}</div>
                                 <span class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-clock"></i> {{ chamado.data_criacao|date:"H:i" }}</span>
                             </td>
                             
-                            <td class="text-center">
+                            <td data-coluna="status" class="text-center">
                                 {% if chamado.status == 'Aberto' %}
                                     <span class="badge rounded-pill bg-danger-subtle text-danger px-3 border border-danger">Aberto</span>
                                 {% elif chamado.status == 'Em Andamento' %}
@@ -164,7 +172,7 @@
                                 {% endif %}
                             </td>
                             
-                            <td class="text-center">
+                            <td data-coluna="prioridade" class="text-center">
                                 {% if chamado.prioridade == 'Crítica' %}
                                     <span class="text-danger fw-bold"><i class="bi bi-fire"></i> {{ chamado.prioridade }}</span>
                                 {% elif chamado.prioridade == 'Alta' %}
@@ -174,7 +182,7 @@
                                 {% endif %}
                             </td>
                             
-                            <td>
+                            <td data-coluna="sla">
                                 {% if chamado.status == 'Resolvido' or chamado.status == 'Fechado' %}
                                     <span class="text-success small fw-bold"><i class="bi bi-check-all"></i> Finalizado</span>
                                 {% elif chamado.sla_estourado %}
@@ -186,11 +194,11 @@
                                 {% endif %}
                             </td>
 
-                            <td class="text-nowrap">
+                            <td data-coluna="interacao" class="text-nowrap">
                                 <div class="small fw-bold">{{ chamado.data_ultima_interacao|date:"d/m/Y H:i" }}</div>
                                 <span class="text-muted small">{{ chamado.data_ultima_interacao|timesince }} atrás</span>
                             </td>
-                            <td>
+                            <td data-coluna="solicitante">
                                 <div class="d-flex align-items-center">
                                     <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 24px; height: 24px; font-size: 0.7rem;">
                                         {{ chamado.solicitante.username|slice:":1"|upper }}
@@ -199,7 +207,7 @@
                                 </div>
                             </td>
                             
-                            <td class="text-center align-middle">
+                            <td data-coluna="tecnico" class="text-center align-middle">
                                 {% if chamado.tecnico %}
                                     <div class="d-inline-flex align-items-center bg-light rounded-pill px-2 py-1 border" title="Atendido por: {{ chamado.tecnico.get_full_name|default:chamado.tecnico.username }}">
                                         <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 22px; height: 22px; font-size: 0.65rem;">
@@ -214,7 +222,7 @@
                                 {% endif %}
                             </td>
 
-                            <td class="pe-4 text-end">
+                            <td data-coluna="acoes" class="text-end">
                                 <a href="{% url 'detalhes_chamado' chamado.id %}" class="btn btn-sm btn-white border shadow-sm px-3 fw-bold" style="font-size: 0.75rem;">ABRIR</a>
                             </td>
                         </tr>
@@ -264,7 +272,11 @@
                     </ul>
                 </nav>
             </div>
+        </div>
         </div> 
     </div>
+{{ colunas_padrao|json_script:"colunas-padrao" }}
+{{ ordem_colunas|json_script:"colunas-salvas" }}
+<script src="{% static 'helpdesk/js/colunas.js' %}" defer></script>
 </body>
 </html>

@@ -365,3 +365,8 @@ class Notificacao(models.Model):
                 'transferencia': 'arrow-left-right', 'resolucao': 'check-circle',
                 'sla_proximo': 'hourglass-split', 'sla_vencido': 'alarm',
                 'sem_responsavel': 'person-exclamation'}.get(self.tipo, 'bell')
+
+
+class PreferenciaListaChamados(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='preferencia_lista_chamados')
+    ordem = models.JSONField(default=list)

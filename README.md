@@ -2,7 +2,7 @@
 
 ![Marca do Portal de TI](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.8.0** · [Notas da versão](docs/releases/v1.8.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.9.0** · [Notas da versão](docs/releases/v1.9.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -14,6 +14,12 @@ Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django*
 As capturas da galeria principal foram registradas na **v1.1.0**, com a marca atual, os novos ícones e **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
 
 ---
+
+## Colunas na sua ordem
+
+A **v1.9.0** permite arrastar os títulos da tabela de chamados para mudar a sequência das colunas. A ordem é salva automaticamente na conta e mantida ao filtrar, paginar ou voltar ao portal. No celular, mantenha o dedo no título e arraste para os lados. Também há movimento por teclado e um comando discreto para restaurar a ordem padrão. [Funcionamento](docs/ordem-colunas.md).
+
+![Colunas reorganizadas com dados fictícios](docs/imagens/ordem-colunas.png)
 
 ## Iniciar no Windows
 

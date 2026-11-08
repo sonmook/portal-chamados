@@ -11,6 +11,7 @@ from .encaminhamento import criar_chamado_encaminhado
 from .notificacoes import notificar_atribuicao, notificar_resposta, notificar_resolucao
 from .sla import filtrar_sla, ATIVOS
 from .operacao import resumo_operacional
+from .colunas import COLUNAS, ordem_usuario
 from .acesso import chamados_acessiveis, equipes_acessiveis, integrante_ativo, pode_distribuir, filtrar_equipe
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -165,6 +166,8 @@ def lista_chamados(request):
     page_obj = paginator.get_page(page_number)
 
     context = {
+        'ordem_colunas': ordem_usuario(request.user),
+        'colunas_padrao': list(COLUNAS),
         'page_obj': page_obj,
         'query': query,
         'status_filter': status_filter,

@@ -84,7 +84,7 @@ import django
 django.setup()
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
-from helpdesk.models import Chamado, Comentario, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista, Notificacao
+from helpdesk.models import Chamado, Comentario, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista, Notificacao, PreferenciaListaChamados
 user=User.objects.create_user(username='validation-only',is_staff=True)
 from io import BytesIO
 from PIL import Image
@@ -100,6 +100,10 @@ cliente=User.objects.create_user(username='validation-client')
 t.solicitante=cliente;t.save(update_fields=['solicitante'])
 from django.test import Client
 client=Client();client.force_login(user)
+from helpdesk.colunas import COLUNAS
+response=client.post('/preferencias/colunas-chamados/',{'ordem':list(reversed(COLUNAS))},content_type='application/json',secure=True,HTTP_HOST='localhost')
+assert response.status_code==200
+assert PreferenciaListaChamados.objects.get(usuario=user).ordem==list(reversed(COLUNAS))
 response=client.post(f'/chamado/{t.pk}/',{'texto':'Atualização de validação para o solicitante.'},secure=True,HTTP_HOST='localhost')
 assert response.status_code==302
 aviso=Notificacao.objects.get(destinatario=cliente,tipo='resposta')
@@ -146,8 +150,10 @@ print('PASS: processo periódico iniciado; três tipos de alertas gerados sem du
 import django
 django.setup()
 from django.contrib.auth.models import User
-from helpdesk.models import Chamado, Comentario, RegistroAuditoria, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista, Notificacao
+from helpdesk.models import Chamado, Comentario, RegistroAuditoria, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista, Notificacao, PreferenciaListaChamados
 assert User.objects.filter(username='validation-only').exists()
+from helpdesk.colunas import COLUNAS
+assert PreferenciaListaChamados.objects.get(usuario__username='validation-only').ordem==list(reversed(COLUNAS))
 assert RegraConquista.objects.filter(codigo='guardiao-sla',meta=50,icone='escudo').exists()
 assert Chamado.objects.filter(titulo='Restauração isolada').exists()
 comment=Comentario.objects.get(texto='Fixture')

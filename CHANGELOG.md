@@ -1,5 +1,15 @@
 # Histórico de atualizações
 
+## v1.9.0 — Ordem pessoal das colunas
+
+- Arraste direto dos títulos da tabela, com indicador discreto ao passar o mouse e salvamento automático por conta.
+- Cabeçalhos e células se movem juntos. Ordem preservada em filtros, paginação e novos acessos na mesma instalação.
+- Toque prolongado no celular, teclado com Alt + setas, cancelamento por Esc e restauração do padrão.
+- Falhas de gravação mostram opção de tentar novamente; requisições sequenciais preservam a última ordem escolhida.
+- API pessoal protegida por login, POST e CSRF, com validação estrita das dez colunas; permissões dos chamados preservadas.
+- Migração 0025 adiciona preferências sem alterar usuários ou histórico. Backup/restauração preserva a ordem salva.
+- Notas em `docs/releases/v1.9.0.md`.
+
 ## v1.8.0 — Resumo operacional da fila
 
 - Inicializador único no Windows com verificação de ambiente, trava contra duplicação e supervisão de portal/alertas. Ctrl+C ou falha de um serviço encerra os dois.
