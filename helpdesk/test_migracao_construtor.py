@@ -6,7 +6,7 @@ from django.utils import timezone
 
 class MigracaoConstrutorTests(TransactionTestCase):
     def tearDown(self):
-        MigrationExecutor(connection).migrate([('helpdesk','0024_alertas_sla')])
+        MigrationExecutor(connection).migrate([('helpdesk','0025_preferencia_colunas')])
         super().tearDown()
 
     def test_preserva_catalogo_medalhas_e_eventos_sem_inventar_trilhas(self):

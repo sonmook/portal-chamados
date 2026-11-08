@@ -492,3 +492,19 @@ form label { color: var(--portal-ink); }
 @media (min-width: 360px) and (max-width: 991.98px) {
     .resumo-indicador-nome { min-height: 2.5rem; }
 }
+
+/* Ordem pessoal das colunas, sem painel de configuração. */
+.colunas-controles { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1rem; margin: 0 0 .65rem; font-size: .75rem; color: var(--portal-muted); }
+.colunas-controles[hidden], .colunas-controles [hidden] { display: none !important; }
+.colunas-restaurar, .colunas-repetir { border: 0; padding: .2rem 0; background: none; color: var(--portal-blue); text-decoration: underline; font: inherit; }
+.colunas-restaurar { margin-left: auto; }
+.colunas-restaurar:disabled { color: var(--portal-muted); opacity: .65; text-decoration: none; }
+.ticket-table th[data-coluna] { position: relative; cursor: grab; user-select: none; touch-action: pan-y; }
+.coluna-grip { position: absolute; right: .1rem; top: 50%; transform: translateY(-50%); opacity: 0; color: var(--portal-blue); }
+.ticket-table th:hover .coluna-grip, .ticket-table th:focus-visible .coluna-grip { opacity: .75; }
+.ticket-table th:focus-visible { outline: 2px solid var(--portal-blue); outline-offset: -3px; }
+.ticket-table th.coluna-em-movimento { background: #e6efff !important; opacity: .7; cursor: grabbing; }
+.colunas-em-movimento { user-select: none; }
+.ticket-table tr > :first-child { padding-left: 1.5rem; }
+.ticket-table tr > :last-child { padding-right: 1.5rem; }
+@media (hover: none) { .coluna-grip { opacity: .5; } }
