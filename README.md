@@ -15,6 +15,16 @@ As capturas da galeria principal foram registradas na **v1.1.0**, com a marca at
 
 ---
 
+## Iniciar no Windows
+
+Com a `.venv` preparada, inicie o portal e os alertas no mesmo terminal:
+
+```powershell
+.\iniciar-portal.cmd
+```
+
+O inicializador localiza a pasta do projeto, verifica Python/dependências/migrações/porta e inicia os dois serviços. **Ctrl+C** encerra ambos. Não instala pacotes, aplica migrações ou cria usuários automaticamente. `tzdata` já está fixado com hashes para a instalação no Windows. [Preparação e solução de erros](docs/inicializacao-windows.md).
+
 ## Resumo operacional da fila
 
 A **v1.8.0** adiciona quatro indicadores clicáveis na Central de Chamados: **Minha fila**, **Sem responsável**, **Próximos do prazo** e **SLA vencido**. As quantidades seguem as permissões e a equipe selecionada. Ao clicar, os outros filtros são limpos e a lista abre no recorte escolhido. Também é possível combinar o novo filtro Sem responsável com prazo, busca e ordenação. Disponível para técnicos e administradores. [Critérios e uso](docs/resumo-operacional.md).
@@ -29,7 +39,7 @@ A **v1.7.0** reúne a gestão em um único acesso **Administração** no cabeça
 
 ## Alertas de SLA
 
-A **v1.6.0** avisa o responsável quando faltar até **1 hora** para o prazo ou quando o SLA vencer. Chamados sem responsável são sinalizados aos coordenadores da equipe, sem repetir o mesmo aviso. Use **Próximos do prazo (até 1h)** e **SLA vencido** junto de **Minha fila** para priorizar o atendimento. O Docker inicia a verificação automaticamente; no Windows, execute o comando contínuo em um segundo terminal. [Configuração e critérios](docs/alertas-sla.md).
+A **v1.6.0** avisa o responsável quando faltar até **1 hora** para o prazo ou quando o SLA vencer. Chamados sem responsável são sinalizados aos coordenadores da equipe, sem repetir o mesmo aviso. Use **Próximos do prazo (até 1h)** e **SLA vencido** junto de **Minha fila** para priorizar o atendimento. O Docker inicia a verificação automaticamente; no Windows, `iniciar-portal.cmd` inicia o portal e esse processo juntos. [Configuração e critérios](docs/alertas-sla.md).
 
 ![Minha fila com filtro de proximidade do SLA; dados fictícios](docs/imagens/fila-sla.png)
 

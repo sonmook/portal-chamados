@@ -4,3 +4,6 @@ django-allauth[socialaccount]>=65.21.1,<66
 gunicorn>=25.3,<26; sys_platform != "win32"
 
 Pillow>=13.0,<14
+
+# Disponível também no Windows, com versão e hashes no lockfile.
+tzdata==2026.6

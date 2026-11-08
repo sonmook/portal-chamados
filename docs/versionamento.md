@@ -8,7 +8,7 @@ Usamos `MAJOR.MINOR.PATCH`: mudanças incompatíveis incrementam MAJOR; funciona
 
 1. Trabalhe em branch, sem alterar a main diretamente.
 2. Atualize `VERSION`, a entrada do `CHANGELOG.md`, as notas em `docs/releases/vX.Y.Z.md` e a indicação no README.
-3. Execute `python scripts/check_release.py` e a validação do projeto. Abra um PR e confirme os três checks antes do merge.
+3. Execute `python scripts/check_release.py` e a validação do projeto. Abra um PR e confirme todos os checks antes do merge.
 
 ## Publicar a versão atual
 
@@ -18,7 +18,7 @@ As versões **v1.3.0 e v1.4.0 já foram registradas**. As opções `v1.3.0` e `v
 
 Na homologação, o certificado público é copiado temporariamente para dentro do contexto permitido pelo Docker Bake e montado como secret. A pasta é excluída da imagem e removida ao final, inclusive em falhas.
 
-Cada publicação repete os três jobs do CI (testes, dependências e homologação) com checkout do SHA escolhido, e publica o mesmo commit. A ação não instala a atualização em servidores ou no Windows automaticamente.
+Cada publicação repete os jobs do CI (testes, dependências, homologação e inicialização no Windows) com checkout do SHA escolhido, e publica o mesmo commit. A etapa nativa Windows se aplica às revisões que já contêm o inicializador; versões históricas anteriores preservam suas validações existentes. A ação não instala a atualização em servidores ou no Windows automaticamente.
 
 ## Registro histórico das versões v1.5.0 e v1.6.0
 

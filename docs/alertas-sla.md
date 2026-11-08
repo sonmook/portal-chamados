@@ -24,23 +24,15 @@ A migração preserva avisos e datas de leitura. Não cria notificações; o pri
 
 ## Windows / desenvolvimento local
 
-Depois do merge, atualize a main, instale as dependências e aplique a migração:
+Com a `.venv` preparada e as migrações aplicadas, use um único terminal:
 
 ```powershell
-git switch main
-git pull origin main
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe manage.py migrate
-.\.venv\Scripts\python.exe manage.py runserver
+.\iniciar-portal.cmd
 ```
 
-Em **outro terminal**, na mesma pasta e com a mesma configuração de banco:
+O comando inicia portal e alertas. **Ctrl+C** encerra ambos. Não execute um segundo comando de alertas ao usar o inicializador. Veja [preparação do Windows](inicializacao-windows.md).
 
-```powershell
-.\.venv\Scripts\python.exe manage.py processar_alertas_sla --continuo
-```
-
-Mantenha esse terminal aberto. Ctrl+C encerra. Para verificar uma vez, retire `--continuo`. `--intervalo 60` define a pausa entre ciclos, entre 5 e 3600 segundos. Falhas de banco no modo contínuo são registradas e tentadas novamente no próximo ciclo; na execução única, o comando termina com erro.
+A execução manual continua disponível: `python manage.py runserver` e, em outro terminal com o mesmo banco/ambiente, `python manage.py processar_alertas_sla --continuo`. Para verificar uma vez, retire `--continuo`. `--intervalo 60` define a pausa entre ciclos, entre 5 e 3600 segundos. Falhas de banco no modo contínuo são registradas e tentadas novamente no próximo ciclo; na execução única, o comando termina com erro.
 
 ## Docker / homologação
 

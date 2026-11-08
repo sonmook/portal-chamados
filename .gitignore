@@ -26,3 +26,6 @@ backups/
 
 # Certificado temporário do build, montado somente como secret do BuildKit.
 .build-ca-*
+
+# Trava local do inicializador (sem dados do portal).
+.portal-local.lock

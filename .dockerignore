@@ -19,3 +19,5 @@ backups
 
 # Certificado temporário do build, montado somente como secret do BuildKit.
 .build-ca-*
+
+.portal-local.lock
