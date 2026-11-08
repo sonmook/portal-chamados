@@ -1,0 +1,9 @@
+{% if resumo_operacional %}
+<section class="resumo-operacional" aria-label="Resumo operacional da fila">
+<div class="resumo-operacional-cabecalho"><h3>Visão da fila</h3><p>{% if equipe_filter %}Chamados ativos da equipe selecionada.{% else %}Chamados ativos nas filas acessíveis.{% endif %}</p></div>
+<div class="resumo-operacional-grade">{% for indicador in resumo_operacional %}
+<a class="resumo-indicador resumo-indicador-{{ indicador.chave }}{% if indicador.ativo %} resumo-indicador-ativo{% endif %}" href="{{ indicador.url }}"{% if indicador.ativo %} aria-current="true"{% endif %} aria-label="{{ indicador.nome }}: {{ indicador.total }} chamado{{ indicador.total|pluralize:'s' }}. Filtrar fila."><span class="resumo-indicador-nome"><i class="bi bi-{{ indicador.icone }}" aria-hidden="true"></i>{{ indicador.nome }}</span><strong>{{ indicador.total }}</strong>{% if indicador.chave == 'proximos' %}<span class="resumo-indicador-legenda">Vencem em até 1 hora</span>{% elif indicador.chave == 'minha' %}<span class="resumo-indicador-legenda">Atribuídos a você</span>{% elif indicador.chave == 'sem_responsavel' %}<span class="resumo-indicador-legenda">Aguardando atribuição</span>{% else %}<span class="resumo-indicador-legenda">Prazo ultrapassado</span>{% endif %}</a>
+{% endfor %}</div>
+<p class="resumo-operacional-ajuda">Os indicadores consideram a equipe selecionada. Ao clicar, os demais filtros são limpos.</p>
+</section>
+{% endif %}
