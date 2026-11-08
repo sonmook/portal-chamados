@@ -15,6 +15,10 @@ class InicializacaoLocalTests(TestCase):
         from django.conf import settings
         debug=patch.object(settings,'DEBUG',True)
         debug.start();self.addCleanup(debug.stop)
+        # Cada cenário parte de uma .venv válida, independentemente do Python
+        # usado pelo runner. O teste de ambiente incorreto sobrescreve isso.
+        prefix=patch.object(local.sys,'prefix',str(local.ROOT/'.venv'))
+        prefix.start();self.addCleanup(prefix.stop)
         self.output=StringIO()
         self.addCleanup(self.output.close)
         self.stdout=redirect_stdout(self.output);self.stdout.__enter__()
