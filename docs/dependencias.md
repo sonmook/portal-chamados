@@ -51,3 +51,7 @@ A imagem Docker foi construída com verificação de hashes/TLS. Este resultado 
 ## Preparação da v1.2.0 — Fotos de perfil
 
 Pillow 13.0.0 adicionado para decodificar, validar, orientar e normalizar as fotos de perfil. As dependências anteriores foram mantidas; o lockfile foi regenerado com hashes.
+
+## Preparação da v1.8.0 — Instalação no Windows
+
+`tzdata==2026.6` passa a ser dependência explícita, com hashes oficiais do wheel e do sdist. Isso permite instalar `requirements.txt` em modo de hashes no Windows sem pré-instalar `tzdata` manualmente. A dependência fica fixada também no Linux para manter o lockfile reproduzível entre plataformas; os pacotes anteriores permanecem nas mesmas versões. O CI inclui instalação nativa no Windows.

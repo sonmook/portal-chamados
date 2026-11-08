@@ -2,12 +2,15 @@
 
 ## v1.8.0 — Resumo operacional da fila
 
+- Inicializador único no Windows com verificação de ambiente, trava contra duplicação e supervisão de portal/alertas. Ctrl+C ou falha de um serviço encerra os dois.
+- Lockfile inclui `tzdata==2026.6` com hashes, corrigindo o erro de instalação no Windows. CI adiciona validação Windows do lockfile e do inicializador chamado de outra pasta.
+
 - Indicadores clicáveis Minha fila, Sem responsável, Próximos do prazo (até 1 hora) e SLA vencido.
 - Contagens de chamados ativos no mesmo escopo de acesso e equipe da listagem, em uma consulta agregada.
 - Clique preserva a equipe e limpa busca, status, categoria, ordenação, paginação e filtros de fila/prazo anteriores para manter quantidade e resultado coerentes.
 - Novo filtro Sem responsável (ativos), combinável com os filtros existentes; paginação preserva a seleção.
 - Resumo exclusivo para técnicos e administradores; permissões e acesso aos próprios chamados preservados.
-- Sem migração ou dependência nova; nenhuma criação de chamados/alertas ao abrir a página. Notas em `docs/releases/v1.8.0.md`.
+- Sem migração; nenhuma criação de chamados/alertas ao abrir a página. Notas em `docs/releases/v1.8.0.md`.
 
 ## v1.7.0 — Central de Administração
 

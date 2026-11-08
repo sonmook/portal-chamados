@@ -82,3 +82,49 @@ jobs:
             printf '\n.build-ca-*\n' >> .dockerignore
           fi
           BUILD_CA_BUNDLE="$build_ca_dir/ca.pem" python scripts/test_homologacao.py
+
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: portal com espacos
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          path: portal com espacos
+      - name: Verificar suporte ao inicializador nesta revisão
+        id: suporte
+        shell: pwsh
+        run: |
+          if (Test-Path 'iniciar-portal.cmd') {
+            'habilitado=true' >> $env:GITHUB_OUTPUT
+          } else {
+            'habilitado=false' >> $env:GITHUB_OUTPUT
+            Write-Host 'Revisão histórica anterior ao inicializador; a validação Windows não se aplica.'
+          }
+      - uses: actions/setup-python@v5
+        if: steps.suporte.outputs.habilitado == 'true'
+        with:
+          python-version-file: portal com espacos/.python-version
+      - if: steps.suporte.outputs.habilitado == 'true'
+        run: python -m venv .venv
+      - if: steps.suporte.outputs.habilitado == 'true'
+        run: .\.venv\Scripts\python.exe -m pip install --require-hashes -r requirements.txt
+      - if: steps.suporte.outputs.habilitado == 'true'
+        run: .\.venv\Scripts\python.exe manage.py migrate --noinput
+      - if: steps.suporte.outputs.habilitado == 'true'
+        run: .\.venv\Scripts\python.exe -m unittest helpdesk.test_iniciar_local -v
+      - name: Verificar inicializador chamado de outra pasta
+        if: steps.suporte.outputs.habilitado == 'true'
+        shell: pwsh
+        run: |
+          $inicializador = Join-Path $env:GITHUB_WORKSPACE 'portal com espacos\iniciar-portal.cmd'
+          Push-Location $env:TEMP
+          try {
+            & $inicializador --verificar
+            if ($LASTEXITCODE -ne 0) { throw 'O inicializador retornou erro.' }
+          } finally {
+            Pop-Location
+          }

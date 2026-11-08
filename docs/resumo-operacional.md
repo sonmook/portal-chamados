@@ -31,7 +31,7 @@ Solicitantes continuam acompanhando seus chamados sem indicadores de atendimento
 
 ## Atualização
 
-Sem nova migração ou dependência. Faça backup, atualize o código aprovado, colete estáticos em produção e reinicie os processos. O processo periódico de alertas de SLA continua separado da aplicação.
+O resumo não exige nova migração. Faça backup, atualize o código aprovado e suas dependências, colete estáticos em produção e reinicie os processos. O processo periódico de alertas de SLA continua separado da aplicação. No Windows, o [inicializador único](inicializacao-windows.md) cuida dos dois processos no mesmo terminal.
 
 ## Demonstração
 
