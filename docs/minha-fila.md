@@ -15,3 +15,7 @@ O filtro Minha fila não exige migração. A atualização com alertas de prazo 
 Captura com dados fictícios e dois chamados ativos atribuídos ao técnico conectado.
 
 ![Filtro Minha fila aplicado na Central de Chamados](imagens/minha-fila.png)
+
+## Indicadores e fila sem responsável
+
+Os indicadores da [Visão da fila](resumo-operacional.md) oferecem acesso direto aos recortes de atendimento, respeitando a equipe selecionada. No seletor de fila, **Sem responsável (ativos)** mostra chamados Abertos ou Em Andamento sem técnico atribuído e pode combinar com prazo, busca, categoria, status e ordenação.

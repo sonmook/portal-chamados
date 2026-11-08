@@ -2,7 +2,7 @@
 
 ![Marca do Portal de TI](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.7.0** · [Notas da versão](docs/releases/v1.7.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.8.0** · [Notas da versão](docs/releases/v1.8.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -14,6 +14,12 @@ Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django*
 As capturas da galeria principal foram registradas na **v1.1.0**, com a marca atual, os novos ícones e **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
 
 ---
+
+## Resumo operacional da fila
+
+A **v1.8.0** adiciona quatro indicadores clicáveis na Central de Chamados: **Minha fila**, **Sem responsável**, **Próximos do prazo** e **SLA vencido**. As quantidades seguem as permissões e a equipe selecionada. Ao clicar, os outros filtros são limpos e a lista abre no recorte escolhido. Também é possível combinar o novo filtro Sem responsável com prazo, busca e ordenação. Disponível para técnicos e administradores. [Critérios e uso](docs/resumo-operacional.md).
+
+![Resumo operacional com dados fictícios](docs/imagens/resumo-operacional.png)
 
 ## Administração
 

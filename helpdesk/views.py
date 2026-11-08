@@ -9,7 +9,8 @@ from .user_security import bloquear_administradores, validar_pendencias
 from .audit import registrar
 from .encaminhamento import criar_chamado_encaminhado
 from .notificacoes import notificar_atribuicao, notificar_resposta, notificar_resolucao
-from .sla import filtrar_sla
+from .sla import filtrar_sla, ATIVOS
+from .operacao import resumo_operacional
 from .acesso import chamados_acessiveis, equipes_acessiveis, integrante_ativo, pode_distribuir, filtrar_equipe
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -111,26 +112,29 @@ def lista_chamados(request):
     """
     Exibe a lista de chamados com suporte a busca, filtros e paginação.
     """
-    chamados_list = chamados_acessiveis(request.user).order_by('-id')
+    agora = timezone.now()
+    equipe_filter = request.GET.get('equipe', '')
+    base_equipe = filtrar_equipe(chamados_acessiveis(request.user), equipe_filter)
+    chamados_list = base_equipe.order_by('-id')
 
     # Captura parâmetros da URL
     query = request.GET.get('q')
     status_filter = request.GET.get('status')
     categoria_filter = request.GET.get('categoria')
     fila_filter = request.GET.get('fila', '')
-    if fila_filter not in ('', 'minha'):
+    if fila_filter not in ('', 'minha', 'sem_responsavel'):
         fila_filter = ''
-    if fila_filter == 'minha':
-        if request.user.is_staff or request.user.is_superuser:
-            chamados_list = chamados_list.filter(tecnico_id=request.user.pk).exclude(status__in=FINALIZADOS)
-        else:
+    if fila_filter:
+        if not (request.user.is_staff or request.user.is_superuser):
             chamados_list = chamados_list.none()
+        elif fila_filter == 'minha':
+            chamados_list = chamados_list.filter(tecnico_id=request.user.pk, status__in=ATIVOS)
+        else:
+            chamados_list = chamados_list.filter(tecnico__isnull=True, status__in=ATIVOS)
     sla_filter = request.GET.get('sla', '')
     if sla_filter not in ('', 'proximos', 'vencidos'):
         sla_filter = ''
-    chamados_list = filtrar_sla(chamados_list, sla_filter)
-    equipe_filter = request.GET.get('equipe', '')
-    chamados_list = filtrar_equipe(chamados_list, equipe_filter)
+    chamados_list = filtrar_sla(chamados_list, sla_filter, agora)
     ordenacao = request.GET.get('ordenacao', 'novos')
     if ordenacao not in ('novos', 'interacao_recente', 'sem_interacao'):
         ordenacao = 'novos'
@@ -165,6 +169,9 @@ def lista_chamados(request):
         'query': query,
         'status_filter': status_filter,
         'categoria_filter': categoria_filter,
+        'resumo_operacional': resumo_operacional(base_equipe, request.user, agora,
+            equipe=equipe_filter, fila=fila_filter, sla=sla_filter,
+            outros_filtros=bool(query or status_filter or categoria_filter)),
         'fila_filter': fila_filter,
         'sla_filter': sla_filter,
         'ordenacao': ordenacao,

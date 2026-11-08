@@ -471,3 +471,24 @@ form label { color: var(--portal-ink); }
     .auditoria-resumo, .auditoria-valores { grid-template-columns: minmax(0, 1fr); }
     .auditoria-resumo { gap: 1rem; }
 }
+
+/* Indicadores operacionais da Central de Chamados. */
+.resumo-operacional { width: 100%; }
+.resumo-operacional-cabecalho { display: flex; flex-wrap: wrap; align-items: baseline; gap: .35rem 1rem; margin-bottom: .65rem; }
+.resumo-operacional-cabecalho h3 { font-size: .875rem; font-weight: 650; margin: 0; }
+.resumo-operacional-cabecalho p, .resumo-operacional-ajuda { font-size: .75rem; color: var(--portal-muted); margin: 0; }
+.resumo-operacional-grade { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; }
+.resumo-indicador { display: flex; flex-direction: column; gap: .4rem; padding: 1rem 1.15rem; border: 1px solid var(--portal-line); border-radius: 12px; background: white; color: var(--portal-ink); text-decoration: none; }
+.resumo-indicador:hover, .resumo-indicador:focus-visible, .resumo-indicador-ativo { color: var(--portal-ink); border-color: var(--portal-blue); background: #f5f8ff; }
+.resumo-indicador:focus-visible { outline: 2px solid var(--portal-blue); outline-offset: 3px; }
+.resumo-indicador-nome { display: flex; align-items: baseline; gap: .5rem; font-size: .8rem; font-weight: 600; }
+.resumo-indicador-nome i { color: var(--portal-blue); }
+.resumo-indicador strong { font-size: 1.65rem; line-height: 1.2; font-weight: 700; font-variant-numeric: tabular-nums; }
+.resumo-indicador-vencidos strong { color: #ad3543; }
+.resumo-indicador-legenda { font-size: .75rem; color: var(--portal-muted); margin-top: auto; }
+.resumo-operacional-ajuda { margin-top: .6rem; }
+@media (max-width: 991.98px) { .resumo-operacional-grade { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 359.98px) { .resumo-operacional-grade { grid-template-columns: minmax(0, 1fr); } }
+@media (min-width: 360px) and (max-width: 991.98px) {
+    .resumo-indicador-nome { min-height: 2.5rem; }
+}

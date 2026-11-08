@@ -34,6 +34,8 @@
                 <p class="text-muted small mb-0">Gerencie as solicitações.</p>
             </div>
             
+            {% include 'helpdesk/componentes/resumo_operacional.html' %}
+
             <form method="GET" class="ticket-filters d-flex flex-wrap align-items-center gap-2" role="search" aria-label="Filtrar chamados">
                 
                 <div class="input-group input-group-sm filter-search" style="width: 240px;">
@@ -44,6 +46,7 @@
                 {% if request.user.is_staff or request.user.is_superuser %}
                 <select name="fila" aria-label="Filtrar por fila" class="form-select form-select-sm" style="width: auto;">
                     <option value="">Todas as filas acessíveis</option>
+                    <option value="sem_responsavel" {% if fila_filter == 'sem_responsavel' %}selected{% endif %}>Sem responsável (ativos)</option>
                     <option value="minha" {% if fila_filter == 'minha' %}selected{% endif %}>Minha fila (ativos)</option>
                 </select>
                 {% endif %}
@@ -95,6 +98,7 @@
             <span class="text-muted small fw-bold"><i class="bi bi-funnel-fill"></i> Filtros aplicados:</span>
             
             {% if sla_filter %}<span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 fw-normal">{% if sla_filter == 'proximos' %}Prazo: próximos do vencimento (até 1h){% else %}Prazo: SLA vencido{% endif %}</span>{% endif %}
+            {% if fila_filter == 'sem_responsavel' %}<span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 fw-normal">Fila: chamados ativos sem responsável</span>{% endif %}
             {% if fila_filter == 'minha' %}
             <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 fw-normal">Minha fila: chamados ativos atribuídos a você</span>
             {% endif %}
