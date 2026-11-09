@@ -1,0 +1,10 @@
+{% extends 'helpdesk/equipes/base.html' %}
+{% block titulo %}{% if resposta.pk %}Editar resposta pronta{% else %}Nova resposta pronta{% endif %}{% endblock %}
+{% block conteudo %}
+<header class="mb-4"><h1 class="h2">{% if resposta.pk %}Editar resposta pronta{% else %}Nova resposta pronta{% endif %}</h1><p class="text-muted">Defina um texto que o técnico poderá adaptar antes de enviar.</p></header>
+<form method="post" class="card card-body" style="max-width:800px">{% csrf_token %}{{ form.versao_atual }}{{ form.versao_atual.errors }}{{ form.non_field_errors }}
+<div class="mb-3">{{ form.nome.label_tag }}{{ form.nome.errors }}{{ form.nome }}</div>
+<div class="mb-3">{{ form.texto.label_tag }}{{ form.texto.errors }}{{ form.texto }}<p class="form-text">Texto simples, sem preenchimento automático de dados do chamado.</p></div>
+<div class="form-check mb-2">{{ form.ativa }}{{ form.ativa.label_tag }}</div><p class="form-text mb-4">Desative para retirar da seleção dos técnicos. Respostas já enviadas permanecem no histórico dos chamados.</p>
+<button class="btn btn-primary align-self-start" type="submit">Salvar resposta</button></form>
+{% endblock %}

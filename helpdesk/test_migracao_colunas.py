@@ -5,7 +5,7 @@ from django.test import TransactionTestCase
 
 class MigracaoColunasTests(TransactionTestCase):
     def tearDown(self):
-        MigrationExecutor(connection).migrate([('helpdesk','0025_preferencia_colunas')])
+        MigrationExecutor(connection).migrate([('helpdesk','0026_respostas_prontas')])
         super().tearDown()
 
     def test_adiciona_preferencia_sem_alterar_usuarios_ou_registros_existentes(self):

@@ -166,6 +166,14 @@
                                 <form method="POST" enctype="multipart/form-data">
                                     {% csrf_token %}
                                     {{ form.non_field_errors }} {{ form.texto.errors }} {{ form.anexo.errors }}
+                                    {% if respostas_prontas %}
+                                    <div class="resposta-pronta mb-3" data-resposta-pronta>
+                                        <label class="form-label small fw-bold" for="resposta-pronta">Resposta pronta</label>
+                                        <select class="form-select form-select-sm" id="resposta-pronta"><option value="">Selecionar um modelo…</option>{% for modelo in respostas_prontas %}<option value="{{ modelo.pk }}" data-url="{% url 'obter_resposta_pronta' chamado.pk modelo.pk %}">{{ modelo.nome }}</option>{% endfor %}</select>
+                                        <p class="form-text mb-0">O modelo é acrescentado ao texto já escrito. Revise antes de enviar.</p>
+                                        <p class="resposta-pronta-feedback small text-muted mb-0" role="status" aria-live="polite"></p>
+                                    </div>
+                                    {% endif %}
                                     {{ form.texto }} 
                                     
                                     <div class="mt-3">
@@ -297,5 +305,6 @@
             </div>
         </div>
     </div>
+{% if respostas_prontas %}<script src="{% static 'helpdesk/js/respostas_prontas.js' %}" defer></script>{% endif %}
 </body>
 </html>

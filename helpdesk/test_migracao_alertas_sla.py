@@ -6,7 +6,7 @@ from django.utils import timezone
 
 class MigracaoAlertasSLATests(TransactionTestCase):
     def tearDown(self):
-        MigrationExecutor(connection).migrate([('helpdesk','0025_preferencia_colunas')])
+        MigrationExecutor(connection).migrate([('helpdesk','0026_respostas_prontas')])
         super().tearDown()
 
     def test_preserva_chamados_e_notificacoes_sem_criar_alertas_na_migracao(self):

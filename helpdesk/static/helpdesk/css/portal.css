@@ -508,3 +508,10 @@ form label { color: var(--portal-ink); }
 .ticket-table tr > :first-child { padding-left: 1.5rem; }
 .ticket-table tr > :last-child { padding-right: 1.5rem; }
 @media (hover: none) { .coluna-grip { opacity: .5; } }
+
+/* Catálogo de respostas prontas. */
+.respostas-filtros { display: grid; grid-template-columns: minmax(0, 1fr) 220px auto auto; gap: .5rem; }
+@media (max-width: 575.98px) {
+    .respostas-filtros { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .respostas-filtros input, .respostas-filtros select { grid-column: 1 / -1; }
+}

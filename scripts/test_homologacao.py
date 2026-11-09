@@ -84,7 +84,7 @@ import django
 django.setup()
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
-from helpdesk.models import Chamado, Comentario, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista, Notificacao, PreferenciaListaChamados
+from helpdesk.models import Chamado, Comentario, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista, Notificacao, PreferenciaListaChamados, RespostaPronta
 user=User.objects.create_user(username='validation-only',is_staff=True)
 from io import BytesIO
 from PIL import Image
@@ -104,7 +104,12 @@ from helpdesk.colunas import COLUNAS
 response=client.post('/preferencias/colunas-chamados/',{'ordem':list(reversed(COLUNAS))},content_type='application/json',secure=True,HTTP_HOST='localhost')
 assert response.status_code==200
 assert PreferenciaListaChamados.objects.get(usuario=user).ordem==list(reversed(COLUNAS))
-response=client.post(f'/chamado/{t.pk}/',{'texto':'Atualização de validação para o solicitante.'},secure=True,HTTP_HOST='localhost')
+modelo=RespostaPronta.objects.get(nome='Atendimento iniciado',ativa=True)
+quantidade=Comentario.objects.filter(chamado=t).count()
+response=client.get(f'/chamado/{t.pk}/respostas-prontas/{modelo.pk}/',secure=True,HTTP_HOST='localhost')
+assert response.status_code==200 and response.json()['texto']==modelo.texto
+assert Comentario.objects.filter(chamado=t).count()==quantidade
+response=client.post(f'/chamado/{t.pk}/',{'texto':modelo.texto+' Texto revisado para homologação.'},secure=True,HTTP_HOST='localhost')
 assert response.status_code==302
 aviso=Notificacao.objects.get(destinatario=cliente,tipo='resposta')
 client.force_login(cliente)
@@ -116,6 +121,11 @@ assert Conquista.objects.filter(usuario=user,regra__codigo='primeira-solucao').e
 assert Notificacao.objects.filter(destinatario=cliente,tipo='resolucao',lida_em__isnull=True).exists()
 admin=User.objects.create_superuser('validation-admin','admin@example.invalid','validation-only-not-production')
 client.force_login(admin)
+response=client.post('/administracao/respostas-prontas/nova/',{'nome':'Retorno de validação','texto':'Modelo da homologação','ativa':'on','versao_atual':0},secure=True,HTTP_HOST='localhost')
+assert response.status_code==302
+pronta=RespostaPronta.objects.get(nome='Retorno de validação')
+response=client.post(f'/administracao/respostas-prontas/{pronta.pk}/editar/',{'nome':pronta.nome,'texto':'Modelo revisado da homologação','ativa':'','versao_atual':0},secure=True,HTTP_HOST='localhost')
+assert response.status_code==302
 # Configuração anterior à restrição: permanece publicável e restaurável.
 assert client.post('/conquistas/nova/',{},secure=True,HTTP_HOST='localhost').status_code==403
 plano=PlanoConquista.objects.create(nome='Trilha de validação',descricao='Fixture',icone='escudo',
@@ -150,8 +160,11 @@ print('PASS: processo periódico iniciado; três tipos de alertas gerados sem du
 import django
 django.setup()
 from django.contrib.auth.models import User
-from helpdesk.models import Chamado, Comentario, RegistroAuditoria, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista, Notificacao, PreferenciaListaChamados
+from helpdesk.models import Chamado, Comentario, RegistroAuditoria, IntegranteEquipe, RegraEncaminhamento, Perfil, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista, Notificacao, PreferenciaListaChamados, RespostaPronta
 assert User.objects.filter(username='validation-only').exists()
+pronta=RespostaPronta.objects.get(nome='Retorno de validação')
+assert pronta.texto=='Modelo revisado da homologação' and not pronta.ativa and pronta.versao==1
+assert RespostaPronta.objects.filter(nome='Atendimento iniciado',ativa=True).exists()
 from helpdesk.colunas import COLUNAS
 assert PreferenciaListaChamados.objects.get(usuario__username='validation-only').ordem==list(reversed(COLUNAS))
 assert RegraConquista.objects.filter(codigo='guardiao-sla',meta=50,icone='escudo').exists()

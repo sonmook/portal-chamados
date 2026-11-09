@@ -3,6 +3,7 @@ from . import construtor_conquistas as construtor
 from . import conquistas
 from . import perfis
 from . import notificacoes
+from . import respostas_prontas
 from . import colunas
 from . import auditoria
 from . import administracao
@@ -13,6 +14,10 @@ from . import regras_encaminhamento
 # Define as rotas (URLs) do aplicativo Helpdesk.
 # Cada path vincula um endereço web a uma função específica no arquivo views.py.
 urlpatterns = [
+    path('administracao/respostas-prontas/', respostas_prontas.gerenciar, name='gerenciar_respostas_prontas'),
+    path('administracao/respostas-prontas/nova/', respostas_prontas.editar, name='criar_resposta_pronta'),
+    path('administracao/respostas-prontas/<int:resposta_id>/editar/', respostas_prontas.editar, name='editar_resposta_pronta'),
+    path('chamado/<int:chamado_id>/respostas-prontas/<int:resposta_id>/', respostas_prontas.obter, name='obter_resposta_pronta'),
     path('preferencias/colunas-chamados/', colunas.salvar_ordem, name='salvar_ordem_colunas'),
     path('administracao/auditoria/', auditoria.listar_auditoria, name='listar_auditoria'),
     path('administracao/auditoria/<int:registro_id>/', auditoria.detalhe_auditoria, name='detalhe_auditoria'),
