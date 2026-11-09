@@ -86,3 +86,30 @@ class ResolveReleaseTests(TestCase):
         self.commit('1.5.0', 'atual150')
         with self.assertRaisesRegex(ValueError, 'anterior'):
             resolve_release('v1.5.0', self.repo)
+
+    def test_historica_180_inclui_inicializador_e_preserva_tags_anteriores(self):
+        original = self.commit('1.7.0', 'administracao')
+        self.git('tag', 'v1.7.0')
+        self.commit('1.8.0', 'resumo-operacional')
+        historico = self.commit('1.8.0', 'inicializacao-windows')
+        self.commit('1.9.0', 'ordem-colunas')
+        atual = self.commit('1.9.0', 'ajuste-publicacao')
+        self.assertEqual(resolve_release('v1.8.0', self.repo),
+            {'sha': historico, 'version': '1.8.0', 'tag': 'v1.8.0', 'latest': 'false'})
+        self.assertEqual(resolve_release('atual', self.repo),
+            {'sha': atual, 'version': '1.9.0', 'tag': 'v1.9.0', 'latest': 'true'})
+        self.assertEqual(self.git('rev-parse', 'HEAD'), atual)
+        self.assertEqual(self.git('rev-parse', 'v1.7.0'), original)
+        self.assertEqual(self.git('tag', '--list'), 'v1.7.0')
+
+    def test_180_lateral_ausente_ou_atual_nao_e_historica(self):
+        base = self.commit('1.7.0', 'base')
+        self.git('checkout', '-qb', 'lateral180')
+        self.commit('1.8.0', 'apenas lateral')
+        self.git('checkout', '-q', base)
+        self.commit('1.9.0', 'main')
+        with self.assertRaisesRegex(ValueError, 'v1.8.0'):
+            resolve_release('v1.8.0', self.repo)
+        self.commit('1.8.0', 'atual180')
+        with self.assertRaisesRegex(ValueError, 'anterior'):
+            resolve_release('v1.8.0', self.repo)

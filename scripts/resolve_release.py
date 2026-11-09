@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parent.parent
-HISTORICAS = ('v1.3.0', 'v1.5.0')
+HISTORICAS = ('v1.3.0', 'v1.5.0', 'v1.8.0')
 SEMVER = re.compile(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)')
 
 
@@ -23,7 +23,7 @@ def version_at(repository, sha):
 
 def resolve_release(selection='atual', repository=ROOT):
     if selection not in ('atual', *HISTORICAS):
-        raise ValueError('Selecione atual, v1.3.0 ou v1.5.0.')
+        raise ValueError('Selecione atual ou uma versão histórica: '+', '.join(HISTORICAS)+'.')
     head = git(repository, 'rev-parse', 'HEAD')
     current = version_at(repository, head)
     if not current or not SEMVER.fullmatch(current):
@@ -42,7 +42,7 @@ def resolve_release(selection='atual', repository=ROOT):
 
 if __name__ == '__main__':
     if len(sys.argv) > 2:
-        raise SystemExit('Uso: python scripts/resolve_release.py [atual|v1.3.0|v1.5.0]')
+        raise SystemExit('Uso: python scripts/resolve_release.py ['+'|'.join(('atual', *HISTORICAS))+']')
     try:
         result = resolve_release(sys.argv[1] if len(sys.argv) == 2 else 'atual')
     except (ValueError, subprocess.CalledProcessError) as error:

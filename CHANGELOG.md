@@ -2,6 +2,8 @@
 
 ## v1.9.0 — Ordem pessoal das colunas
 
+- Publicador permite registrar a v1.8.0 histórica antes da versão atual, com validação do próprio commit, sem mover tags ou atribuir Latest à versão intermediária.
+
 - Arraste direto dos títulos da tabela, com indicador discreto ao passar o mouse e salvamento automático por conta.
 - Cabeçalhos e células se movem juntos. Ordem preservada em filtros, paginação e novos acessos na mesma instalação.
 - Toque prolongado no celular, teclado com Alt + setas, cancelamento por Esc e restauração do padrão.
