@@ -357,3 +357,7 @@ externo protegido contra adulteração continuam dependentes da implantação.
 A preparação Docker/HTTPS, envio SMTP e procedimentos de backup/restauração estão em
 [docs/homologacao.md](docs/homologacao.md). Publicação exige servidor, domínio e acesso
 ao provedor; o teste local automatizado não significa que uma URL pública foi criada.
+
+## Dados de demonstração
+
+Para explorar o portal localmente com seis usuários e doze chamados fictícios, execute `manage.py criar_dados_demo`. As senhas são geradas no terminal. [Instruções para Windows e cenários disponíveis](docs/dados-demonstracao.md).
