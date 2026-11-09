@@ -12,7 +12,7 @@ Usamos `MAJOR.MINOR.PATCH`: mudanças incompatíveis incrementam MAJOR; funciona
 
 ## Publicar a versão atual
 
-Após o merge, abra **Actions → Publicar versão → Run workflow**, escolha a branch **main** e a opção **atual**. O fluxo lê `VERSION` e publica a versão do código validado; nesta preparação, **v1.9.0**.
+Após o merge, abra **Actions → Publicar versão → Run workflow**, escolha a branch **main** e a opção **atual**. O fluxo lê `VERSION` e publica a versão do código validado; nesta preparação, **v1.10.0**.
 
 As versões **v1.3.0 e v1.4.0 já foram registradas**. As opções `v1.3.0`, `v1.5.0` e `v1.8.0` permitem recuperar versões históricas anteriores à atual. São resolvidas pelo histórico principal, não recebem Latest e não alteram tags ou Releases existentes. A v1.3.0 corresponde ao commit e97932d e a v1.5.0 ao commit 421fed7 e a v1.8.0 ao commit 3714370 (resumo operacional e inicializador Windows).
 
@@ -22,7 +22,7 @@ Cada publicação repete os jobs do CI (testes, dependências, homologação e i
 
 ## Registro histórico das versões v1.5.0 e v1.6.0
 
-As tags v1.5.0 e v1.6.0 já foram registradas. O procedimento abaixo documenta a publicação realizada quando a main estava em 1.6.0; a opção **atual** sempre lê VERSION e nesta preparação publica 1.9.0. Não a use para recriar uma versão anterior.
+As tags v1.5.0 e v1.6.0 já foram registradas. O procedimento abaixo documenta a publicação realizada quando a main estava em 1.6.0; a opção **atual** sempre lê VERSION e nesta preparação publica 1.10.0. Não a use para recriar uma versão anterior.
 
 Procedimento histórico:
 
@@ -33,9 +33,11 @@ Procedimento histórico:
 
 Cada execução valida testes, dependências e homologação no próprio commit da versão. Se alguma etapa falhar, corrija a causa antes de tentar novamente. A versão atual pode ser conferida antes de publicar com `python scripts/resolve_release.py atual`.
 
-## Registrar v1.8.0 e v1.9.0
+## Registro histórico de v1.8.0 e v1.9.0
 
-A main já contém a v1.9.0. Para registrar também a versão intermediária, depois do merge deste ajuste e dos checks aprovados:
+As tags v1.8.0 e v1.9.0 já foram registradas. O procedimento abaixo foi usado quando VERSION era 1.9.0. A opção atual lê a versão do código e nesta preparação publica 1.10.0.
+
+Procedimento histórico:
 
 1. Abra **Actions → Publicar versão → Run workflow** na branch **main** e selecione **v1.8.0**. A ação valida o commit histórico `3714370`, incluindo resumo operacional e inicializador Windows, e publica a tag e as notas da v1.8.0 sem Latest.
 2. Aguarde finalizar com sucesso e confira a Release v1.8.0.

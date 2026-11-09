@@ -1,5 +1,15 @@
 # Histórico de atualizações
 
+## v1.10.0 — Respostas prontas
+
+- Catálogo em Administração para criar, editar e desativar modelos, com busca, filtro de disponibilidade e paginação.
+- Seleção no formulário de resposta do técnico responsável por chamado ativo; texto acrescentado ao rascunho para revisão antes do envio.
+- Consulta do texto revalida acesso, vínculo e disponibilidade; modelos desativados deixam de carregar em páginas já abertas.
+- Rascunho e anexos preservados. A seleção não envia comentário, notificação ou mudança de status; o envio usa o fluxo existente.
+- Edições administrativas protegidas por CSRF e versão, com auditoria sem cópia do texto do modelo.
+- Migração 0026 adiciona três modelos iniciais sem gerar mensagens ou alterar o histórico. Backup/restauração inclui o catálogo.
+- Notas em `docs/releases/v1.10.0.md`.
+
 ## v1.9.0 — Ordem pessoal das colunas
 
 - Publicador permite registrar a v1.8.0 histórica antes da versão atual, com validação do próprio commit, sem mover tags ou atribuir Latest à versão intermediária.

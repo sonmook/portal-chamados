@@ -20,7 +20,7 @@ from django.utils import timezone
 from django.contrib import messages
 from datetime import timedelta
 
-from .models import Chamado, Comentario, Equipe, IntegranteEquipe
+from .models import Chamado, Comentario, Equipe, IntegranteEquipe, RespostaPronta
 from .forms import ChamadoForm, ComentarioForm, NovoUsuarioForm, EditarUsuarioForm, ResolucaoForm, RedistribuirChamadoForm
 
 
@@ -223,10 +223,8 @@ def _exigir_responsavel(user, chamado):
 def detalhes_chamado(request, id):
     chamado = _chamado_visivel(request.user, id, bloquear=request.method == 'POST')
     ativo = chamado.status not in FINALIZADOS and chamado.equipe.ativa
-    pode_responder = ativo and (
-        chamado.solicitante_id == request.user.pk
-        or (chamado.tecnico_id == request.user.pk and integrante_ativo(request.user, chamado.equipe_id))
-    )
+    tecnico_responsavel = ativo and chamado.tecnico_id == request.user.pk and integrante_ativo(request.user, chamado.equipe_id)
+    pode_responder = ativo and (chamado.solicitante_id == request.user.pk or tecnico_responsavel)
     if request.method == 'POST':
         if not pode_responder:
             raise PermissionDenied
@@ -246,7 +244,8 @@ def detalhes_chamado(request, id):
         'form': form,
         'ativo': ativo,
         'pode_responder': pode_responder,
-        'pode_fechar': ativo and chamado.tecnico_id == request.user.pk and integrante_ativo(request.user, chamado.equipe_id),
+        'pode_fechar': tecnico_responsavel,
+        'respostas_prontas': list(RespostaPronta.objects.filter(ativa=True).values('pk', 'nome')) if tecnico_responsavel else [],
         'pode_assumir': ativo and chamado.tecnico_id is None and integrante_ativo(request.user, chamado.equipe_id),
         'pode_distribuir': pode_distribuir(request.user, chamado),
     })

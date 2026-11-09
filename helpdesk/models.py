@@ -370,3 +370,16 @@ class Notificacao(models.Model):
 class PreferenciaListaChamados(models.Model):
     usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='preferencia_lista_chamados')
     ordem = models.JSONField(default=list)
+
+
+class RespostaPronta(models.Model):
+    nome = models.CharField(max_length=100, unique=True)
+    texto = models.TextField(max_length=4000)
+    ativa = models.BooleanField(default=True)
+    versao = models.PositiveIntegerField(default=0, editable=False)
+
+    class Meta:
+        ordering = ['nome', 'pk']
+
+    def __str__(self):
+        return self.nome

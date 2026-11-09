@@ -10,6 +10,7 @@ A central reúne as ferramentas existentes:
 | Equipes | Integrantes, coordenadores e responsabilidades |
 | Encaminhamento | Categoria do chamado → equipe de destino |
 | Conquistas | Configurações das conquistas existentes |
+| Respostas prontas | Criar, editar e desativar modelos para os técnicos |
 | Auditoria | Histórico no próprio portal, com filtros e detalhes; sem edição ou exclusão |
 
 As telas de gestão mantêm seus endereços e mostram um único caminho de retorno à central, pelo link Administração acima do conteúdo. Links antigos de volta a equipes, conquistas, regras e gerenciamento de usuários foram removidos dessas telas. A seção Administração fica destacada durante a gestão; Conquistas no menu continua abrindo a coleção pessoal.
@@ -20,7 +21,7 @@ A central apenas organiza a navegação. Não altera usuários, vínculos, regra
 
 ## Atualizar
 
-Após backup e atualização do código aprovado, reinicie os processos e colete estáticos em produção. Não há nova migração ou dependência. A versão do código será exibida como 1.7.0; a publicação da Release é feita separadamente pelo workflow.
+Após backup e atualização do código aprovado, reinicie os processos e colete estáticos em produção. A consulta de Administração não altera dados. Para a v1.10.0, aplique a migração 0026, que adiciona o catálogo de respostas prontas. A publicação da Release é feita separadamente pelo workflow.
 
 ## Demonstração
 
@@ -45,3 +46,5 @@ Capturas com histórico fictício de demonstração:
 ![Detalhes de um registro no celular](imagens/auditoria-detalhe-mobile.png)
 
 ![Alteração de foto apresentada sem colunas vazias; dados fictícios](imagens/auditoria-foto.png)
+
+Veja [Respostas prontas](respostas-prontas.md) para administrar os modelos e entender quem pode usá-los nos chamados.

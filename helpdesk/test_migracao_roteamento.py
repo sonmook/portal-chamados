@@ -5,7 +5,7 @@ from django.test import TransactionTestCase
 
 class MigracaoRoteamentoTests(TransactionTestCase):
     def tearDown(self):
-        MigrationExecutor(connection).migrate([('helpdesk', '0025_preferencia_colunas')])
+        MigrationExecutor(connection).migrate([('helpdesk', '0026_respostas_prontas')])
         super().tearDown()
 
     def test_regras_iniciais_nao_reclassificam_chamados_nem_recriam_equipes_renomeadas(self):

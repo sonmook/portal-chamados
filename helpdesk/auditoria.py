@@ -11,6 +11,7 @@ from django.views.decorators.http import require_GET
 from .models import RegistroAuditoria
 
 OBJETOS = {
+    'helpdesk.respostapronta': 'Resposta pronta',
     'auth.user': 'Usuário', 'helpdesk.chamado': 'Chamado', 'helpdesk.comentario': 'Comentário',
     'helpdesk.equipe': 'Equipe', 'helpdesk.regraencaminhamento': 'Regra de encaminhamento',
     'helpdesk.regraconquista': 'Regra de conquista', 'helpdesk.planoconquista': 'Plano de conquista',
