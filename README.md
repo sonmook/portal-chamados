@@ -26,6 +26,8 @@ Acesse **Administração → Indicadores** com uma conta de administrador ativo 
 
 Cada chamado conta uma única resolução. Criações são filtradas pela data de abertura; resoluções, pela data de fechamento. Os percentuais de SLA consideram apenas resoluções com fechamento e vencimento conhecidos. Ativos vencidos e chamados sem responsável mostram a situação atual, independentemente do período, e aparecem separados das resoluções fora do prazo. O dashboard mantém seu comportamento existente. [Critérios e funcionamento](docs/indicadores-administracao.md).
 
+![Relatório de performance administrativo com visual integrado ao portal e dados fictícios](docs/imagens/indicadores-administracao.png)
+
 ## Respostas prontas
 
 A **v1.10.0** adiciona modelos de texto para o técnico responsável por um chamado ativo. Escolha um modelo para acrescentá-lo ao rascunho, adapte o texto e clique em Enviar resposta. Administradores criam, editam e desativam os modelos em **Administração → Respostas prontas**. Três exemplos iniciais ajudam a começar; selecionar um modelo não envia mensagens nem altera o status do chamado. [Funcionamento](docs/respostas-prontas.md).

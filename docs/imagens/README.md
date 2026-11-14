@@ -35,3 +35,15 @@ ilustram as medalhas e a seleção visual de ícones em uma demonstração isola
 As regras iniciais usam metas de 1/20/20/20; a meta coletiva nas capturas foi
 ajustada para 2 apenas para demonstrar uma medalha desbloqueada. O histórico
 anterior e a data de início da contagem são preservados na migração 0020.
+
+
+## Relatório de performance administrativo
+
+A captura `indicadores-administracao.png` mostra o relatório de Administração →
+Indicadores com o visual integrado ao Portal de TI, implementado na revisão
+`3056455`. Registrada em Chromium com viewport de 1280 × 900 e captura da página
+inteira, em 14/11/2026, usando banco isolado e dados fictícios de validação.
+A demonstração usa o fuso UTC, indicado no cabeçalho do relatório.
+Os oito chamados e a conta de teste servem apenas para ilustrar a interface.
+A imagem inclui resumo, SLA, categorias, equipes, rankings e detalhamento das
+resoluções; nenhum banco, cookie ou credencial acompanha a captura.
