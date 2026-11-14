@@ -15,6 +15,17 @@ As capturas da galeria principal foram registradas na **v1.1.0**, com a marca at
 
 ---
 
+## Indicadores administrativos — relatório de performance
+
+Acesse **Administração → Indicadores** com uma conta de administrador ativo para consultar o relatório de performance. O visual acompanha a identidade do Portal de TI, com cabeçalho claro, destaque azul, cards compactos e layout responsivo.
+
+- Resumo de chamados criados, resoluções com SLA violado, percentual dentro do SLA e chamados ativos sem responsável.
+- Panorama de SLA, distribuição pelas categorias atuais, desempenho por equipe, ranking de resoluções por analista e top 20 solicitantes por volume de chamados.
+- Lista clicável de resoluções fora do prazo e detalhamento paginado dos resolvidos.
+- Filtros por equipe, incluindo inativas, e por período: hoje, últimos 7 dias, mês, histórico completo ou intervalo personalizado.
+
+Cada chamado conta uma única resolução. Criações são filtradas pela data de abertura; resoluções, pela data de fechamento. Os percentuais de SLA consideram apenas resoluções com fechamento e vencimento conhecidos. Ativos vencidos e chamados sem responsável mostram a situação atual, independentemente do período, e aparecem separados das resoluções fora do prazo. O dashboard mantém seu comportamento existente. [Critérios e funcionamento](docs/indicadores-administracao.md).
+
 ## Respostas prontas
 
 A **v1.10.0** adiciona modelos de texto para o técnico responsável por um chamado ativo. Escolha um modelo para acrescentá-lo ao rascunho, adapte o texto e clique em Enviar resposta. Administradores criam, editam e desativam os modelos em **Administração → Respostas prontas**. Três exemplos iniciais ajudam a começar; selecionar um modelo não envia mensagens nem altera o status do chamado. [Funcionamento](docs/respostas-prontas.md).
