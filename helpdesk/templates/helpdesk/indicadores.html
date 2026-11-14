@@ -1,35 +1,8 @@
 {% extends 'helpdesk/equipes/base.html' %}
-{% load l10n %}
+{% load l10n static %}
 {% block titulo %}Relatório de performance{% endblock %}
 {% block conteudo %}
-<style>
-.performance { --rel-borda: #deded9; color: #20252b; background: #f5f5f2; padding: 1.25rem; border-radius: .75rem; }
-.performance .rel-header { background: #11151a; color: #fff; padding: 1.6rem; border-radius: .6rem; margin-bottom: 1.25rem; }
-.performance .rel-header p { color: #dde3e9; margin-bottom: .3rem; }
-.performance .rel-marca { color: #b5e18c; letter-spacing: .12em; text-transform: uppercase; font-size: .72rem; font-weight: 700; }
-.performance h1 { color: #fff; font-size: clamp(1.4rem, 3vw, 2rem); margin: .5rem 0; }
-.performance h2 { font-size: .95rem; font-weight: 800; text-transform: uppercase; letter-spacing: .035em; border-bottom: 1px solid #343a40; padding-bottom: .6rem; margin: 1.8rem 0 .75rem; }
-.performance h3 { font-size: .85rem; font-weight: 700; }
-.performance .card, .performance .rel-surface { background: #fff; border: 1px solid var(--rel-borda); border-radius: .6rem; box-shadow: none; }
-.performance .rel-surface { padding: 1rem; }
-.performance .rel-kpi { display: block; font-size: 2rem; line-height: 1.25; font-weight: 800; margin: .35rem 0; }
-.performance .rel-label { font-size: .75rem; text-transform: uppercase; color: #526174; }
-.performance .rel-note { color: #526174; font-size: .82rem; }
-.performance .rel-danger { color: #b3261e; }
-.performance .rel-success { color: #197348; }
-.performance .table { margin-bottom: 0; font-size: .88rem; }
-.performance .table > :not(caption) > * > * { padding: .6rem .7rem; border-color: var(--rel-borda); background: transparent; }
-.performance .table thead { color: #526174; font-size: .75rem; }
-.performance .table-responsive { background: #fff; border: 1px solid var(--rel-borda); border-radius: .6rem; }
-.performance .rel-track { display: block; height: .55rem; background: #e5e5e0; border-radius: .2rem; overflow: hidden; }
-.performance .rel-bar { display: block; height: 100%; background: #20252b; }
-.performance .rel-bar-danger { background: #b3261e; }
-.performance .rel-ranking-bar { width: 25%; min-width: 4rem; }
-.performance .rel-links { display: flex; gap: .5rem; flex-wrap: wrap; }
-.performance .rel-links a { color: #b3261e; border: 1px solid #ecd5d3; border-radius: .25rem; padding: .25rem .5rem; }
-.performance nav { margin-top: .75rem; font-size: .9rem; }
-@media (max-width: 575px) { .performance { padding: .75rem; } .performance .rel-header { padding: 1rem; } }
-</style>
+<link rel="stylesheet" href="{% static 'helpdesk/css/indicadores.css' %}">
 <div class="performance">
 <header class="rel-header">
 <div class="rel-marca">Portal de TI · Administração</div>

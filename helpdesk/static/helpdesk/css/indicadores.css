@@ -1,0 +1,29 @@
+/* Relatório integrado à identidade compartilhada do Portal de TI. */
+.performance { --rel-borda: var(--portal-line); color: var(--bs-body-color); margin-top: 1.5rem; }
+.performance .rel-header { background: #fff; color: var(--portal-ink); border: 1px solid var(--portal-line); border-top: 3px solid var(--portal-blue); padding: 1.5rem; border-radius: 14px; margin-bottom: 1.25rem; }
+.performance .rel-header p { color: var(--portal-muted); margin-bottom: .3rem; }
+.performance .rel-marca { color: var(--portal-blue); letter-spacing: .12em; text-transform: uppercase; font-size: .72rem; font-weight: 700; }
+.performance h1 { color: var(--portal-ink); font-size: clamp(1.4rem, 3vw, 2rem); margin: .5rem 0; }
+.performance h2 { font-size: .95rem; font-weight: 700; letter-spacing: -.025em; border-bottom: 1px solid var(--portal-line); padding-bottom: .6rem; margin: 1.8rem 0 .75rem; }
+.performance h3 { font-size: .85rem; font-weight: 700; }
+.performance .card, .performance .rel-surface { background: #fff; border: 1px solid var(--rel-borda); border-radius: 14px; box-shadow: 0 4px 16px #24364c06; }
+.performance .rel-surface { padding: 1rem; }
+.performance .rel-kpi { display: block; font-size: 2rem; line-height: 1.25; font-weight: 750; margin: .35rem 0; }
+.performance .rel-label { font-size: .75rem; text-transform: uppercase; color: var(--portal-muted); }
+.performance .rel-note { color: var(--portal-muted); font-size: .82rem; }
+.performance .rel-danger { color: #a12835; }
+.performance .rel-success { color: #17623c; }
+.performance .table { margin-bottom: 0; font-size: .88rem; }
+.performance .table > :not(caption) > * > * { padding: .6rem .7rem; border-color: var(--rel-borda); background: transparent; }
+.performance .table thead { color: var(--portal-muted); font-size: .75rem; }
+.performance .table-responsive { background: #fff; border: 1px solid var(--rel-borda); border-radius: 13px; }
+.performance .rel-track { display: block; height: .55rem; background: #e7edf5; border-radius: .2rem; overflow: hidden; }
+.performance .rel-bar { display: block; height: 100%; background: var(--portal-blue); }
+.performance .rel-bar-danger { background: #a12835; }
+.performance .rel-ranking-bar { width: 25%; min-width: 4rem; }
+.performance .rel-links { display: flex; gap: .5rem; flex-wrap: wrap; }
+.performance .rel-links a { color: #a12835; background: #fff5f5; border: 1px solid #f1d7dc; border-radius: 8px; text-decoration: none; padding: .25rem .5rem; }
+.performance .rel-links a:hover { background: #fce8ec; border-color: #a12835; text-decoration: underline; }
+.performance .table thead th { background: #f8fafd; }
+.performance nav { margin-top: .75rem; font-size: .9rem; }
+@media (max-width: 575px) { .performance { margin-top: 1rem; } .performance .rel-header { padding: 1rem; } }
