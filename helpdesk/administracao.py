@@ -6,6 +6,7 @@ from django.views.decorators.http import require_GET
 
 SECOES = {
     'central_administracao': 'Administração',
+    'indicadores_administracao': 'Indicadores',
     'listar_auditoria': 'Auditoria',
     'detalhe_auditoria': 'Auditoria',
     **dict.fromkeys(('gerenciar_respostas_prontas', 'criar_resposta_pronta', 'editar_resposta_pronta'), 'Respostas prontas'),
@@ -16,6 +17,8 @@ SECOES = {
 }
 
 FERRAMENTAS = [
+    {'nome': 'Indicadores', 'icone': 'bar-chart', 'url': 'indicadores_administracao',
+     'descricao': 'Consulte o resumo geral, desempenho por equipe e resoluções por período.'},
     {'nome': 'Usuários', 'icone': 'people', 'url': 'gerenciar_usuarios',
      'descricao': 'Gerencie contas, permissões e acesso ao portal.'},
     {'nome': 'Equipes', 'icone': 'diagram-3', 'url': 'gerenciar_equipes',
