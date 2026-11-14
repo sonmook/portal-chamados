@@ -2,6 +2,7 @@
 from datetime import datetime, time, timedelta
 
 from django import forms
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
@@ -57,8 +58,23 @@ def metricas(chamados):
 def apresentar(dados):
     dados['tmr_horas'] = round(dados['tmr'].total_seconds() / 3600, 1) if dados['tmr'] is not None else None
     conhecidos = dados['dentro_sla'] + dados['fora_sla']
+    dados['sla_conhecidos'] = conhecidos
+    dados['fora_sla_percentual'] = round(100 * dados['fora_sla'] / conhecidos, 1) if conhecidos else None
     dados['sla_percentual'] = round(100 * dados['dentro_sla'] / conhecidos, 1) if conhecidos else None
     return dados
+
+
+def ranking(chamados, campo, limite=None):
+    """Agrupa pela pessoa registrada no chamado, inclusive sem autor histórico."""
+    grupos = chamados.values(campo).annotate(total=Count('pk')).order_by('-total', campo)
+    linhas = list(grupos[:limite] if limite else grupos)
+    usuarios = get_user_model().objects.in_bulk(linha[campo] for linha in linhas if linha[campo])
+    maior = linhas[0]['total'] if linhas else 0
+    for linha in linhas:
+        usuario = usuarios.get(linha[campo])
+        linha['nome'] = (usuario.get_full_name() or usuario.username) if usuario else 'Não registrado'
+        linha['proporcao'] = round(100 * linha['total'] / maior, 1) if maior else 0
+    return linhas
 
 
 @login_required
@@ -69,7 +85,8 @@ def painel(request):
     parametros = request.GET.copy()
     parametros.setdefault('periodo', 'mes')
     form = FiltrosIndicadores(parametros)
-    contexto = {'form': form}
+    agora = timezone.now()
+    contexto = {'form': form, 'gerado_em': agora}
     if form.is_valid():
         dados = form.cleaned_data
         hoje = timezone.localdate()
@@ -96,7 +113,20 @@ def painel(request):
             resolvidos = resolvidos.filter(data_fechamento__gte=limite_inicial, data_fechamento__lt=limite_final)
         resumo = apresentar(metricas(resolvidos))
         resumo['criados'] = abertos.count()
-        resumo['ativos'] = base.exclude(status__in=FINALIZADOS).count()
+        ativos = base.exclude(status__in=FINALIZADOS)
+        resumo['ativos'] = ativos.count()
+        resumo['sem_responsavel'] = ativos.filter(tecnico__isnull=True).count()
+        resumo['ativos_vencidos'] = ativos.filter(data_vencimento__lt=agora).count()
+        categorias = list(abertos.values('categoria').annotate(total=Count('pk')).order_by('-total', 'categoria'))
+        nomes_categorias = dict(Chamado.CATEGORIA_CHOICES)
+        for categoria in categorias:
+            categoria['nome'] = nomes_categorias.get(categoria['categoria'], categoria['categoria'] or 'Não registrada')
+            categoria['percentual'] = round(100 * categoria['total'] / resumo['criados'], 1) if resumo['criados'] else 0
+        analistas = ranking(resolvidos, 'fechado_por')
+        solicitantes = ranking(abertos, 'solicitante', limite=20)
+        violados = resolvidos.filter(data_fechamento__gt=F('data_vencimento'))
+        pagina_violados = Paginator(violados.order_by('-data_fechamento', '-pk'), 25).get_page(request.GET.get('page_sla'))
+
         # Agrupamento pelo FK do chamado: vínculos e comentários não multiplicam resoluções.
         grupos = resolvidos.values('equipe_id').annotate(total=Count('pk'),
             dentro_sla=Count('pk', filter=Q(data_fechamento__lte=F('data_vencimento'))),
@@ -109,6 +139,13 @@ def painel(request):
             equipes = equipes.filter(pk=dados['equipe'].pk)
         linhas = [{'equipe': equipe, **por_equipe.get(equipe.pk, {'total': 0, 'sla_percentual': None, 'tmr_horas': None})} for equipe in equipes]
         pagina = Paginator(resolvidos.select_related('equipe', 'fechado_por').order_by('-data_fechamento', '-pk'), 25).get_page(request.GET.get('page'))
-        parametros.pop('page', None)
-        contexto.update(resumo=resumo, equipes=linhas, pagina=pagina, filtros_url=parametros.urlencode())
+        filtros_resolucoes = parametros.copy()
+        filtros_resolucoes.pop('page', None)
+        filtros_sla = parametros.copy()
+        filtros_sla.pop('page_sla', None)
+        contexto.update(resumo=resumo, equipes=linhas, pagina=pagina,
+            filtros_url=filtros_resolucoes.urlencode(), filtros_sla_url=filtros_sla.urlencode(),
+            categorias=categorias, analistas=analistas, solicitantes=solicitantes,
+            pagina_violados=pagina_violados, equipe_selecionada=dados['equipe'],
+            periodo_nome=dict(form.fields['periodo'].choices)[periodo], inicio=inicio, fim=fim)
     return render(request, 'helpdesk/indicadores.html', contexto)

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
+from django.db.models import F
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -103,3 +104,58 @@ class IndicadoresTests(TestCase):
         segunda = self.client.get(self.url, {'periodo': 'sempre', 'page': 2})
         self.assertEqual(len(segunda.context['pagina']), 1)
         self.assertTrue(set(c.pk for c in r.context['pagina']).isdisjoint(c.pk for c in segunda.context['pagina']))
+
+    def test_relatorio_separa_aberturas_resolucoes_e_ativos_vencidos(self):
+        dentro = self.chamado()
+        fora = self.chamado(status='Fechado')
+        sem_dados = self.chamado()
+        ativo = self.chamado(status='Aberto')
+        Chamado.objects.filter(pk=dentro.pk).update(data_vencimento=timezone.now()+timedelta(days=1))
+        Chamado.objects.filter(pk=fora.pk).update(data_vencimento=timezone.now()-timedelta(days=1))
+        Chamado.objects.filter(pk=sem_dados.pk).update(data_vencimento=None, fechado_por=None)
+        Chamado.objects.filter(pk=ativo.pk).update(data_criacao=timezone.now(), data_fechamento=None,
+            data_vencimento=timezone.now()-timedelta(days=1), categoria='Rede', tecnico=None)
+        Comentario.objects.create(chamado=fora, autor=self.admin, texto='Não multiplicar')
+        r = self.client.get(self.url, {'periodo': 'hoje'})
+        resumo = r.context['resumo']
+        self.assertEqual((resumo['criados'], resumo['resolvidos'], resumo['fora_sla']), (1, 3, 1))
+        self.assertEqual((resumo['sla_percentual'], resumo['fora_sla_percentual']), (50, 50))
+        self.assertEqual((resumo['sem_responsavel'], resumo['ativos_vencidos']), (1, 1))
+        self.assertEqual(list(r.context['pagina_violados']), [fora])
+        self.assertEqual(r.context['categorias'], [{'categoria': 'Rede', 'nome': 'Rede/Internet', 'total': 1, 'percentual': 100}])
+        self.assertEqual([(l['nome'], l['total'], l['proporcao']) for l in r.context['analistas']],
+            [('tecnico', 2, 100), ('Não registrado', 1, 50)])
+        self.assertEqual(r.context['solicitantes'][0]['total'], 1)
+        self.assertContains(r, 'Relatório de performance')
+        self.assertContains(r, 'Ativos vencidos não fazem parte desta lista.')
+        self.assertContains(r, reverse('detalhes_chamado', args=[fora.pk]))
+
+    def test_rankings_respeitam_equipe_periodo_e_top_20_sem_joins(self):
+        outra = Equipe.objects.create(nome='Outra equipe')
+        for i in range(22):
+            usuario = User.objects.create_user(f'solicitante{i:02}')
+            chamado = self.chamado()
+            Chamado.objects.filter(pk=chamado.pk).update(solicitante=usuario, data_criacao=timezone.now())
+        Chamado.objects.filter(pk=chamado.pk).update(equipe=outra)
+        r = self.client.get(self.url, {'periodo': 'hoje', 'equipe': self.equipe.pk})
+        self.assertEqual(len(r.context['solicitantes']), 20)
+        self.assertEqual([l['nome'] for l in r.context['solicitantes']], [f'solicitante{i:02}' for i in range(20)])
+        self.assertEqual(r.context['analistas'][0]['total'], 21)
+        self.assertEqual(sum(l['total'] for l in r.context['categorias']), 21)
+        self.assertEqual(self.client.get(self.url, {'periodo': 'personalizado', 'inicio': '2020-01-01',
+            'fim': '2020-01-02'}).context['analistas'], [])
+
+    def test_sla_igualdade_e_paginacao_independente(self):
+        for _ in range(26):
+            chamado = self.chamado()
+            Chamado.objects.filter(pk=chamado.pk).update(data_vencimento=timezone.now()-timedelta(days=1))
+        igual = self.chamado()
+        Chamado.objects.filter(pk=igual.pk).update(data_vencimento=F('data_fechamento'))
+        r = self.client.get(self.url, {'periodo': 'sempre', 'equipe': self.equipe.pk, 'page_sla': 2})
+        self.assertEqual(len(r.context['pagina_violados']), 1)
+        self.assertEqual(len(r.context['pagina']), 25)
+        self.assertEqual(r.context['resumo']['dentro_sla'], 1)
+        self.assertEqual(r.context['resumo']['fora_sla'], 26)
+        self.assertContains(r, 'periodo=sempre')
+        self.assertIn('page_sla=2', r.context['filtros_url'])
+        self.assertNotIn('page_sla=', r.context['filtros_sla_url'])
