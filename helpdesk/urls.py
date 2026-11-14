@@ -6,6 +6,7 @@ from . import notificacoes
 from . import respostas_prontas
 from . import colunas
 from . import auditoria
+from . import indicadores
 from . import administracao
 from . import views
 from . import equipes
@@ -14,6 +15,7 @@ from . import regras_encaminhamento
 # Define as rotas (URLs) do aplicativo Helpdesk.
 # Cada path vincula um endereço web a uma função específica no arquivo views.py.
 urlpatterns = [
+    path('administracao/indicadores/', indicadores.painel, name='indicadores_administracao'),
     path('administracao/respostas-prontas/', respostas_prontas.gerenciar, name='gerenciar_respostas_prontas'),
     path('administracao/respostas-prontas/nova/', respostas_prontas.editar, name='criar_resposta_pronta'),
     path('administracao/respostas-prontas/<int:resposta_id>/editar/', respostas_prontas.editar, name='editar_resposta_pronta'),
