@@ -1,3 +1,4 @@
+from .test_helpers import restaurar_migracoes_atuais
 from datetime import timedelta
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
@@ -7,7 +8,7 @@ from django.utils import timezone
 
 class MigracaoConquistasTests(TransactionTestCase):
     def tearDown(self):
-        MigrationExecutor(connection).migrate([('helpdesk', '0026_respostas_prontas')])
+        restaurar_migracoes_atuais()
         super().tearDown()
 
     def test_catalogo_nao_premia_historico_nem_altera_contas_e_chamados(self):

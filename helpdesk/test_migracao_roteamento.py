@@ -1,3 +1,4 @@
+from .test_helpers import restaurar_migracoes_atuais
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
 from django.test import TransactionTestCase
@@ -5,7 +6,7 @@ from django.test import TransactionTestCase
 
 class MigracaoRoteamentoTests(TransactionTestCase):
     def tearDown(self):
-        MigrationExecutor(connection).migrate([('helpdesk', '0026_respostas_prontas')])
+        restaurar_migracoes_atuais()
         super().tearDown()
 
     def test_regras_iniciais_nao_reclassificam_chamados_nem_recriam_equipes_renomeadas(self):

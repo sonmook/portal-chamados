@@ -4,6 +4,23 @@ from django.contrib.auth.password_validation import validate_password
 from .user_security import validar_administrador, validar_pendencias
 from .models import Chamado, Comentario, Equipe
 from .validators import validar_anexo
+from .estados import ATIVOS, EM_ESPERA
+
+
+class SituacaoForm(forms.Form):
+    status = forms.ChoiceField(label='Situação do atendimento', choices=[(s, s) for s in ATIVOS],
+        widget=forms.Select(attrs={'class': 'form-select'}))
+    motivo = forms.CharField(label='Motivo da alteração', max_length=500, required=False, strip=True,
+        help_text='Obrigatório para aguardar. Visível a quem tem acesso ao chamado; não inclua senhas.',
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3}))
+    versao_status = forms.IntegerField(min_value=0, widget=forms.HiddenInput)
+    versao_atribuicao = forms.IntegerField(min_value=0, widget=forms.HiddenInput)
+
+    def clean(self):
+        dados = super().clean()
+        if dados.get('status') in EM_ESPERA and not dados.get('motivo'):
+            self.add_error('motivo', 'Informe por que o chamado precisa aguardar.')
+        return dados
 
 
 class ResolucaoForm(forms.Form):

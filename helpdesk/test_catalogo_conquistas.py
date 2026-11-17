@@ -1,3 +1,4 @@
+from .test_helpers import restaurar_migracoes_atuais
 from datetime import timedelta
 from importlib import import_module
 from django.apps import apps
@@ -36,7 +37,7 @@ class CatalogoConquistasTests(ConquistasFixtureMixin, TestCase):
 
 class MigracaoCatalogoTests(TransactionTestCase):
     def tearDown(self):
-        MigrationExecutor(connection).migrate([('helpdesk','0026_respostas_prontas')])
+        restaurar_migracoes_atuais()
         super().tearDown()
 
     def test_migracao_aditiva_idempotente_sem_concessao_e_sem_modificar_regra_existente(self):

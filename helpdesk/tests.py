@@ -1,4 +1,4 @@
-from .test_helpers import integrar_triagem
+from .test_helpers import integrar_triagem, dados_situacao
 from datetime import datetime, timezone
 from unittest.mock import patch
 
@@ -150,7 +150,8 @@ class AtendimentoTests(TestCase):
             self.assertEqual(self.client.post(self.url('atualizar_status'), {'status': status}).status_code, 400)
         self.chamado.refresh_from_db()
         self.assertEqual(self.chamado.status, 'Aberto')
-        self.assertEqual(self.client.post(self.url('atualizar_status'), {'status': 'Em Andamento'}).status_code, 302)
+        self.assertEqual(self.client.post(self.url('atualizar_status'),
+            {'status': 'Em Andamento', **dados_situacao(self.chamado)}).status_code, 302)
         self.chamado.refresh_from_db()
         self.assertEqual(self.chamado.status, 'Em Andamento')
 

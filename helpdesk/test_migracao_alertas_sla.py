@@ -1,3 +1,4 @@
+from .test_helpers import restaurar_migracoes_atuais
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
 from django.test import TransactionTestCase
@@ -6,7 +7,7 @@ from django.utils import timezone
 
 class MigracaoAlertasSLATests(TransactionTestCase):
     def tearDown(self):
-        MigrationExecutor(connection).migrate([('helpdesk','0026_respostas_prontas')])
+        restaurar_migracoes_atuais()
         super().tearDown()
 
     def test_preserva_chamados_e_notificacoes_sem_criar_alertas_na_migracao(self):

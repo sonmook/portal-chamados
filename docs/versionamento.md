@@ -12,7 +12,7 @@ Usamos `MAJOR.MINOR.PATCH`: mudanças incompatíveis incrementam MAJOR; funciona
 
 ## Publicar a versão atual
 
-Após o merge, abra **Actions → Publicar versão → Run workflow**, escolha a branch **main** e a opção **atual**. O fluxo lê `VERSION` e publica a versão do código validado; nesta preparação, **v1.11.0**.
+Após o merge, abra **Actions → Publicar versão → Run workflow**, escolha a branch **main** e a opção **atual**. O fluxo lê `VERSION` e publica a versão do código validado; nesta preparação, **v1.12.0**.
 
 As versões **v1.3.0 e v1.4.0 já foram registradas**. As opções `v1.3.0`, `v1.5.0` e `v1.8.0` permitem recuperar versões históricas anteriores à atual. São resolvidas pelo histórico principal, não recebem Latest e não alteram tags ou Releases existentes. A v1.3.0 corresponde ao commit e97932d e a v1.5.0 ao commit 421fed7 e a v1.8.0 ao commit 3714370 (resumo operacional e inicializador Windows).
 
@@ -22,7 +22,7 @@ Cada publicação repete os jobs do CI (testes, dependências, homologação e i
 
 ## Registro histórico das versões v1.5.0 e v1.6.0
 
-As tags v1.5.0 e v1.6.0 já foram registradas. O procedimento abaixo documenta a publicação realizada quando a main estava em 1.6.0; a opção **atual** sempre lê VERSION e nesta preparação publica 1.11.0. Não a use para recriar uma versão anterior.
+As tags v1.5.0 e v1.6.0 já foram registradas. O procedimento abaixo documenta a publicação realizada quando a main estava em 1.6.0; a opção **atual** sempre lê VERSION e nesta preparação publica 1.12.0. Não a use para recriar uma versão anterior.
 
 Procedimento histórico:
 
@@ -35,7 +35,7 @@ Cada execução valida testes, dependências e homologação no próprio commit 
 
 ## Registro histórico de v1.8.0 e v1.9.0
 
-As tags v1.8.0 e v1.9.0 já foram registradas. O procedimento abaixo foi usado quando VERSION era 1.9.0. A opção atual lê a versão do código e nesta preparação publica 1.11.0.
+As tags v1.8.0 e v1.9.0 já foram registradas. O procedimento abaixo foi usado quando VERSION era 1.9.0. A opção atual lê a versão do código e nesta preparação publica 1.12.0.
 
 Procedimento histórico:
 

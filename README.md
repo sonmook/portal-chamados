@@ -2,7 +2,7 @@
 
 ![Marca do Portal de TI](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.11.0** · [Notas da versão](docs/releases/v1.11.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.12.0** · [Notas da versão](docs/releases/v1.12.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -14,6 +14,10 @@ Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django*
 As capturas da galeria principal foram registradas na **v1.1.0**, com a marca atual, os novos ícones e **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
 
 ---
+
+## Estados de espera do atendimento
+
+A **v1.12.0** adiciona **Aguardando solicitante** e **Aguardando fornecedor**. O técnico responsável informa um motivo e o portal registra autor, data e histórico da alteração. A resposta do solicitante retoma automaticamente o atendimento quando a espera era por ele. Os chamados continuam ativos na fila, nos indicadores e nos alertas: **o SLA continua contando durante a espera**. [Funcionamento e atualização](docs/estados-espera.md).
 
 ## Calendário de SLA e cobertura da triagem
 

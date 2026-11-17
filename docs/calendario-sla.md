@@ -49,7 +49,7 @@ O novo cálculo é usado quando um vencimento precisa ser gerado. Vencimentos j�
 
 O prazo conta horas reais dentro das janelas locais. Minutos e segundos são preservados, e a duração entre instantes é calculada em UTC. Datas de entrada precisam ter fuso. As duas funções públicas de cálculo usam o mesmo serviço.
 
-O aviso de proximidade continua sendo de até **uma hora corrida** antes do vencimento. Não há pausa por status de espera, SLA separado de primeira resposta ou reabertura nesta entrega.
+O aviso de proximidade continua sendo de até **uma hora corrida** antes do vencimento. Os estados de espera da v1.12.0 continuam consumindo SLA; veja [Estados de espera](estados-espera.md). Não há SLA separado de primeira resposta nem reabertura nesta entrega.
 
 ## Avisos quando falta coordenação
 
