@@ -12,13 +12,13 @@ from .notificacoes import notificar_atribuicao, notificar_resposta, notificar_re
 from .sla import filtrar_sla, ATIVOS
 from .operacao import resumo_operacional
 from .colunas import COLUNAS, ordem_usuario
+from .periodos import datas_periodo, limites_datas
 from .acesso import chamados_acessiveis, equipes_acessiveis, integrante_ativo, pode_distribuir, filtrar_equipe
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User 
 from django.utils import timezone
 from django.contrib import messages
-from datetime import timedelta
 
 from .models import Chamado, Comentario, Equipe, IntegranteEquipe, RespostaPronta
 from .forms import ChamadoForm, ComentarioForm, NovoUsuarioForm, EditarUsuarioForm, ResolucaoForm, RedistribuirChamadoForm
@@ -32,19 +32,18 @@ def dashboard(request):
     de acordo com o nível de permissão do usuário.
     """
     periodo = request.GET.get('periodo', 'sempre')
-    hoje = timezone.now().date()
+    hoje = timezone.localdate()
     
     base_chamados = chamados_acessiveis(request.user)
     equipe_filter = request.GET.get('equipe', '')
     base_chamados = filtrar_equipe(base_chamados, equipe_filter)
 
-    # Aplicação do Filtro de Data
-    if periodo == 'hoje':
-        base_chamados = base_chamados.filter(data_criacao__date=hoje)
-    elif periodo == '7dias':
-        base_chamados = base_chamados.filter(data_criacao__date__gte=hoje - timedelta(days=7))
-    elif periodo == 'mes':
-        base_chamados = base_chamados.filter(data_criacao__month=hoje.month, data_criacao__year=hoje.year)
+    inicio, fim = datas_periodo(periodo, hoje=hoje)
+    if inicio:
+        limite_inicial, limite_final = limites_datas(inicio, fim)
+        base_chamados = base_chamados.filter(
+            data_criacao__gte=limite_inicial, data_criacao__lt=limite_final,
+        )
 
     finalizados = Q(status__in=FINALIZADOS)
     categorias = ('Software', 'Hardware', 'Rede', 'Acessos', 'Outros')
@@ -119,7 +118,7 @@ def lista_chamados(request):
     chamados_list = base_equipe.order_by('-id')
 
     # Captura parâmetros da URL
-    query = request.GET.get('q')
+    query = request.GET.get('q', '').strip()
     status_filter = request.GET.get('status')
     categoria_filter = request.GET.get('categoria')
     fila_filter = request.GET.get('fila', '')
@@ -142,9 +141,14 @@ def lista_chamados(request):
 
     # Filtro de Busca (Q objects permitem o uso do operador OR | )
     if query:
-        chamados_list = chamados_list.filter(
-            Q(titulo__icontains=query) | Q(descricao__icontains=query)
-        )
+        busca = Q(titulo__icontains=query) | Q(descricao__icontains=query)
+        numero = query.removeprefix('#')
+        # IDs fora do limite do banco continuam sendo apenas uma busca textual.
+        if numero.isascii() and numero.isdigit() and len(numero) <= 19:
+            numero = int(numero)
+            if 0 < numero <= 9223372036854775807:
+                busca |= Q(pk=numero)
+        chamados_list = chamados_list.filter(busca)
 
     if status_filter:
         chamados_list = chamados_list.filter(status=status_filter)
@@ -172,6 +176,8 @@ def lista_chamados(request):
         'query': query,
         'status_filter': status_filter,
         'categoria_filter': categoria_filter,
+        'categorias_filtro': Chamado.CATEGORIA_CHOICES,
+        'categoria_nome': dict(Chamado.CATEGORIA_CHOICES).get(categoria_filter, categoria_filter),
         'resumo_operacional': resumo_operacional(base_equipe, request.user, agora,
             equipe=equipe_filter, fila=fila_filter, sla=sla_filter,
             outros_filtros=bool(query or status_filter or categoria_filter)),
@@ -218,15 +224,31 @@ def _exigir_responsavel(user, chamado):
         raise PermissionDenied
 
 
+def _contexto_detalhes(usuario, chamado, *, form=None, resolucao_form=None):
+    ativo = chamado.status not in FINALIZADOS and chamado.equipe.ativa
+    tecnico_responsavel = ativo and chamado.tecnico_id == usuario.pk and integrante_ativo(usuario, chamado.equipe_id)
+    return {
+        'chamado': chamado,
+        'comentarios': chamado.comentarios.select_related('autor', 'autor__perfil').all().order_by('data_criacao'),
+        'form': form if form is not None else ComentarioForm(),
+        'resolucao_form': resolucao_form if resolucao_form is not None else ResolucaoForm(),
+        'abrir_resolucao': resolucao_form is not None and bool(resolucao_form.errors),
+        'ativo': ativo,
+        'pode_responder': ativo and (chamado.solicitante_id == usuario.pk or tecnico_responsavel),
+        'pode_fechar': tecnico_responsavel,
+        'respostas_prontas': list(RespostaPronta.objects.filter(ativa=True).values('pk', 'nome')) if tecnico_responsavel else [],
+        'pode_assumir': ativo and chamado.tecnico_id is None and integrante_ativo(usuario, chamado.equipe_id),
+        'pode_distribuir': pode_distribuir(usuario, chamado),
+    }
+
+
 @login_required
 @transaction.atomic
 def detalhes_chamado(request, id):
     chamado = _chamado_visivel(request.user, id, bloquear=request.method == 'POST')
-    ativo = chamado.status not in FINALIZADOS and chamado.equipe.ativa
-    tecnico_responsavel = ativo and chamado.tecnico_id == request.user.pk and integrante_ativo(request.user, chamado.equipe_id)
-    pode_responder = ativo and (chamado.solicitante_id == request.user.pk or tecnico_responsavel)
+    contexto = _contexto_detalhes(request.user, chamado)
     if request.method == 'POST':
-        if not pode_responder:
+        if not contexto['pode_responder']:
             raise PermissionDenied
         form = ComentarioForm(request.POST, request.FILES)
         if form.is_valid():
@@ -236,19 +258,8 @@ def detalhes_chamado(request, id):
             comentario.save()
             notificar_resposta(comentario)
             return redirect('detalhes_chamado', id=chamado.id)
-    else:
-        form = ComentarioForm()
-    return render(request, 'helpdesk/detalhes_chamado.html', {
-        'chamado': chamado,
-        'comentarios': chamado.comentarios.select_related('autor', 'autor__perfil').all().order_by('data_criacao'),
-        'form': form,
-        'ativo': ativo,
-        'pode_responder': pode_responder,
-        'pode_fechar': tecnico_responsavel,
-        'respostas_prontas': list(RespostaPronta.objects.filter(ativa=True).values('pk', 'nome')) if tecnico_responsavel else [],
-        'pode_assumir': ativo and chamado.tecnico_id is None and integrante_ativo(request.user, chamado.equipe_id),
-        'pode_distribuir': pode_distribuir(request.user, chamado),
-    })
+        contexto['form'] = form
+    return render(request, 'helpdesk/detalhes_chamado.html', contexto)
 
 
 @login_required
@@ -278,7 +289,8 @@ def fechar_chamado(request, id):
         raise PermissionDenied
     form = ResolucaoForm(request.POST, request.FILES)
     if not form.is_valid():
-        return HttpResponseBadRequest(form.errors.as_text(), content_type='text/plain; charset=utf-8')
+        return render(request, 'helpdesk/detalhes_chamado.html',
+            _contexto_detalhes(request.user, chamado, resolucao_form=form), status=400)
     texto_resolucao = form.cleaned_data['resolucao']
     Comentario.objects.create(
         chamado=chamado,

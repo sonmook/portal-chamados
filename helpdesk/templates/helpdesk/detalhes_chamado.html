@@ -32,6 +32,11 @@
 
     <div id="conteudo-principal" tabindex="-1" class="container">
         {% for message in messages %}<div class="alert alert-info" role="status">{{ message }}</div>{% endfor %}
+        {% if abrir_resolucao %}
+        <div class="alert alert-danger" role="alert">O chamado continua aberto. Revise os campos da solução.
+            <button type="button" class="btn btn-sm btn-outline-danger ms-2" data-bs-toggle="modal" data-bs-target="#modalResolucao">Revisar solução</button>
+        </div>
+        {% endif %}
         {% if pode_distribuir %}
         <div class="mb-3"><a class="btn btn-outline-primary" href="{% url 'redistribuir_chamado' chamado.pk %}">Redistribuir chamado</a></div>
         {% endif %}
@@ -274,25 +279,31 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalResolucao" tabindex="-1" aria-hidden="true">
+    {% if pode_fechar %}
+    <div class="modal fade" id="modalResolucao" tabindex="-1" aria-hidden="true" aria-labelledby="tituloResolucao"{% if abrir_resolucao %} data-resolucao-invalida{% endif %}>
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow">
                 
                 <div class="modal-header bg-success text-white border-0">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-check-circle-fill me-2"></i>Finalizar Chamado</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 id="tituloResolucao" class="modal-title fw-bold"><i class="bi bi-check-circle-fill me-2"></i>Finalizar Chamado</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 
                 <form action="{% url 'fechar_chamado' chamado.id %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="modal-body p-4">
+                        {{ resolucao_form.non_field_errors }}
                         <div class="mb-3">
-                            <label class="form-label fw-bold small text-muted text-uppercase">Como o problema foi resolvido?</label>
-                            <textarea name="resolucao" class="form-control bg-light" rows="4" required placeholder="Descreva o procedimento efetuado..."></textarea>
+                            <label for="{{ resolucao_form.resolucao.id_for_label }}" class="form-label fw-bold small text-muted text-uppercase">{{ resolucao_form.resolucao.label }}</label>
+                            {{ resolucao_form.resolucao }}
+                            {{ resolucao_form.resolucao.errors }}
                         </div>
                         <div class="mb-2">
-                            <label class="form-label fw-bold small text-muted text-uppercase"><i class="bi bi-paperclip"></i> Anexar Evidência/Print (Opcional)</label>
-                            <input type="file" name="anexo_resolucao" class="form-control form-control-sm">
+                            <label for="{{ resolucao_form.anexo_resolucao.id_for_label }}" class="form-label fw-bold small text-muted text-uppercase"><i class="bi bi-paperclip"></i> {{ resolucao_form.anexo_resolucao.label }}</label>
+                            {{ resolucao_form.anexo_resolucao }}
+                            <div class="form-text" id="{{ resolucao_form.anexo_resolucao.auto_id }}_helptext">{{ resolucao_form.anexo_resolucao.help_text }}</div>
+                            {{ resolucao_form.anexo_resolucao.errors }}
+                            {% if abrir_resolucao %}<p class="small text-muted mt-2 mb-0">Seu texto foi mantido. Se desejar anexar um arquivo, selecione-o novamente antes de enviar.</p>{% endif %}
                         </div>
                     </div>
                     
@@ -305,6 +316,8 @@
             </div>
         </div>
     </div>
+    {% if abrir_resolucao %}<script src="{% static 'helpdesk/js/resolucao.js' %}" defer></script>{% endif %}
+    {% endif %}
 {% if respostas_prontas %}<script src="{% static 'helpdesk/js/respostas_prontas.js' %}" defer></script>{% endif %}
 </body>
 </html>

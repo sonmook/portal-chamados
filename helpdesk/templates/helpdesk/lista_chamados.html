@@ -40,7 +40,7 @@
                 
                 <div class="input-group input-group-sm filter-search" style="width: 240px;">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="text" name="q" aria-label="Buscar chamado por assunto ou descrição" class="form-control border-start-0 ps-0" placeholder="Buscar chamado..." value="{{ query|default_if_none:'' }}">
+                    <input type="text" name="q" aria-label="Buscar chamado por número, assunto ou descrição" class="form-control border-start-0 ps-0" placeholder="Número, assunto ou descrição" value="{{ query|default_if_none:'' }}">
                 </div>
 
                 {% if request.user.is_staff or request.user.is_superuser %}
@@ -65,7 +65,10 @@
                     <option value="vencidos" {% if sla_filter == 'vencidos' %}selected{% endif %}>SLA vencido</option>
                 </select>
 
-                {% if categoria_filter %}<input type="hidden" name="categoria" value="{{ categoria_filter }}">{% endif %}
+                <select name="categoria" aria-label="Filtrar por categoria" class="form-select form-select-sm" style="width: auto;">
+                    <option value="">Todas as categorias</option>
+                    {% for valor, nome in categorias_filtro %}<option value="{{ valor }}"{% if categoria_filter == valor %} selected{% endif %}>{{ nome }}</option>{% endfor %}
+                </select>
                 <select name="ordenacao" aria-label="Ordenação dos chamados" class="form-select form-select-sm shadow-sm" style="width: auto;">
                     <option value="novos" {% if ordenacao == 'novos' %}selected{% endif %}>Aberturas mais recentes</option>
                     <option value="interacao_recente" {% if ordenacao == 'interacao_recente' %}selected{% endif %}>Interações mais recentes</option>
@@ -93,7 +96,7 @@
             </form>
         </div>
 
-        {% if query or status_filter or fila_filter or sla_filter %}
+        {% if query or status_filter or categoria_filter or fila_filter or sla_filter %}
         <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
             <span class="text-muted small fw-bold"><i class="bi bi-funnel-fill"></i> Filtros aplicados:</span>
             
@@ -111,6 +114,11 @@
             {% if status_filter %}
             <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 fw-normal">
                 Status: <span class="text-muted fw-bold">{{ status_filter }}</span>
+            </span>
+            {% endif %}
+            {% if categoria_filter %}
+            <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 fw-normal">
+                Categoria: <span class="text-muted fw-bold">{{ categoria_nome }}</span>
             </span>
             {% endif %}
         </div>
