@@ -1,5 +1,16 @@
 # Histórico de atualizações
 
+## v1.11.0 — Calendário de SLA e cobertura da triagem
+
+- Novos vencimentos calculados no fuso da instalação, independentemente do fuso da data recebida, com expediente, dias da semana e feriados configuráveis.
+- Padrão de 24 horas de segunda a sexta em America/Sao_Paulo; prazos de 4/24/48/120 horas por prioridade mantidos. Fuso configurável por DJANGO_TIME_ZONE.
+- Contagem preserva minutos/segundos, pula dias sem atendimento e usa instantes UTC para a duração. Funções antigas passam pelo mesmo cálculo.
+- Vencimentos já gravados não são recalculados ao alterar calendário, prioridade ou outros dados. Sem migração ou nova dependência.
+- Check Django recusa calendários inválidos antes da operação. Administração mostra o calendário vigente.
+- Chamados sem responsável e sem coordenador elegível geram avisos aos administradores ativos, com a deduplicação existente. Sem destinatário elegível, o comando registra a quantidade nos resultados.
+- Administração e lista de equipes sinalizam falta de coordenação/técnicos ativos sem gravar dados em consultas.
+- Notas em `docs/releases/v1.11.0.md` e configuração em `docs/calendario-sla.md`.
+
 ## v1.10.1 — Correções da fila e validação das atualizações
 
 - Busca por número com ou sem `#`, combinada com busca textual e os filtros existentes, preservando o escopo de acesso e tratando IDs fora do limite do banco.

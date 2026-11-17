@@ -11,7 +11,7 @@ from django.views.decorators.http import require_http_methods
 from .audit import registrar
 from .forms_equipes import EquipeForm
 from .models import Equipe, IntegranteEquipe
-from .acesso import FINALIZADOS
+from .acesso import FINALIZADOS, cobertura_equipes
 
 
 class EquipeAlterada(Exception):
@@ -29,7 +29,7 @@ def snapshot(equipe):
 def gerenciar_equipes(request):
     if not request.user.is_superuser:
         raise PermissionDenied
-    equipes = Equipe.objects.annotate(total_integrantes=Count('vinculos', distinct=True),
+    equipes = cobertura_equipes(Equipe.objects.all()).annotate(total_integrantes=Count('vinculos', distinct=True),
         total_pendentes=Count('chamados', filter=~Q(chamados__status__in=FINALIZADOS), distinct=True)).prefetch_related(
         Prefetch('vinculos', queryset=IntegranteEquipe.objects.filter(coordenador=True).select_related('usuario'),
                  to_attr='coordenacao')

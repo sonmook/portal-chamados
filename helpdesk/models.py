@@ -4,7 +4,7 @@ from django.db import transaction
 from django.db.models.functions import Coalesce, Greatest, Lower
 from django.contrib.auth.models import User
 from django.utils import timezone
-from datetime import timedelta
+from .calendario_sla import calcular_vencimento
 from .validators import validar_anexo
 from .visual_conquistas import OPCOES_ICONES, visual
 
@@ -13,20 +13,8 @@ def equipe_triagem_id():
     return Equipe.objects.get(triagem_padrao=True, ativa=True).pk
 
 def calcular_prazo_util(data_inicial, horas_prazo):
-    """
-    Função auxiliar para calcular a data final de um SLA, adicionando horas 
-    e pulando finais de semana (sábados e domingos).
-    """
-    data_final = data_inicial
-    horas_contadas = 0
-
-    while horas_contadas < horas_prazo:
-        data_final += timedelta(hours=1)
-        # weekday(): 0=Seg, 1=Ter, 2=Qua, 3=Qui, 4=Sex, 5=Sáb, 6=Dom
-        if data_final.weekday() < 5:
-            horas_contadas += 1
-
-    return data_final
+    """Compatibilidade: usa o calendário e fuso configurados para a instalação."""
+    return calcular_vencimento(data_inicial, horas_prazo)
 
 
 class Chamado(models.Model):
@@ -148,12 +136,7 @@ class Comentario(models.Model):
 
 # Função alternativa de cálculo de horas (Mantida para fins de compatibilidade)
 def somar_horas_uteis(data_inicio, horas_a_somar):
-    data_final = data_inicio
-    while horas_a_somar > 0:
-        data_final += timedelta(hours=1)
-        if data_final.weekday() < 5:
-            horas_a_somar -= 1
-    return data_final
+    return calcular_prazo_util(data_inicio, horas_a_somar)
 
 class JanelaLogin(models.Model):
     chave = models.CharField(max_length=64, unique=True)

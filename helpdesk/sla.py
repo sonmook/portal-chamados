@@ -22,7 +22,8 @@ def filtrar_sla(chamados, filtro, agora=None):
 
 
 def contadores():
-    return {'verificados': 0, 'sla_proximo': 0, 'sla_vencido': 0, 'sem_responsavel': 0}
+    return {'verificados': 0, 'sla_proximo': 0, 'sla_vencido': 0, 'sem_responsavel': 0,
+        'sem_destinatario': 0}
 
 
 @transaction.atomic
@@ -43,7 +44,12 @@ def processar_chamado(chamado_id, equipe_id, agora):
         ids = User.objects.filter(is_active=True, is_staff=True,
             pk__in=membros.filter(coordenador=True).values('usuario_id')).values_list('pk', flat=True)
     destinatarios = set(ids)
+    if chamado.tecnico_id is None and not destinatarios:
+        # Administradores já têm acesso global; não se concede nova permissão.
+        destinatarios = set(User.objects.filter(is_active=True, is_staff=True,
+            is_superuser=True).values_list('pk', flat=True))
     if not destinatarios:
+        resultado['sem_destinatario'] = 1
         return resultado
     if chamado.tecnico_id is None:
         evento = f'sem_responsavel:{chamado.pk}:{equipe_id}:{chamado.versao_atribuicao}'

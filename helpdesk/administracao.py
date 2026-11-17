@@ -3,6 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
+from .acesso import cobertura_equipes
+from .calendario_sla import obter_calendario
+from .models import Equipe
 
 SECOES = {
     'central_administracao': 'Administração',
@@ -39,4 +42,17 @@ FERRAMENTAS = [
 def central_administracao(request):
     if not request.user.is_active or not request.user.is_superuser:
         raise PermissionDenied
-    return render(request, 'helpdesk/administracao.html', {'ferramentas': FERRAMENTAS})
+    sem_coordenacao = cobertura_equipes(Equipe.objects.filter(ativa=True)).filter(tem_coordenador_ativo=False)
+    calendario = obter_calendario()
+    nomes_dias = ('Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo')
+    return render(request, 'helpdesk/administracao.html', {
+        'ferramentas': FERRAMENTAS,
+        'total_sem_coordenacao': sem_coordenacao.count(),
+        'equipes_sem_coordenacao': sem_coordenacao[:5],
+        'calendario_sla': {
+            'inicio': f'{calendario.inicio // 60:02}:{calendario.inicio % 60:02}',
+            'fim': f'{calendario.fim // 60:02}:{calendario.fim % 60:02}',
+            'dias': ', '.join(nomes_dias[d] for d in sorted(calendario.dias)),
+            'fuso': str(calendario.fuso), 'feriados': len(calendario.feriados),
+        },
+    })

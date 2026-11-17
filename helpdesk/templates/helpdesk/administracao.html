@@ -3,6 +3,14 @@
 {% block conteudo %}
 <div class="administracao-pagina">
 <header class="administracao-cabecalho"><span class="administracao-selo"><i class="bi bi-gear" aria-hidden="true"></i> Gestão do portal</span><h1>Administração</h1><p>Organize pessoas, equipes e configurações em um só lugar.</p></header>
+<section class="border rounded p-3 mb-3" aria-label="Calendário de SLA"><strong>Calendário de atendimento</strong>
+<p class="mb-0 small text-muted">{{ calendario_sla.dias }} · {{ calendario_sla.inicio }} às {{ calendario_sla.fim }} · {{ calendario_sla.fuso }} · {{ calendario_sla.feriados }} {{ calendario_sla.feriados|pluralize:'feriado configurado,feriados configurados' }}.</p></section>
+{% if total_sem_coordenacao %}
+<aside class="alert alert-warning" role="status"><strong>{{ total_sem_coordenacao }} {{ total_sem_coordenacao|pluralize:'equipe ativa sem coordenador técnico ativo,equipes ativas sem coordenador técnico ativo' }}.</strong>
+<p class="mb-1">Os avisos de chamados sem responsável dessas equipes serão enviados aos administradores ativos até a definição de um coordenador.</p>
+<ul class="mb-2">{% for equipe in equipes_sem_coordenacao %}<li><a href="{% url 'editar_equipe' equipe.pk %}">{{ equipe.nome }}</a></li>{% endfor %}</ul>
+<a href="{% url 'gerenciar_equipes' %}">Revisar cobertura de todas as equipes</a></aside>
+{% endif %}
 <section class="administracao-grade" aria-label="Ferramentas de administração">
 {% for ferramenta in ferramentas %}
 <a class="administracao-card" href="{% url ferramenta.url %}"><span class="administracao-icone"><i class="bi bi-{{ ferramenta.icone }}" aria-hidden="true"></i></span><div><h2>{{ ferramenta.nome }}</h2><p>{{ ferramenta.descricao }}</p></div><i class="bi bi-arrow-up-right administracao-seta" aria-hidden="true"></i></a>

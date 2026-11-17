@@ -1,9 +1,18 @@
-from django.db.models import Q
+from django.db.models import Exists, OuterRef, Q
 
 from .models import Chamado, Equipe, IntegranteEquipe
 
 
 FINALIZADOS = ('Resolvido', 'Fechado')
+
+
+def cobertura_equipes(equipes):
+    integrantes = IntegranteEquipe.objects.filter(equipe_id=OuterRef('pk'),
+        usuario__is_active=True, usuario__is_staff=True)
+    return equipes.annotate(
+        tem_tecnico_ativo=Exists(integrantes),
+        tem_coordenador_ativo=Exists(integrantes.filter(coordenador=True)),
+    )
 
 
 def filtrar_equipe(chamados, valor):

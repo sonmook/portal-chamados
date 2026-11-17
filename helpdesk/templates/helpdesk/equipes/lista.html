@@ -9,7 +9,9 @@
 <div class="card"><div class="table-responsive" role="region" aria-label="Tabela de dados" tabindex="0"><table class="table align-middle mb-0">
 <thead><tr><th>Equipe</th><th>Coordenadores</th><th>Integrantes</th><th>Pendentes</th><th>Status</th><th>Ações</th></tr></thead>
 <tbody>{% for equipe in page_obj %}<tr>
-<td><strong>{{ equipe.nome }}</strong><div class="small text-muted">{{ equipe.descricao|truncatechars:130 }}</div></td>
+<td><strong>{{ equipe.nome }}</strong><div class="small text-muted">{{ equipe.descricao|truncatechars:130 }}</div>
+{% if equipe.ativa and not equipe.tem_tecnico_ativo %}<div class="small text-danger">Sem técnico ativo</div>{% endif %}
+{% if equipe.ativa and not equipe.tem_coordenador_ativo %}<div class="small text-warning-emphasis">Sem coordenador ativo · avisos aos administradores</div>{% endif %}</td>
 <td>{% for vinculo in equipe.coordenacao %}<div>{{ vinculo.usuario.get_full_name|default:vinculo.usuario.username }}{% if not vinculo.usuario.is_active or not vinculo.usuario.is_staff %} <span class="text-danger">(sem acesso de técnico ativo)</span>{% endif %}</div>{% empty %}<span class="text-muted">Não definido</span>{% endfor %}</td>
 <td>{{ equipe.total_integrantes }}</td><td><a href="{% url 'lista_chamados' %}?equipe={{ equipe.pk }}&amp;ordenacao=sem_interacao">{{ equipe.total_pendentes }}</a></td><td>{% if equipe.ativa %}<span class="badge bg-success">Ativa</span>{% else %}<span class="badge bg-secondary">Inativa</span>{% endif %}</td>
 <td><a class="btn btn-sm btn-outline-primary" href="{% url 'editar_equipe' equipe.pk %}">Gerenciar</a></td>

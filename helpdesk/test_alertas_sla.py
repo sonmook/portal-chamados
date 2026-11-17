@@ -57,12 +57,12 @@ class AlertasSLATests(TestCase):
     def test_coordenador_inativo_sem_papel_ou_sem_vinculo_nao_recebe(self):
         self.chamado(tecnico=None)
         User.objects.filter(pk=self.coord.pk).update(is_active=False)
-        self.processar();self.assertFalse(Notificacao.objects.exists())
+        self.processar();self.assertEqual(set(Notificacao.objects.values_list('destinatario_id', flat=True)), {self.admin.pk})
         User.objects.filter(pk=self.coord.pk).update(is_active=True,is_staff=False)
-        self.processar();self.assertFalse(Notificacao.objects.exists())
+        self.processar();self.assertEqual(set(Notificacao.objects.values_list('destinatario_id', flat=True)), {self.admin.pk})
         User.objects.filter(pk=self.coord.pk).update(is_staff=True)
         IntegranteEquipe.objects.filter(usuario=self.coord).delete()
-        self.processar();self.assertFalse(Notificacao.objects.exists())
+        self.processar();self.assertEqual(set(Notificacao.objects.values_list('destinatario_id', flat=True)), {self.admin.pk})
 
     def test_tecnico_inativo_sem_papel_ou_sem_vinculo_nao_recebe(self):
         self.chamado()
