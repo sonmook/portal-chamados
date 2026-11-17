@@ -2,7 +2,7 @@
 
 ![Marca do Portal de TI](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.10.0** · [Notas da versão](docs/releases/v1.10.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.10.1** · [Notas da versão](docs/releases/v1.10.1.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -14,6 +14,12 @@ Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django*
 As capturas da galeria principal foram registradas na **v1.1.0**, com a marca atual, os novos ícones e **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
 
 ---
+
+## Correções da fila e validação das atualizações
+
+A **v1.10.1** permite buscar por número (`123` ou `#123`), selecionar categoria diretamente na fila e corrigir erros de resolução sem perder o texto da solução. Dashboard e indicadores usam os mesmos limites de datas: **Últimos 7 dias** inclui hoje e os seis dias anteriores, no fuso ativo do portal.
+
+Execute `python scripts/validar_atualizacao.py` com o Python da venv para validar versão, dependências, configuração, migrações e testes em um comando. A CI executa a mesma validação em cada PR e publica um resumo por etapa; os jobs de dependências, homologação e Windows continuam separados. [Funcionamento e limites](docs/validacao-atualizacoes.md).
 
 ## Indicadores administrativos — relatório de performance
 

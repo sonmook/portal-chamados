@@ -1,5 +1,15 @@
 # Histórico de atualizações
 
+## v1.10.1 — Correções da fila e validação das atualizações
+
+- Busca por número com ou sem `#`, combinada com busca textual e os filtros existentes, preservando o escopo de acesso e tratando IDs fora do limite do banco.
+- Seletor de categoria visível na fila, com identificação da seleção entre os filtros aplicados.
+- Intervalos de datas compartilhados entre dashboard e indicadores; últimos 7 dias inclui hoje e os seis anteriores, com limites no fuso ativo do portal.
+- Resolução inválida retorna ao detalhe com os campos e erros, preserva o texto e reabre o formulário; nenhuma solução, notificação ou conquista é gravada até o reenvio válido.
+- Comando único de validação local/CI, resumo por etapa no GitHub Actions e manutenção da validação de releases históricas.
+- Testes de regressão para busca autorizada, limites de datas, categoria e correção de resolução. Sem nova migração ou dependência.
+- Notas em `docs/releases/v1.10.1.md`.
+
 ## v1.10.0 — Respostas prontas
 
 - Catálogo em Administração para criar, editar e desativar modelos, com busca, filtro de disponibilidade e paginação.

@@ -7,8 +7,13 @@ from .validators import validar_anexo
 
 
 class ResolucaoForm(forms.Form):
-    resolucao = forms.CharField(strip=True)
-    anexo_resolucao = forms.FileField(required=False, validators=[validar_anexo])
+    resolucao = forms.CharField(label='Como o problema foi resolvido?', strip=True,
+        widget=forms.Textarea(attrs={'class': 'form-control bg-light', 'rows': 4,
+            'placeholder': 'Descreva o procedimento efetuado...'}))
+    anexo_resolucao = forms.FileField(label='Anexar evidência/print (opcional)', required=False,
+        validators=[validar_anexo], help_text='PNG, JPEG ou PDF de até 10 MB.',
+        widget=forms.FileInput(attrs={'class': 'form-control form-control-sm',
+            'accept': '.png,.jpg,.jpeg,.pdf'}))
 
 
 class RedistribuirChamadoForm(forms.Form):

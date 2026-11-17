@@ -1,6 +1,4 @@
 """Indicadores administrativos: uma resolução por chamado, sem joins de integrantes."""
-from datetime import datetime, time, timedelta
-
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -13,6 +11,7 @@ from django.views.decorators.http import require_GET
 
 from .acesso import FINALIZADOS
 from .models import Chamado, Equipe
+from .periodos import datas_periodo, limites_datas
 
 
 class FiltrosIndicadores(forms.Form):
@@ -91,15 +90,7 @@ def painel(request):
         dados = form.cleaned_data
         hoje = timezone.localdate()
         periodo = dados['periodo']
-        inicio = fim = None
-        if periodo == 'hoje':
-            inicio = fim = hoje
-        elif periodo == '7dias':
-            inicio, fim = hoje - timedelta(days=6), hoje
-        elif periodo == 'mes':
-            inicio, fim = hoje.replace(day=1), hoje
-        elif periodo == 'personalizado':
-            inicio, fim = dados['inicio'], dados['fim']
+        inicio, fim = datas_periodo(periodo, hoje=hoje, inicio=dados['inicio'], fim=dados['fim'])
         base = Chamado.objects.all()
         if dados['equipe']:
             base = base.filter(equipe=dados['equipe'])
@@ -107,8 +98,7 @@ def painel(request):
         abertos = base
         resolvidos = base.filter(status__in=FINALIZADOS)
         if inicio:
-            limite_inicial = timezone.make_aware(datetime.combine(inicio, time.min))
-            limite_final = timezone.make_aware(datetime.combine(fim + timedelta(days=1), time.min))
+            limite_inicial, limite_final = limites_datas(inicio, fim)
             abertos = abertos.filter(data_criacao__gte=limite_inicial, data_criacao__lt=limite_final)
             resolvidos = resolvidos.filter(data_fechamento__gte=limite_inicial, data_fechamento__lt=limite_final)
         resumo = apresentar(metricas(resolvidos))
