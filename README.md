@@ -2,7 +2,7 @@
 
 ![Marca do Portal de TI](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.10.1** · [Notas da versão](docs/releases/v1.10.1.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.11.0** · [Notas da versão](docs/releases/v1.11.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -14,6 +14,10 @@ Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django*
 As capturas da galeria principal foram registradas na **v1.1.0**, com a marca atual, os novos ícones e **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
 
 ---
+
+## Calendário de SLA e cobertura da triagem
+
+A **v1.11.0** calcula novos vencimentos no fuso da instalação, com dias, expediente e feriados configuráveis. O padrão é **24 horas de segunda a sexta, em America/Sao_Paulo**, mantendo os prazos por prioridade. Vencimentos existentes são preservados. A Administração mostra o calendário vigente e equipes sem coordenador ativo. Nessa situação, os avisos de chamados sem responsável chegam aos administradores ativos. [Configuração e critérios](docs/calendario-sla.md).
 
 ## Correções da fila e validação das atualizações
 

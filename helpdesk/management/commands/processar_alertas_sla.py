@@ -28,7 +28,8 @@ class Command(BaseCommand):
                     self.stdout.write(f"Verificação de SLA {timezone.localtime():%d/%m/%Y %H:%M:%S}: "
                         f"{total['verificados']} chamados; novos avisos — "
                         f"próximos: {total['sla_proximo']}, vencidos: {total['sla_vencido']}, "
-                        f"sem responsável: {total['sem_responsavel']}.")
+                        f"sem responsável: {total['sem_responsavel']}; "
+                        f"chamados sem destinatário elegível: {total['sem_destinatario']}.")
                 except DatabaseError as error:
                     if not options['continuo']:
                         raise CommandError('Falha no banco ao processar alertas de SLA. Tente novamente.') from error

@@ -1,6 +1,6 @@
 # Alertas de SLA
 
-O portal verifica os chamados **Abertos e Em Andamento** de equipes ativas a cada minuto. Não depende de visitas à página e usa o vencimento calculado pelo portal. A antecedência é de **uma hora corrida**, mesmo que o cálculo original do SLA use horário comercial.
+O portal verifica os chamados **Abertos e Em Andamento** de equipes ativas a cada minuto. Não depende de visitas à página e usa o vencimento gravado no chamado. A antecedência é de **uma hora corrida**, inclusive quando o calendário usa expediente reduzido. Novos prazos seguem o [calendário configurado](calendario-sla.md); os existentes são preservados.
 
 | Situação | Destinatário |
 | --- | --- |
@@ -8,8 +8,9 @@ O portal verifica os chamados **Abertos e Em Andamento** de equipes ativas a cad
 | Vencimento anterior a agora | Mesmo destinatário, com aviso de SLA vencido |
 | Chamado sem responsável | Coordenadores ativos da equipe |
 | Prazo próximo ou vencido sem responsável | Coordenadores ativos também recebem o aviso de prazo |
+| Sem coordenador elegível para chamado sem responsável | Administradores ativos recebem os avisos como substitutos |
 
-Sem coordenador elegível, o aviso aguarda uma próxima verificação. Contas sem papel de técnico, sem vínculo ou inativas não recebem. Resolvidos, Fechados e equipes inativas não geram avisos. Um chamado sem prazo pode gerar aviso de falta de responsável, mas não de SLA. Não há atribuição automática de técnico, mudança de prioridade ou envio de e-mail.
+Sem coordenador elegível, recebem os administradores ativos com acesso administrativo. Na ausência de ambos, o comando registra o chamado no contador de ausência de destinatário e tenta novamente no ciclo seguinte. Coordenadores precisam de papel de técnico, vínculo e conta ativa; o substituto precisa ser administrador ativo. Resolvidos, Fechados e equipes inativas não geram avisos. Um chamado sem prazo pode gerar aviso de falta de responsável, mas não de SLA. Não há atribuição automática de técnico, mudança de prioridade ou envio de e-mail.
 
 Os avisos aparecem no sino e na central já existentes. O contador atualiza ao navegar ou recarregar. Um prazo alcançado entre ciclos será identificado no ciclo seguinte; a antecedência é de até uma hora, não um agendamento no segundo exato.
 

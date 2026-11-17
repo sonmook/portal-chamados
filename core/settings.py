@@ -127,11 +127,19 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = os.environ.get('DJANGO_TIME_ZONE', 'America/Sao_Paulo')
 
 USE_I18N = True
 
 USE_TZ = True
+
+# O padrão preserva 24 horas por dia útil. Expediente e feriados são configuráveis.
+SLA_CALENDARIO = {
+    'inicio': os.environ.get('DJANGO_SLA_INICIO', '00:00'),
+    'fim': os.environ.get('DJANGO_SLA_FIM', '24:00'),
+    'dias': [d.strip() for d in os.environ.get('DJANGO_SLA_DIAS', '0,1,2,3,4').split(',')],
+    'feriados': [d.strip() for d in os.environ.get('DJANGO_SLA_FERIADOS', '').split(',') if d.strip()],
+}
 
 
 # Static files (CSS, JavaScript, Images)
