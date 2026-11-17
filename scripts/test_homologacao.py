@@ -155,10 +155,11 @@ from helpdesk.models import HistoricoStatus
 espera=Chamado.objects.create(titulo='Espera preservada no backup',descricao='Fixture',
     solicitante=cliente,tecnico=user,equipe=t.equipe,data_vencimento=agora+timedelta(days=7))
 prazo=espera.data_vencimento
+client.force_login(user)
 response=client.post(f'/chamado/{espera.pk}/status/',{'status':AGUARDANDO_FORNECEDOR,
     'motivo':'Aguardando peça da homologação','versao_status':0,'versao_atribuicao':0},
     secure=True,HTTP_HOST='localhost')
-assert response.status_code==302
+assert response.status_code==302, ('Situação de espera', response.status_code)
 espera.refresh_from_db()
 assert espera.status==AGUARDANDO_FORNECEDOR and espera.data_vencimento==prazo
 assert espera.espera_desde is not None and espera.versao_status==1
