@@ -6,6 +6,10 @@ from django.views.decorators.csrf import csrf_protect
 
 
 class PortalAdminSite(AdminSite):
+    site_header = 'Nexaltri — Administração'
+    site_title = 'Nexaltri'
+    index_title = 'Administração do sistema'
+
     @method_decorator(never_cache)
     @method_decorator(csrf_protect)
     @login_not_required

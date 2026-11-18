@@ -1,0 +1,7 @@
+:root { --primary: #0f766e; --secondary: #101d37; --accent: #6ee0cf; --header-bg: #101d37; --header-color: #fff; --header-branding-color: #fff; --link-fg: #087f76; --link-hover-color: #075f59; --button-bg: #0f766e; --button-hover-bg: #075f59; --default-button-bg: #101d37; --default-button-hover-bg: #263956; --font-family-primary: "Inter", system-ui, sans-serif; }
+body { font-family: "Inter", system-ui, sans-serif; }
+h1, h2, h3 { font-family: "Manrope", system-ui, sans-serif; }
+#site-name a { display: flex; align-items: center; gap: 24px; }
+#site-name img { display: block; max-width: 100%; height: auto; }
+#site-name span { font-size: .8rem; color: #d0dce9; font-family: "Inter", system-ui, sans-serif; }
+@media (max-width: 767px) { #site-name a { gap: 14px; } #site-name img { width: 146px; } }

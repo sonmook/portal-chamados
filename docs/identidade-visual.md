@@ -1,41 +1,49 @@
-# Identidade visual — Portal de TI
+# Identidade visual — Nexaltri
 
-O Portal de TI tem marca própria, independente de empresas que o utilizem. O nome exibido é **Portal de TI** e o descritor é **Central de suporte**.
+Desde a v1.15.0, o nome exibido é **Nexaltri** e o descritor é **Gestão de chamados e atendimento de TI**. Dois segmentos formam um N, com recorte diagonal e pontas arredondadas, representando conexão e encaminhamento. A proposta aprovada orienta as aplicações no produto.
 
-![Marca do Portal de TI](../helpdesk/static/helpdesk/brand/logo.svg)
+![Marca Nexaltri](../helpdesk/static/helpdesk/brand/logo.svg)
 
-## Símbolo e uso
+## Arquivos e proporções
 
-A silhueta branca de um chamado representa a solicitação; o headset azul representa o atendimento. O preenchimento separa as duas formas e mantém a leitura nos tamanhos pequenos. O fundo azul tem cantos arredondados. A versão compacta é usada no cabeçalho e na aba do navegador; a assinatura com nome e descritor é indicada para documentação e apresentação.
+Em `helpdesk/static/helpdesk/brand/`:
 
-Os arquivos vetoriais estão em `helpdesk/static/helpdesk/brand/`: `simbolo.svg` e `logo.svg`. Os favicons PNG de 16px e 32px atendem navegadores sem ícone SVG, e o ícone de 180px atende atalhos em dispositivos Apple. As declarações ficam no componente compartilhado `estilos.html` para contemplar também equipes e regras.
+- `simbolo.svg`: monograma turquesa, sem fundo.
+- `logo.svg`: monograma e wordmark azul-marinho, para fundos claros.
+- `logo-claro.svg`: monograma e wordmark branco, para fundos escuros.
+- `favicon.svg`: monograma sobre base azul-marinho arredondada.
+- `favicon-16.png`, `favicon-32.png`, `apple-touch-icon.png`: ícones em 16/32/180px.
 
-Mantenha as proporções, a legibilidade e uma área livre de pelo menos um quarto da altura do símbolo. Não use sombras ou cores de status no símbolo. No cabeçalho, o texto do nome identifica a marca; o ícone ao lado é decorativo para leitores de tela.
+O wordmark tem contornos vetoriais derivados da Manrope em peso 800 e espaçamento óptico próprio. Não depende de fonte instalada ou texto rasterizado. Preserve proporções e uma área livre de pelo menos um quarto da altura do símbolo. Não adicione sombras, efeitos ou cores de status ao logotipo. No cabeçalho, a imagem possui texto alternativo Nexaltri; imagens decorativas não repetem o nome.
 
-## Paleta
+## Paleta e contraste
 
-| Uso | Cor |
+| Papel | Cor |
 | --- | --- |
-| Navegação e base da marca | `#15283F` |
-| Marca e ações principais | `#245CCE` |
-| Texto principal | `#172B45` |
-| Texto secundário | `#52647A` |
-| Fundo | `#F4F7FB` |
+| Marca e texto principal | `#101D37` |
+| Ações principais e monograma | `#14B8A6` |
+| Acento azul | `#638CFF` |
+| Fundo gelo | `#F4F7FB` |
+| Links, contornos e foco | `#0F766E` / `#087F76` |
+| Azul funcional legível | `#365EC4` |
 | Superfícies | `#FFFFFF` |
+| Texto secundário | `#526179` |
 | Bordas | `#DCE4EE` |
 
-Vermelho, verde e amarelo continuam reservados para estados de atendimento e avisos, sempre acompanhados de texto. Os ícones do menu pertencem à família Bootstrap Icons; equipes usam `bi-diagram-3` e usuários, `bi-people`.
+Turquesa claro usa texto azul-marinho nas ações principais. Links usam turquesa escuro; o azul funcional mantém contraste em textos/estados. Vermelho, verde e amarelo continuam com significado operacional, sempre acompanhados de texto. O check visual verifica contraste de pelo menos 4,5:1 nos botões principais renderizados.
 
-## Tipografia e componentes
+## Tipografia e aplicações
 
-Use Segoe UI com fallback para a fonte do sistema, sem dependência de fontes externas. Títulos têm peso forte e texto de apoio discreto. Cartões usam raio de 14px; campos e botões, aproximadamente 8px. A ação principal de cada contexto usa azul; ações secundárias usam contorno ou fundo neutro.
+**Manrope** em títulos e **Inter** na interface, com fallback para fontes do sistema. As famílias variáveis WOFF e licenças OFL estão em `helpdesk/static/helpdesk/fonts/`. O carregamento é local; não se consulta um provedor de fontes durante o acesso. O conjunto inclui os caracteres latinos do português; demais escritas usam fallback. A procedência e os blobs originais estão no README das fontes.
 
-Mantenha foco por teclado visível, rótulos explícitos e respeito à preferência de movimento reduzido. No celular, recolha a navegação e permita rolagem contida nas tabelas. Consulte `docs/auditoria-visual.md` para a revisão anterior.
+Navegação clara, marca compacta e seleção em turquesa suave. O login combina apresentação azul-marinho no desktop com formulário claro e marca compacta no celular. O Django Admin usa a mesma marca/fontes com folha própria, sem carregar Bootstrap sobre seus componentes. Ícones e CSS compartilhado recebem a versão na URL para atualizar o cache após o deploy.
 
-## Aplicação no portal
+Campos, rotas, permissões, conteúdo de chamados, notas e ciclos não foram alterados por esta entrega. Responsividade, foco visível e movimento reduzido são preservados. Bootstrap, ícones e Chart.js continuam usando recursos externos já existentes; fontes e marca locais não tornam todo o portal independente de rede.
 
-Capturas com dados fictícios de demonstração:
+## Validação visual
 
-![Gerenciar Equipes com a marca, o ícone no menu e a versão](imagens/identidade-equipes.png)
+O job `visual` instala Playwright/Chromium somente no ambiente de teste. `scripts/validar_visual.py` cria **seu próprio banco SQLite temporário e usuários fictícios**, sem ler um banco de implantação. Exercita login e senha, navegação e telas principais em 1440px, 820px e 390px; verifica marca, imagens, fontes locais, erros JavaScript, contraste e ausência de overflow global. Tabelas podem manter rolagem interna.
 
-![Login com identidade própria e versão](imagens/identidade-login.png)
+Capturas e resultados ficam em `artifacts/nexaltri-visual/`, publicados no artefato homônimo da CI por 14 dias. As prévias incluem apenas dados fictícios. O script pode rodar em desenvolvimento com Playwright 1.62.0 e Chromium preparados; não é preciso instalá-los para usar o portal ou executar a validação comum da atualização.
+
+Capturas antigas da documentação identificam versões anteriores. Notas anteriores mantêm o nome histórico; novas notas usam Nexaltri. Repositório e comandos de inicialização conservam seus caminhos para compatibilidade com instalações existentes.

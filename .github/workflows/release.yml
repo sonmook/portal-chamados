@@ -83,6 +83,11 @@ jobs:
           GIT_COMMITTER_EMAIL: 132287925+sonmook@users.noreply.github.com
         run: |
           tag="$PORTAL_TAG"
+          if rg -q '^# Nexaltri' README.md; then
+            sistema=Nexaltri
+          else
+            sistema='Portal de TI'
+          fi
           if git show-ref --verify --quiet "refs/tags/$tag"; then
             test "$(git rev-list -n 1 "$tag")" = "$(git rev-parse HEAD)" || { echo 'A tag já aponta para outro commit; não será sobrescrita.'; exit 1; }
           else
@@ -94,5 +99,5 @@ jobs:
           if printf '%s\n' "$releases" | grep -Fxq "$tag"; then
             echo 'Release já publicada.'
           else
-            gh release create "$tag" --verify-tag --title "Portal de TI $tag" --notes-file "docs/releases/$tag.md" --latest="$PORTAL_LATEST"
+            gh release create "$tag" --verify-tag --title "$sistema $tag" --notes-file "docs/releases/$tag.md" --latest="$PORTAL_LATEST"
           fi

@@ -1,8 +1,8 @@
-# Portal de TI — Central de suporte
+# Nexaltri — Gestão de chamados e atendimento de TI
 
-![Marca do Portal de TI](helpdesk/static/helpdesk/brand/logo.svg)
+![Marca Nexaltri](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.14.0** · [Notas da versão](docs/releases/v1.14.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.15.0** · [Notas da versão](docs/releases/v1.15.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -11,9 +11,13 @@
 
 Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django**, com fila de atendimento, acompanhamento de SLA, indicadores, controle de acesso e trilha de auditoria.
 
-As capturas da galeria principal foram registradas na **v1.1.0**, com a marca atual, os novos ícones e **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
+As capturas da galeria principal foram registradas na **v1.1.0**, com a marca e os ícones daquela versão e **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
 
 ---
+
+## Identidade Nexaltri
+
+A **v1.15.0** aplica a identidade Nexaltri ao portal: monograma N em SVG, assinaturas clara/escura, navegação clara, turquesa e azul-marinho, fontes Manrope/Inter locais, login e ícones próprios. Cores semânticas de SLA e status permanecem identificadas por texto. CSS e ícones usam a versão na URL para atualizar o cache do navegador. A CI inclui Chromium em desktop, tablet e celular, com capturas e dados fictícios em banco temporário. [Identidade e critérios visuais](docs/identidade-visual.md).
 
 ## Notas internas da TI
 
@@ -39,7 +43,7 @@ Execute `python scripts/validar_atualizacao.py` com o Python da venv para valida
 
 ## Indicadores administrativos — relatório de performance
 
-Acesse **Administração → Indicadores** com uma conta de administrador ativo para consultar o relatório de performance. O visual acompanha a identidade do Portal de TI, com cabeçalho claro, destaque azul, cards compactos e layout responsivo.
+Acesse **Administração → Indicadores** com uma conta de administrador ativo para consultar o relatório de performance. O visual acompanha a identidade Nexaltri, com cabeçalho claro, destaque turquesa, cards compactos e layout responsivo.
 
 - Resumo de chamados criados, resoluções com SLA violado, percentual dentro do SLA e chamados ativos sem responsável.
 - Panorama de SLA, distribuição pelas categorias atuais, desempenho por equipe, ranking de resoluções por analista e top 20 solicitantes por volume de chamados.

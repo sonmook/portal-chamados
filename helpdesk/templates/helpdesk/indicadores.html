@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{% static 'helpdesk/css/indicadores.css' %}">
 <div class="performance">
 <header class="rel-header">
-<div class="rel-marca">Portal de TI · Administração</div>
+<div class="rel-marca">Nexaltri · Administração</div>
 <h1>Relatório de performance</h1>
 <p>{% if equipe_selecionada %}{{ equipe_selecionada.nome }}{% if not equipe_selecionada.ativa %} · Inativa{% endif %}{% else %}Todas as equipes{% endif %}</p>
 {% if resumo %}<p>{{ periodo_nome }}{% if inicio %} · {{ inicio|date:'d/m/Y' }} a {{ fim|date:'d/m/Y' }}{% endif %}</p>{% endif %}
