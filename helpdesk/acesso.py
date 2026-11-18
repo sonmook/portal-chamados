@@ -1,9 +1,7 @@
 from django.db.models import Exists, OuterRef, Q
 
 from .models import Chamado, Equipe, IntegranteEquipe
-
-
-FINALIZADOS = ('Resolvido', 'Fechado')
+from .estados import FINALIZADOS
 
 
 def cobertura_equipes(equipes):

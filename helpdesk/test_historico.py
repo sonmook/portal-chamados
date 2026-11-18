@@ -78,7 +78,7 @@ class HistoricoTests(TestCase):
     def test_trilha_assumir_status_devolver_com_ator(self):
         self.client.force_login(self.tecnico)
         for rota, dados, campo in [('assumir_chamado',{},'tecnico_id'),
-                                  ('atualizar_status',{'status':'Em Andamento'},'status'),
+                                  ('atualizar_status',{'status':'Em Andamento', 'versao_status':0, 'versao_atribuicao':1},'status'),
                                   ('devolver_chamado',{},'tecnico_id')]:
             self.assertEqual(self.client.post(reverse(rota,args=[self.ticket.pk]),dados).status_code,302)
             evento = self.eventos().first()

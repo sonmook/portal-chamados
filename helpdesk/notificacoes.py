@@ -63,6 +63,10 @@ def notificar_resolucao(chamado, ator_id):
     gerar(chamado, ator_id, 'resolucao', f'resolucao:{chamado.pk}', participantes(chamado))
 
 
+def notificar_status(chamado, ator_id):
+    gerar(chamado, ator_id, 'status', f'status:{chamado.pk}:{chamado.versao_status}', participantes(chamado))
+
+
 @login_required
 @never_cache
 @require_GET

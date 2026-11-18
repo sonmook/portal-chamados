@@ -32,6 +32,13 @@
 
     <div id="conteudo-principal" tabindex="-1" class="container">
         {% for message in messages %}<div class="alert alert-info" role="status">{{ message }}</div>{% endfor %}
+        {% if chamado.em_espera %}
+        <section class="alert alert-warning" aria-label="Espera do atendimento">
+            <strong>{{ chamado.status }}</strong>{% if chamado.espera_desde %} desde {{ chamado.espera_desde|date:"d/m/Y H:i" }}{% endif %}.
+            <p class="mb-1 mt-2">{{ chamado.motivo_espera|linebreaksbr }}</p>
+            <p class="mb-0 small">Próxima ação: {{ chamado.proxima_acao }}. O SLA continua contando durante a espera.</p>
+        </section>
+        {% endif %}
         {% if abrir_resolucao %}
         <div class="alert alert-danger" role="alert">O chamado continua aberto. Revise os campos da solução.
             <button type="button" class="btn btn-sm btn-outline-danger ms-2" data-bs-toggle="modal" data-bs-target="#modalResolucao">Revisar solução</button>
@@ -123,6 +130,7 @@
                     </div>
                 </div>
 
+                {% include 'helpdesk/componentes/historico_status.html' %}
                 <h6 class="fw-bold mb-3 text-muted text-uppercase small"><i class="bi bi-chat-text"></i> Histórico de Interações</h6>
 
                 <div class="d-flex flex-column gap-3 mb-4 ticket-conversation">
@@ -168,7 +176,7 @@
                             <div class="card-body p-4" id="formulario-comentario">
                                 <h6 class="fw-bold mb-3"><i class="bi bi-reply-fill"></i> Adicionar Resposta</h6>
                                 
-                                <form method="POST" enctype="multipart/form-data">
+                                <form action="{% url 'detalhes_chamado' chamado.pk %}" method="POST" enctype="multipart/form-data">
                                     {% csrf_token %}
                                     {{ form.non_field_errors }} {{ form.texto.errors }} {{ form.anexo.errors }}
                                     {% if respostas_prontas %}
@@ -229,6 +237,8 @@
                                     <span class="badge bg-danger fs-6 px-3 py-2 rounded-pill">Aberto</span>
                                 {% elif chamado.status == 'Em Andamento' %}
                                     <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill">Em Andamento</span>
+                                {% elif chamado.em_espera %}
+                                    <span class="badge bg-warning-subtle text-warning-emphasis fs-6 px-3 py-2 rounded-pill">{{ chamado.status }}</span>
                                 {% else %}
                                     <span class="badge bg-success fs-6 px-3 py-2 rounded-pill">{{ chamado.status }}</span>
                                 {% endif %}
@@ -262,6 +272,25 @@
                                 <span class="fw-bold text-dark">{{ chamado.categoria }}</span>
                             </li>
                         </ul>
+
+                        {% if pode_fechar %}
+                        <div class="p-3 border-top">
+                            <form action="{% url 'atualizar_status' chamado.pk %}" method="post">
+                                {% csrf_token %}
+                                {{ situacao_form.versao_status }}{{ situacao_form.versao_atribuicao }}
+                                <h2 class="h6">Alterar situação</h2>
+                                {{ situacao_form.non_field_errors }}
+                                {% if situacao_form.errors %}<p class="small"><a href="{% url 'detalhes_chamado' chamado.pk %}">Carregar os dados atuais do chamado</a></p>{% endif %}
+                                <label class="form-label small" for="{{ situacao_form.status.id_for_label }}">{{ situacao_form.status.label }}</label>
+                                {{ situacao_form.status }}{{ situacao_form.status.errors }}
+                                <label class="form-label small mt-3" for="{{ situacao_form.motivo.id_for_label }}">{{ situacao_form.motivo.label }}</label>
+                                {{ situacao_form.motivo }}{{ situacao_form.motivo.errors }}
+                                <p class="form-text mb-2" id="{{ situacao_form.motivo.auto_id }}_helptext">{{ situacao_form.motivo.help_text }}</p>
+                                <p class="small text-muted">O SLA continua contando durante a espera.</p>
+                                <button type="submit" class="btn btn-outline-primary w-100">Salvar situação</button>
+                            </form>
+                        </div>
+                        {% endif %}
                         
                         {% if ativo %}
                             {% if pode_fechar %}

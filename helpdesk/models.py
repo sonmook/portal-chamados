@@ -7,6 +7,7 @@ from django.utils import timezone
 from .calendario_sla import calcular_vencimento
 from .validators import validar_anexo
 from .visual_conquistas import OPCOES_ICONES, visual
+from .estados import EM_ESPERA, FINALIZADOS, STATUS_CHOICES, AGUARDANDO_SOLICITANTE
 
 
 def equipe_triagem_id():
@@ -22,12 +23,7 @@ class Chamado(models.Model):
     Modelo principal que representa um ticket/chamado de suporte.
     Armazena detalhes do problema, prazos (SLA), status e responsáveis.
     """
-    STATUS_CHOICES = (
-        ('Aberto', 'Aberto'),
-        ('Em Andamento', 'Em Andamento'),
-        ('Resolvido', 'Resolvido'),
-        ('Fechado', 'Fechado'),
-    )
+    STATUS_CHOICES = STATUS_CHOICES
 
     PRIORIDADE_CHOICES = (
         ('Baixa', 'Baixa'),
@@ -48,7 +44,10 @@ class Chamado(models.Model):
     titulo = models.CharField(max_length=200, verbose_name="Título do Chamado")
     descricao = models.TextField(verbose_name="Descrição do Problema")
     categoria = models.CharField(max_length=30, choices=CATEGORIA_CHOICES, default='Outros')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Aberto')
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='Aberto')
+    versao_status = models.PositiveIntegerField(default=0, editable=False)
+    espera_desde = models.DateTimeField(null=True, blank=True, editable=False)
+    motivo_espera = models.CharField(max_length=500, blank=True, editable=False)
     prioridade = models.CharField(max_length=20, choices=PRIORIDADE_CHOICES, default='Normal')
     anexo = models.FileField(validators=[validar_anexo], upload_to='anexos_chamados/', blank=True, null=True, verbose_name="Anexo (Print do Erro)")
     
@@ -98,17 +97,45 @@ class Chamado(models.Model):
         return self.ultima_interacao_em or self.data_criacao
 
     @property
+    def em_espera(self):
+        return self.status in EM_ESPERA
+
+    @property
+    def proxima_acao(self):
+        if self.status in FINALIZADOS:
+            return 'Atendimento concluído'
+        if self.status == AGUARDANDO_SOLICITANTE:
+            return 'Resposta do solicitante'
+        if self.em_espera:
+            return 'Retorno do fornecedor; acompanhamento pela equipe'
+        return 'Equipe responsável' if self.tecnico_id else 'Triagem da equipe'
+
+    @property
     def sla_estourado(self):
         """
         Propriedade computada que retorna True se o chamado não está resolvido
         e a data/hora atual ultrapassou o vencimento do SLA.
         """
-        if self.status not in ('Resolvido', 'Fechado') and self.data_vencimento and timezone.now() > self.data_vencimento:
+        if self.status not in FINALIZADOS and self.data_vencimento and timezone.now() > self.data_vencimento:
             return True
         return False                                         
 
     def __str__(self):
         return f"#{self.id} - {self.titulo}"
+
+
+class HistoricoStatus(models.Model):
+    chamado = models.ForeignKey(Chamado, on_delete=models.PROTECT, related_name='historico_status')
+    autor = models.ForeignKey(User, on_delete=models.PROTECT)
+    status_anterior = models.CharField(max_length=30, choices=STATUS_CHOICES)
+    status_novo = models.CharField(max_length=30, choices=STATUS_CHOICES)
+    motivo = models.CharField(max_length=500, blank=True)
+    criado_em = models.DateTimeField(default=timezone.now, editable=False)
+    versao = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ['-criado_em', '-pk']
+        constraints = [models.UniqueConstraint(fields=['chamado', 'versao'], name='status_chamado_versao_unica')]
 
 
 class Comentario(models.Model):
@@ -326,7 +353,7 @@ class Notificacao(models.Model):
     TIPOS = [('atribuicao', 'Atribuição atualizada'), ('resposta', 'Nova resposta'),
              ('transferencia', 'Equipe alterada'), ('resolucao', 'Chamado resolvido'),
              ('sla_proximo', 'SLA próximo do vencimento'), ('sla_vencido', 'SLA vencido'),
-             ('sem_responsavel', 'Chamado sem responsável')]
+             ('sem_responsavel', 'Chamado sem responsável'), ('status', 'Situação atualizada')]
     destinatario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notificacoes')
     chamado = models.ForeignKey(Chamado, on_delete=models.CASCADE, related_name='notificacoes')
     tipo = models.CharField(max_length=15, choices=TIPOS)
@@ -338,7 +365,7 @@ class Notificacao(models.Model):
         ordering = ['-criada_em', '-pk']
         constraints = [
             models.UniqueConstraint(fields=['destinatario', 'evento'], name='notificacao_dest_evento_unico'),
-            models.CheckConstraint(condition=models.Q(tipo__in=['atribuicao', 'resposta', 'transferencia', 'resolucao', 'sla_proximo', 'sla_vencido', 'sem_responsavel']), name='notificacao_tipo_valido'),
+            models.CheckConstraint(condition=models.Q(tipo__in=['atribuicao', 'resposta', 'transferencia', 'resolucao', 'sla_proximo', 'sla_vencido', 'sem_responsavel', 'status']), name='notificacao_tipo_valido'),
         ]
         indexes = [models.Index(fields=['destinatario', 'lida_em', '-criada_em'], name='notificacao_dest_lida_data')]
 
@@ -347,7 +374,7 @@ class Notificacao(models.Model):
         return {'atribuicao': 'person-check', 'resposta': 'chat-left-text',
                 'transferencia': 'arrow-left-right', 'resolucao': 'check-circle',
                 'sla_proximo': 'hourglass-split', 'sla_vencido': 'alarm',
-                'sem_responsavel': 'person-exclamation'}.get(self.tipo, 'bell')
+                'sem_responsavel': 'person-exclamation', 'status': 'arrow-repeat'}.get(self.tipo, 'bell')
 
 
 class PreferenciaListaChamados(models.Model):

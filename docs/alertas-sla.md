@@ -1,6 +1,6 @@
 # Alertas de SLA
 
-O portal verifica os chamados **Abertos e Em Andamento** de equipes ativas a cada minuto. Não depende de visitas à página e usa o vencimento gravado no chamado. A antecedência é de **uma hora corrida**, inclusive quando o calendário usa expediente reduzido. Novos prazos seguem o [calendário configurado](calendario-sla.md); os existentes são preservados.
+O portal verifica os chamados **ativos**, incluindo Abertos, Em Andamento, Aguardando solicitante e Aguardando fornecedor, de equipes ativas a cada minuto. Não depende de visitas à página e usa o vencimento gravado no chamado. A antecedência é de **uma hora corrida**, inclusive quando o calendário usa expediente reduzido. Novos prazos seguem o [calendário configurado](calendario-sla.md); os existentes são preservados. O SLA continua contando nos estados de espera.
 
 | Situação | Destinatário |
 | --- | --- |

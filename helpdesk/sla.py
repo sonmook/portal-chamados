@@ -6,8 +6,8 @@ from django.db.models import Q
 from django.utils import timezone
 from .models import Chamado, Equipe, IntegranteEquipe
 from .notificacoes import gerar
+from .estados import ATIVOS
 
-ATIVOS = ('Aberto', 'Em Andamento')
 ANTECEDENCIA = timedelta(hours=1)
 
 

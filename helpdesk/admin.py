@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 
-from .models import Chamado, Comentario, RegistroAuditoria, Equipe, IntegranteEquipe, RegraEncaminhamento, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista, Notificacao
+from .models import Chamado, Comentario, RegistroAuditoria, Equipe, IntegranteEquipe, RegraEncaminhamento, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista, Notificacao, HistoricoStatus
 from .encaminhamento import criar_chamado_encaminhado
 from .user_security import bloquear_administradores, validar_administrador, validar_pendencias
 from .acesso import chamados_acessiveis
@@ -43,7 +43,7 @@ class UsuarioProtegidoAdmin(UserAdmin):
 
 @admin.register(Chamado)
 class ChamadoAdmin(admin.ModelAdmin):
-    readonly_fields = ('status', 'tecnico', 'equipe', 'versao_atribuicao', 'data_criacao', 'data_atualizacao', 'ultima_interacao_em', 'data_fechamento', 'fechado_por')
+    readonly_fields = ('status', 'versao_status', 'espera_desde', 'motivo_espera', 'tecnico', 'equipe', 'versao_atribuicao', 'data_criacao', 'data_atualizacao', 'ultima_interacao_em', 'data_fechamento', 'fechado_por')
 
     def get_queryset(self, request):
         return super().get_queryset(request).filter(pk__in=chamados_acessiveis(request.user).values('pk'))
@@ -70,7 +70,8 @@ class ChamadoAdmin(admin.ModelAdmin):
             if atual.status in ('Resolvido', 'Fechado'):
                 raise PermissionDenied
             # Campos controlados pelo atendimento não podem voltar a valores de uma tela antiga do admin.
-            for campo in ('equipe_id', 'tecnico_id', 'versao_atribuicao', 'status', 'fechado_por_id', 'data_fechamento'):
+            for campo in ('equipe_id', 'tecnico_id', 'versao_atribuicao', 'status', 'versao_status',
+                    'espera_desde', 'motivo_espera', 'fechado_por_id', 'data_fechamento'):
                 setattr(obj, campo, getattr(atual, campo))
         super().save_model(request, obj, form, change)
 
@@ -189,3 +190,9 @@ class PlanoConquistaAdmin(ConsultaEquipeAdmin):
 class NotificacaoAdmin(ConsultaEquipeAdmin):
     list_display = ['destinatario', 'chamado', 'tipo', 'criada_em', 'lida_em']
     list_filter = ['tipo']
+
+
+@admin.register(HistoricoStatus)
+class HistoricoStatusAdmin(ConsultaEquipeAdmin):
+    list_display = ('chamado', 'autor', 'status_anterior', 'status_novo', 'criado_em')
+    list_select_related = ('chamado', 'autor')

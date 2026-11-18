@@ -150,6 +150,22 @@ for tipo in ('sla_proximo','sla_vencido','sem_responsavel'):
     assert Notificacao.objects.filter(destinatario=user,tipo=tipo).count()==1, tipo
 assert not Notificacao.objects.filter(destinatario=cliente,tipo__in=['sla_proximo','sla_vencido','sem_responsavel']).exists()
 print('PASS: processo periódico iniciado; três tipos de alertas gerados sem duplicação.')
+from helpdesk.estados import AGUARDANDO_FORNECEDOR
+from helpdesk.models import HistoricoStatus
+espera=Chamado.objects.create(titulo='Espera preservada no backup',descricao='Fixture',
+    solicitante=cliente,tecnico=user,equipe=t.equipe,data_vencimento=agora+timedelta(days=7))
+prazo=espera.data_vencimento
+client.force_login(user)
+response=client.post(f'/chamado/{espera.pk}/status/',{'status':AGUARDANDO_FORNECEDOR,
+    'motivo':'Aguardando peça da homologação','versao_status':0,'versao_atribuicao':0},
+    secure=True,HTTP_HOST='localhost')
+assert response.status_code==302, ('Situação de espera', response.status_code)
+espera.refresh_from_db()
+assert espera.status==AGUARDANDO_FORNECEDOR and espera.data_vencimento==prazo
+assert espera.espera_desde is not None and espera.versao_status==1
+assert HistoricoStatus.objects.filter(chamado=espera,autor=user,status_novo=AGUARDANDO_FORNECEDOR).count()==1
+assert Notificacao.objects.filter(chamado=espera,destinatario=cliente,tipo='status').count()==1
+print('PASS: espera registrada pelo responsável com prazo preservado e notificação autorizada.')
 """)
             compose('stop','alertas_sla','app')
             compose('run','--rm','--no-deps','--entrypoint','python','app','manage.py','backup_homologacao',
@@ -193,6 +209,15 @@ assert Notificacao.objects.filter(destinatario__username='validation-client',cha
 for tipo in ('sla_proximo','sla_vencido','sem_responsavel'):
     assert Notificacao.objects.filter(destinatario__username='validation-only',tipo=tipo,lida_em__isnull=True).count()==1
 print('PASS: usuário, chamado, comentário, auditoria, anexos, equipes, perfil, conquistas e notificações com estado de leitura restaurados em destino separado.')
+from helpdesk.estados import AGUARDANDO_FORNECEDOR
+from helpdesk.models import HistoricoStatus
+espera=Chamado.objects.get(titulo='Espera preservada no backup')
+assert espera.status==AGUARDANDO_FORNECEDOR and espera.versao_status==1
+assert espera.espera_desde is not None and espera.motivo_espera=='Aguardando peça da homologação'
+assert HistoricoStatus.objects.filter(chamado=espera,autor__username='validation-only',
+    status_novo=AGUARDANDO_FORNECEDOR,motivo=espera.motivo_espera).count()==1
+assert Notificacao.objects.filter(chamado=espera,destinatario__username='validation-client',tipo='status').count()==1
+print('PASS: situação de espera, motivo, histórico e aviso restaurados sem duplicação.')
 """,restored=True)
         except Exception:
             subprocess.run([*base,'logs','--tail=60','app','alertas_sla','proxy'],env=docker_env,cwd=ROOT)

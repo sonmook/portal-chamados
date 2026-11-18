@@ -13,3 +13,15 @@ def dados_atribuicao(chamado):
     chamado.refresh_from_db()
     return {'equipe': chamado.equipe_id, 'equipe_anterior': chamado.equipe_id,
             'versao_atribuicao': chamado.versao_atribuicao}
+
+
+def dados_situacao(chamado):
+    chamado.refresh_from_db()
+    return {'versao_status': chamado.versao_status, 'versao_atribuicao': chamado.versao_atribuicao}
+
+
+def restaurar_migracoes_atuais():
+    from django.db import connection
+    from django.db.migrations.executor import MigrationExecutor
+    executor = MigrationExecutor(connection)
+    executor.migrate(executor.loader.graph.leaf_nodes('helpdesk'))

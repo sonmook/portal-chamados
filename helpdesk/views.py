@@ -13,6 +13,8 @@ from .sla import filtrar_sla, ATIVOS
 from .operacao import resumo_operacional
 from .colunas import COLUNAS, ordem_usuario
 from .periodos import datas_periodo, limites_datas
+from .estados import FINALIZADOS, EM_ESPERA, AGUARDANDO_SOLICITANTE, EM_ANDAMENTO, RESOLVIDO
+from .atendimento import alterar_situacao, ConflitoStatus
 from .acesso import chamados_acessiveis, equipes_acessiveis, integrante_ativo, pode_distribuir, filtrar_equipe
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -21,7 +23,7 @@ from django.utils import timezone
 from django.contrib import messages
 
 from .models import Chamado, Comentario, Equipe, IntegranteEquipe, RespostaPronta
-from .forms import ChamadoForm, ComentarioForm, NovoUsuarioForm, EditarUsuarioForm, ResolucaoForm, RedistribuirChamadoForm
+from .forms import ChamadoForm, ComentarioForm, NovoUsuarioForm, EditarUsuarioForm, ResolucaoForm, RedistribuirChamadoForm, SituacaoForm
 
 
 @login_required
@@ -50,6 +52,7 @@ def dashboard(request):
     agregacoes = {
         'total': Count('pk'),
         'abertos': Count('pk', filter=Q(status='Aberto')),
+        'em_espera': Count('pk', filter=Q(status__in=EM_ESPERA)),
         'resolvidos': Count('pk', filter=finalizados),
         'vencidos': Count('pk', filter=Q(data_vencimento__lt=timezone.now()) & ~finalizados),
         'sla_sem_dados': Count('pk', filter=finalizados & (
@@ -96,6 +99,7 @@ def dashboard(request):
         'periodo_atual': periodo,
         'equipes_filtro': equipes_acessiveis(request.user), 'equipe_filter': equipe_filter,
         'tmr_horas': tmr_horas,
+        'em_espera': metricas['em_espera'],
         **{campo: metricas[campo] for campo in ('total', 'abertos', 'resolvidos', 'vencidos', 'sla_sem_dados')},
         'ultimos_chamados': base_chamados.select_related('solicitante').order_by('-data_criacao')[:5],
         'dados_grafico': [metricas[f'categoria_{i}'] for i in range(len(categorias))],
@@ -178,6 +182,7 @@ def lista_chamados(request):
         'categoria_filter': categoria_filter,
         'categorias_filtro': Chamado.CATEGORIA_CHOICES,
         'categoria_nome': dict(Chamado.CATEGORIA_CHOICES).get(categoria_filter, categoria_filter),
+        'status_filtro': Chamado.STATUS_CHOICES,
         'resumo_operacional': resumo_operacional(base_equipe, request.user, agora,
             equipe=equipe_filter, fila=fila_filter, sla=sla_filter,
             outros_filtros=bool(query or status_filter or categoria_filter)),
@@ -207,9 +212,6 @@ def novo_chamado(request):
     return render(request, 'helpdesk/novo_chamado.html', {'form': form})
 
 
-FINALIZADOS = ('Resolvido', 'Fechado')
-
-
 def _chamado_visivel(user, id, *, bloquear=False):
     chamados = chamados_acessiveis(user).select_related('equipe')
     chamado = get_object_or_404(chamados, pk=id)
@@ -224,7 +226,8 @@ def _exigir_responsavel(user, chamado):
         raise PermissionDenied
 
 
-def _contexto_detalhes(usuario, chamado, *, form=None, resolucao_form=None):
+def _contexto_detalhes(usuario, chamado, *, form=None, resolucao_form=None, situacao_form=None,
+        pagina_historico=None):
     ativo = chamado.status not in FINALIZADOS and chamado.equipe.ativa
     tecnico_responsavel = ativo and chamado.tecnico_id == usuario.pk and integrante_ativo(usuario, chamado.equipe_id)
     return {
@@ -233,6 +236,12 @@ def _contexto_detalhes(usuario, chamado, *, form=None, resolucao_form=None):
         'form': form if form is not None else ComentarioForm(),
         'resolucao_form': resolucao_form if resolucao_form is not None else ResolucaoForm(),
         'abrir_resolucao': resolucao_form is not None and bool(resolucao_form.errors),
+        'situacao_form': situacao_form if situacao_form is not None else SituacaoForm(initial={
+            'status': chamado.status, 'versao_status': chamado.versao_status,
+            'versao_atribuicao': chamado.versao_atribuicao,
+        }),
+        'historico_status': Paginator(chamado.historico_status.select_related('autor'), 20).get_page(pagina_historico),
+        'historico_expandido': bool(pagina_historico),
         'ativo': ativo,
         'pode_responder': ativo and (chamado.solicitante_id == usuario.pk or tecnico_responsavel),
         'pode_fechar': tecnico_responsavel,
@@ -246,7 +255,7 @@ def _contexto_detalhes(usuario, chamado, *, form=None, resolucao_form=None):
 @transaction.atomic
 def detalhes_chamado(request, id):
     chamado = _chamado_visivel(request.user, id, bloquear=request.method == 'POST')
-    contexto = _contexto_detalhes(request.user, chamado)
+    contexto = _contexto_detalhes(request.user, chamado, pagina_historico=request.GET.get('historico_page'))
     if request.method == 'POST':
         if not contexto['pode_responder']:
             raise PermissionDenied
@@ -255,6 +264,14 @@ def detalhes_chamado(request, id):
             comentario = form.save(commit=False)
             comentario.chamado = chamado
             comentario.autor = request.user
+            if chamado.status == AGUARDANDO_SOLICITANTE and chamado.solicitante_id == request.user.pk:
+                try:
+                    alterar_situacao(chamado, request.user, EM_ANDAMENTO,
+                        'Atendimento retomado após resposta do solicitante.', notificar=False)
+                except ConflitoStatus:
+                    form.add_error(None, 'O chamado foi alterado. Atualize a página antes de reenviar sua resposta.')
+                    contexto['form'] = form
+                    return render(request, 'helpdesk/detalhes_chamado.html', contexto, status=409)
             comentario.save()
             notificar_resposta(comentario)
             return redirect('detalhes_chamado', id=chamado.id)
@@ -270,13 +287,21 @@ def atualizar_status(request, id):
     _exigir_responsavel(request.user, chamado)
     if chamado.status in FINALIZADOS:
         raise PermissionDenied
-    # Encerramento deve passar por fechar_chamado para registrar solução e auditoria.
-    novo_status = request.POST.get('status')
-    if novo_status not in ('Aberto', 'Em Andamento'):
-        return HttpResponseBadRequest('Status inválido. Use o encerramento com solução.')
-    chamado.status = novo_status
-    chamado.save()
-    return redirect('detalhes_chamado', id=chamado.id)
+    form = SituacaoForm(request.POST)
+    codigo = 400
+    if form.is_valid():
+        try:
+            mudou = alterar_situacao(chamado, request.user, form.cleaned_data['status'],
+                form.cleaned_data['motivo'], versao_esperada=form.cleaned_data['versao_status'],
+                atribuicao_esperada=form.cleaned_data['versao_atribuicao'])
+        except ConflitoStatus:
+            form.add_error(None, 'O chamado foi alterado em outra página. Reabra o atendimento antes de salvar.')
+            codigo = 409
+        else:
+            messages.success(request, 'Situação atualizada.' if mudou else 'A situação já estava selecionada.')
+            return redirect('detalhes_chamado', id=chamado.id)
+    contexto = _contexto_detalhes(request.user, chamado, situacao_form=form)
+    return render(request, 'helpdesk/detalhes_chamado.html', contexto, status=codigo)
 
 
 @login_required
@@ -289,8 +314,14 @@ def fechar_chamado(request, id):
         raise PermissionDenied
     form = ResolucaoForm(request.POST, request.FILES)
     if not form.is_valid():
-        return render(request, 'helpdesk/detalhes_chamado.html',
-            _contexto_detalhes(request.user, chamado, resolucao_form=form), status=400)
+        contexto = _contexto_detalhes(request.user, chamado, resolucao_form=form)
+        return render(request, 'helpdesk/detalhes_chamado.html', contexto, status=400)
+    try:
+        alterar_situacao(chamado, request.user, RESOLVIDO, 'Solução registrada pelo responsável.', notificar=False)
+    except ConflitoStatus:
+        form.add_error(None, 'O chamado foi alterado. Reabra o atendimento antes de registrar a solução.')
+        contexto = _contexto_detalhes(request.user, chamado, resolucao_form=form)
+        return render(request, 'helpdesk/detalhes_chamado.html', contexto, status=409)
     texto_resolucao = form.cleaned_data['resolucao']
     Comentario.objects.create(
         chamado=chamado,
@@ -298,10 +329,7 @@ def fechar_chamado(request, id):
         texto=f"✅ TICKET ENCERRADO POR TI - SOLUÇÃO:\n\n{texto_resolucao}",
         anexo=form.cleaned_data['anexo_resolucao'],
     )
-    chamado.status = 'Resolvido'
-    chamado.fechado_por = request.user
-    chamado.data_fechamento = timezone.now()
-    # O comentário de solução já atualizou a interação no banco.
+    # A transição registrou situação, autor e data; o comentário atualizou a interação.
     chamado.save(update_fields=['status', 'fechado_por', 'data_fechamento', 'data_atualizacao', 'data_vencimento'])
     from .conquistas import registrar_resolucao
     for conquista in registrar_resolucao(chamado):

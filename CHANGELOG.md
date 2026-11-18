@@ -1,5 +1,17 @@
 # Histórico de atualizações
 
+## v1.12.0 — Estados de espera do atendimento
+
+- Situações Aguardando solicitante e Aguardando fornecedor, com motivo obrigatório, data de início e indicação da próxima ação.
+- Alteração restrita ao técnico responsável ativo; formulário protegido por POST/CSRF e versões de situação/atribuição. Conflitos de tela antiga retornam 409 sem sobrescrever dados.
+- Histórico paginado no chamado, visível conforme suas permissões, e consulta administrativa somente leitura; motivo não é copiado para a auditoria administrativa.
+- Resposta válida do solicitante retoma Em Andamento quando aguardava o próprio solicitante, sem duplicar notificação. Respostas de técnico e espera por fornecedor não retomam automaticamente.
+- Esperas continuam ativas em fila, alertas, resumo e indicadores. O SLA não pausa e o vencimento não muda ao aguardar ou retomar.
+- Resolução limpa a espera e registra a transição na mesma transação da solução. Finalizados continuam protegidos contra alteração/reabertura nesta entrega.
+- Migração 0027 amplia o campo de situação, adiciona metadados/histórico e o tipo de aviso; não cria histórico retroativo nem muda chamados ou avisos existentes.
+- Homologação verifica backup/restauração do estado, motivo, histórico e notificação. Testes de migração passam a restaurar o schema atual sem fixar uma revisão antiga.
+- Notas em `docs/releases/v1.12.0.md` e regras em `docs/estados-espera.md`.
+
 ## v1.11.0 — Calendário de SLA e cobertura da triagem
 
 - Novos vencimentos calculados no fuso da instalação, independentemente do fuso da data recebida, com expediente, dias da semana e feriados configuráveis.
