@@ -219,7 +219,7 @@ class EstadosEsperaTests(TestCase):
         self.alterar(AGUARDANDO_FORNECEDOR)
         prazo = self.ticket.data_vencimento
         self.assertEqual(self.client.post(reverse('fechar_chamado', args=[self.ticket.pk]),
-            {'resolucao': 'Funcionamento validado após troca da peça.'}).status_code, 302)
+            {**dados_situacao(self.ticket), 'resolucao': 'Funcionamento validado após troca da peça.'}).status_code, 302)
         self.ticket.refresh_from_db()
         self.assertEqual(self.ticket.status, 'Resolvido')
         self.assertEqual(self.ticket.data_vencimento, prazo)
@@ -309,7 +309,7 @@ class MigracaoEstadosEsperaTests(TransactionTestCase):
         self.assertEqual(Chamado.objects.filter(pk=t.pk).values(*antes).get(), antes)
         self.assertEqual(Notificacao.objects.filter(pk=n.pk).values().get(), aviso)
         self.assertFalse(HistoricoStatus.objects.exists())
-        ticket = Chamado.objects.get(pk=t.pk)
+        ticket = executor.loader.project_state([('helpdesk', '0027_estados_espera')]).apps.get_model('helpdesk', 'Chamado').objects.get(pk=t.pk)
         self.assertEqual(ticket.versao_status, 0)
         self.assertIsNone(ticket.espera_desde)
         self.assertEqual(ticket.motivo_espera, '')

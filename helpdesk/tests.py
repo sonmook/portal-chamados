@@ -1,3 +1,4 @@
+from .test_helpers import dados_situacao
 from .test_helpers import integrar_triagem, dados_situacao
 from datetime import datetime, timezone
 from unittest.mock import patch
@@ -43,7 +44,7 @@ class AtendimentoTests(TestCase):
         self.assertEqual(self.chamado.tecnico, self.tecnico)
         self.assertEqual(self.client.post(self.url('detalhes_chamado'), {'texto': 'Resposta'}).status_code, 302)
         self.assertTrue(self.chamado.comentarios.filter(autor=self.tecnico, texto='Resposta').exists())
-        self.assertEqual(self.client.post(self.url('fechar_chamado'), {'resolucao': 'Solução aplicada'}).status_code, 302)
+        self.assertEqual(self.client.post(self.url('fechar_chamado'), {**dados_situacao(self.chamado), 'resolucao': 'Solução aplicada'}).status_code, 302)
         self.chamado.refresh_from_db()
         self.assertEqual(self.chamado.status, 'Resolvido')
         self.assertEqual(self.chamado.fechado_por, self.tecnico)
@@ -61,7 +62,7 @@ class AtendimentoTests(TestCase):
         self.assertEqual(self.client.get(self.url('detalhes_chamado')).status_code, 404)
         for nome, dados in [('detalhes_chamado', {'texto': 'Intrusão'}),
                             ('atualizar_status', {'status': 'Resolvido'}),
-                            ('fechar_chamado', {'resolucao': 'Intrusão'}),
+                            ('fechar_chamado', {**dados_situacao(self.chamado), 'resolucao': 'Intrusão'}),
                             ('assumir_chamado', {}), ('devolver_chamado', {})]:
             with self.subTest(nome=nome):
                 self.assertEqual(self.client.post(self.url(nome), dados).status_code, 404)
@@ -74,7 +75,7 @@ class AtendimentoTests(TestCase):
         self.client.force_login(self.cliente)
         for nome in ['assumir_chamado', 'devolver_chamado', 'atualizar_status', 'fechar_chamado']:
             with self.subTest(nome=nome):
-                self.assertEqual(self.client.post(self.url(nome), {'status': 'Resolvido', 'resolucao': 'Texto'}).status_code, 403)
+                self.assertEqual(self.client.post(self.url(nome), {**dados_situacao(self.chamado), 'status': 'Resolvido', 'resolucao': 'Texto'}).status_code, 403)
         self.chamado.refresh_from_db()
         self.assertIsNone(self.chamado.tecnico)
         self.assertEqual(self.chamado.status, 'Aberto')
@@ -83,7 +84,7 @@ class AtendimentoTests(TestCase):
         self.atribuir()
         self.client.force_login(self.outro_tecnico)
         for nome, dados in [('detalhes_chamado', {'texto': 'Intrusão'}),
-                            ('fechar_chamado', {'resolucao': 'Intrusão'}),
+                            ('fechar_chamado', {**dados_situacao(self.chamado), 'resolucao': 'Intrusão'}),
                             ('atualizar_status', {'status': 'Em Andamento'}), ('devolver_chamado', {})]:
             with self.subTest(nome=nome):
                 self.assertEqual(self.client.post(self.url(nome), dados).status_code, 403)
@@ -96,7 +97,7 @@ class AtendimentoTests(TestCase):
     def test_tecnico_precisa_assumir_antes_de_responder_ou_fechar(self):
         self.client.force_login(self.tecnico)
         self.assertEqual(self.client.post(self.url('detalhes_chamado'), {'texto': 'Resposta'}).status_code, 403)
-        self.assertEqual(self.client.post(self.url('fechar_chamado'), {'resolucao': 'Solução'}).status_code, 403)
+        self.assertEqual(self.client.post(self.url('fechar_chamado'), {**dados_situacao(self.chamado), 'resolucao': 'Solução'}).status_code, 403)
 
     def test_solicitante_pode_responder_ao_tecnico(self):
         self.atribuir()
@@ -108,7 +109,7 @@ class AtendimentoTests(TestCase):
     def test_encerramento_exige_solucao(self):
         self.atribuir()
         self.client.force_login(self.tecnico)
-        for dados in [{}, {'resolucao': ''}, {'resolucao': ' \n\t '}]:
+        for dados in [{}, {**dados_situacao(self.chamado), 'resolucao': ''}, {**dados_situacao(self.chamado), 'resolucao': ' \n\t '}]:
             with self.subTest(dados=dados):
                 self.assertEqual(self.client.post(self.url('fechar_chamado'), dados).status_code, 400)
         self.chamado.refresh_from_db()
@@ -124,7 +125,7 @@ class AtendimentoTests(TestCase):
             self.chamado.status = status
             self.chamado.save()
             for nome, dados in [('detalhes_chamado', {'texto': 'Resposta tardia'}),
-                                ('fechar_chamado', {'resolucao': 'Nova solução'}),
+                                ('fechar_chamado', {**dados_situacao(self.chamado), 'resolucao': 'Nova solução'}),
                                 ('atualizar_status', {'status': 'Aberto'}), ('devolver_chamado', {})]:
                 with self.subTest(status=status, nome=nome):
                     self.assertEqual(self.client.post(self.url(nome), dados).status_code, 403)
@@ -199,7 +200,7 @@ class AtendimentoTests(TestCase):
         self.client.force_login(self.tecnico)
         with patch('helpdesk.views.Chamado.save', side_effect=RuntimeError('Falha simulada')):
             with self.assertRaises(RuntimeError):
-                self.client.post(self.url('fechar_chamado'), {'resolucao': 'Solução'})
+                self.client.post(self.url('fechar_chamado'), {**dados_situacao(self.chamado), 'resolucao': 'Solução'})
         self.chamado.refresh_from_db()
         self.assertEqual(self.chamado.status, 'Aberto')
         self.assertFalse(self.chamado.comentarios.exists())

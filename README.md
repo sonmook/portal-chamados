@@ -2,7 +2,7 @@
 
 ![Marca do Portal de TI](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.12.0** · [Notas da versão](docs/releases/v1.12.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.13.0** · [Notas da versão](docs/releases/v1.13.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -14,6 +14,10 @@ Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django*
 As capturas da galeria principal foram registradas na **v1.1.0**, com a marca atual, os novos ícones e **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
 
 ---
+
+## Reabertura e ciclos de atendimento
+
+A **v1.13.0** permite ao solicitante ou técnico responsável reabrir um chamado com motivo obrigatório. Mantém o número, a conversa e as soluções anteriores, e inicia um novo prazo conforme prioridade e calendário atuais. Cada ciclo concluído guarda início, prazo, fechamento, equipe e autor; os indicadores identificam os ciclos e as conquistas continuam contando uma única resolução por chamado. [Regras e atualização](docs/reabertura-chamados.md).
 
 ## Estados de espera do atendimento
 
@@ -38,7 +42,7 @@ Acesse **Administração → Indicadores** com uma conta de administrador ativo 
 - Lista clicável de resoluções fora do prazo e detalhamento paginado dos resolvidos.
 - Filtros por equipe, incluindo inativas, e por período: hoje, últimos 7 dias, mês, histórico completo ou intervalo personalizado.
 
-Cada chamado conta uma única resolução. Criações são filtradas pela data de abertura; resoluções, pela data de fechamento. Os percentuais de SLA consideram apenas resoluções com fechamento e vencimento conhecidos. Ativos vencidos e chamados sem responsável mostram a situação atual, independentemente do período, e aparecem separados das resoluções fora do prazo. O dashboard mantém seu comportamento existente. [Critérios e funcionamento](docs/indicadores-administracao.md).
+Cada ciclo concluído conta uma resolução; reaberturas preservam os resultados anteriores. Criações são filtradas pela data de abertura; resoluções, pela data de fechamento. Os percentuais de SLA consideram apenas resoluções com fechamento e vencimento conhecidos. Ativos vencidos e chamados sem responsável mostram a situação atual, independentemente do período, e aparecem separados das resoluções fora do prazo. O dashboard mantém as contagens de chamados por situação atual; SLA, TMR e produtividade usam ciclos concluídos no recorte de chamados criados no período. [Critérios e funcionamento](docs/indicadores-administracao.md).
 
 ![Relatório de performance administrativo com visual integrado ao portal e dados fictícios](docs/imagens/indicadores-administracao.png)
 

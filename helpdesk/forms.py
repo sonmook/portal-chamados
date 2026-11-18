@@ -23,7 +23,18 @@ class SituacaoForm(forms.Form):
         return dados
 
 
-class ResolucaoForm(forms.Form):
+class VersoesAtendimentoForm(forms.Form):
+    versao_status = forms.IntegerField(min_value=0, widget=forms.HiddenInput)
+    versao_atribuicao = forms.IntegerField(min_value=0, widget=forms.HiddenInput)
+
+
+class ReaberturaForm(VersoesAtendimentoForm):
+    motivo_reabertura = forms.CharField(label='Por que o chamado precisa ser reaberto?', max_length=500, strip=True,
+        help_text='O motivo fica no histórico do chamado. Não inclua senhas.',
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3}))
+
+
+class ResolucaoForm(VersoesAtendimentoForm):
     resolucao = forms.CharField(label='Como o problema foi resolvido?', strip=True,
         widget=forms.Textarea(attrs={'class': 'form-control bg-light', 'rows': 4,
             'placeholder': 'Descreva o procedimento efetuado...'}))

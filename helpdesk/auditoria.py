@@ -19,7 +19,7 @@ OBJETOS = {
 }
 ACOES = {
     'criado': 'Criação', 'alterado': 'Alteração', 'excluido': 'Exclusão',
-    'permissoes': 'Permissões alteradas', 'redistribuido': 'Redistribuição',
+    'permissoes': 'Permissões alteradas', 'redistribuido': 'Redistribuição', 'reaberto': 'Reabertura',
     'encaminhado': 'Encaminhamento', 'concedido': 'Conquista concedida', 'rascunho': 'Rascunho',
     'publicado': 'Publicação', 'retomado': 'Retomada', 'pausado': 'Pausa', 'aparencia': 'Aparência',
 }
@@ -93,6 +93,7 @@ CAMPOS = {
     'username': 'Nome de usuário', 'email': 'E-mail', 'first_name': 'Nome', 'last_name': 'Sobrenome',
     'password': 'Senha', 'titulo': 'Título', 'descricao': 'Descrição', 'texto': 'Texto',
     'status': 'Status', 'categoria': 'Categoria', 'prioridade': 'Prioridade', 'anexo': 'Anexo',
+    'ciclo_atual': 'Ciclo de atendimento',
     'tecnico_id': 'ID do responsável', 'solicitante_id': 'ID do solicitante', 'equipe_id': 'ID da equipe',
     'data_vencimento': 'Prazo SLA', 'data_fechamento': 'Data de resolução', 'motivo': 'Motivo',
     'ativa': 'Ativa', 'meta': 'Meta', 'nome': 'Nome', 'integrantes': 'Integrantes',

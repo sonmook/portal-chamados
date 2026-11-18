@@ -1,3 +1,4 @@
+from .test_helpers import dados_situacao
 import tempfile
 from unittest.mock import patch
 
@@ -60,7 +61,7 @@ class ChamadosEquipeTests(TestCase):
 
     def test_acoes_em_equipe_alheia_nao_alteram_chamado(self):
         for nome, dados in [('assumir_chamado', {}), ('devolver_chamado', {}),
-                            ('atualizar_status', {'status': 'Aberto'}), ('fechar_chamado', {'resolucao': 'Intrusão'}),
+                            ('atualizar_status', {'status': 'Aberto'}), ('fechar_chamado', {**dados_situacao(self.t1), 'resolucao': 'Intrusão'}),
                             ('detalhes_chamado', {'texto': 'Intrusão'}), ('redistribuir_chamado', {})]:
             with self.subTest(nome=nome):
                 self.assertEqual(self.client.post(reverse(nome, args=[self.t2.pk]), dados).status_code, 404)
@@ -79,7 +80,7 @@ class ChamadosEquipeTests(TestCase):
     def test_tecnico_solicitante_fora_da_equipe_comenta_sem_atuar_como_responsavel(self):
         Chamado.objects.filter(pk=self.t2.pk).update(solicitante=self.tec1)
         self.assertEqual(self.client.post(reverse('detalhes_chamado', args=[self.t2.pk]), {'texto': 'Sou solicitante'}).status_code, 302)
-        self.assertEqual(self.client.post(reverse('fechar_chamado', args=[self.t2.pk]), {'resolucao': 'Não permitido'}).status_code, 403)
+        self.assertEqual(self.client.post(reverse('fechar_chamado', args=[self.t2.pk]), {**dados_situacao(self.t1), 'resolucao': 'Não permitido'}).status_code, 403)
         self.assertEqual(self.client.post(reverse('assumir_chamado', args=[self.t2.pk])).status_code, 403)
 
     def test_sem_vinculo_nao_ganha_acesso_por_is_staff_ou_por_atribuicao_direta(self):
@@ -98,9 +99,9 @@ class ChamadosEquipeTests(TestCase):
     def test_coordenacao_nao_dispensa_assumir_o_atendimento(self):
         self.client.force_login(self.coord)
         self.assertEqual(self.client.post(reverse('detalhes_chamado', args=[self.t1.pk]), {'texto': 'Sem atribuição'}).status_code, 403)
-        self.assertEqual(self.client.post(reverse('fechar_chamado', args=[self.t1.pk]), {'resolucao': 'Sem atribuição'}).status_code, 403)
+        self.assertEqual(self.client.post(reverse('fechar_chamado', args=[self.t1.pk]), {**dados_situacao(self.t1), 'resolucao': 'Sem atribuição'}).status_code, 403)
         self.assertEqual(self.transferir(equipe=self.n1, tecnico=self.coord).status_code, 302)
-        self.assertEqual(self.client.post(reverse('fechar_chamado', args=[self.t1.pk]), {'resolucao': 'Atendimento concluído'}).status_code, 302)
+        self.assertEqual(self.client.post(reverse('fechar_chamado', args=[self.t1.pk]), {**dados_situacao(self.t1), 'resolucao': 'Atendimento concluído'}).status_code, 302)
 
     def test_transferencia_limpa_responsavel_e_muda_acesso_sem_mudar_sla(self):
         self.client.force_login(self.coord)

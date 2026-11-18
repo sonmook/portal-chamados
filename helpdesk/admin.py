@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 
-from .models import Chamado, Comentario, RegistroAuditoria, Equipe, IntegranteEquipe, RegraEncaminhamento, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista, Notificacao, HistoricoStatus
+from .models import Chamado, Comentario, RegistroAuditoria, Equipe, IntegranteEquipe, RegraEncaminhamento, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista, Notificacao, HistoricoStatus, CicloAtendimento
 from .encaminhamento import criar_chamado_encaminhado
 from .user_security import bloquear_administradores, validar_administrador, validar_pendencias
 from .acesso import chamados_acessiveis
@@ -43,7 +43,7 @@ class UsuarioProtegidoAdmin(UserAdmin):
 
 @admin.register(Chamado)
 class ChamadoAdmin(admin.ModelAdmin):
-    readonly_fields = ('status', 'versao_status', 'espera_desde', 'motivo_espera', 'tecnico', 'equipe', 'versao_atribuicao', 'data_criacao', 'data_atualizacao', 'ultima_interacao_em', 'data_fechamento', 'fechado_por')
+    readonly_fields = ('status', 'versao_status', 'ciclo_atual', 'ciclo_iniciado_em', 'data_vencimento', 'espera_desde', 'motivo_espera', 'tecnico', 'equipe', 'versao_atribuicao', 'data_criacao', 'data_atualizacao', 'ultima_interacao_em', 'data_fechamento', 'fechado_por')
 
     def get_queryset(self, request):
         return super().get_queryset(request).filter(pk__in=chamados_acessiveis(request.user).values('pk'))
@@ -71,7 +71,8 @@ class ChamadoAdmin(admin.ModelAdmin):
                 raise PermissionDenied
             # Campos controlados pelo atendimento não podem voltar a valores de uma tela antiga do admin.
             for campo in ('equipe_id', 'tecnico_id', 'versao_atribuicao', 'status', 'versao_status',
-                    'espera_desde', 'motivo_espera', 'fechado_por_id', 'data_fechamento'):
+                    'espera_desde', 'motivo_espera', 'fechado_por_id', 'data_fechamento',
+                    'ciclo_atual', 'ciclo_iniciado_em', 'data_vencimento'):
                 setattr(obj, campo, getattr(atual, campo))
         super().save_model(request, obj, form, change)
 
@@ -196,3 +197,9 @@ class NotificacaoAdmin(ConsultaEquipeAdmin):
 class HistoricoStatusAdmin(ConsultaEquipeAdmin):
     list_display = ('chamado', 'autor', 'status_anterior', 'status_novo', 'criado_em')
     list_select_related = ('chamado', 'autor')
+
+
+@admin.register(CicloAtendimento)
+class CicloAtendimentoAdmin(ConsultaEquipeAdmin):
+    list_display = ('chamado', 'numero', 'equipe', 'fechado_por', 'data_fechamento')
+    list_select_related = ('chamado', 'equipe', 'fechado_por')

@@ -1,3 +1,4 @@
+from .test_helpers import registrar_resultados_fixture
 from .test_helpers import integrar_triagem
 from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
@@ -6,7 +7,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import Chamado, IntegranteEquipe, Equipe
+from .models import Chamado, IntegranteEquipe, Equipe, CicloAtendimento
 
 
 class DashboardTests(TestCase):
@@ -36,6 +37,7 @@ class DashboardTests(TestCase):
                 data_fechamento=self.agora - timedelta(hours=fim) if fim is not None else None,
                 data_vencimento=self.agora - timedelta(hours=prazo) if prazo is not None else None,
             )
+        registrar_resultados_fixture()
         integrar_triagem(self.tecnico, self.outro, self.sem_resolucoes, self.inativo)
         self.client.force_login(self.tecnico)
 
@@ -83,6 +85,7 @@ class DashboardTests(TestCase):
         self.assertTrue(all(t.solicitante_id == self.cliente.pk for t in contexto['ultimos_chamados']))
 
     def test_dashboard_vazio(self):
+        CicloAtendimento.objects.all().delete()
         Chamado.objects.all().delete()
         contexto = self.client.get(reverse('dashboard')).context
         self.assertEqual(contexto['total'], 0)
@@ -93,7 +96,7 @@ class DashboardTests(TestCase):
 
     def test_numero_de_consultas_independe_da_equipe_e_do_volume(self):
         # Avatar e contador de notificações adicionam consultas fixas, sem depender do volume.
-        with self.assertNumQueries(8):
+        with self.assertNumQueries(9):
             resposta = self.client.get(reverse('dashboard'))
             self.assertEqual(resposta.status_code, 200)
         User.objects.bulk_create([User(username=f'extra-{i}', is_staff=True) for i in range(20)])
@@ -104,7 +107,8 @@ class DashboardTests(TestCase):
                     status='Resolvido', fechado_por=self.outro, data_fechamento=self.agora)
             for i in range(40)
         ])
-        with self.assertNumQueries(8):
+        registrar_resultados_fixture()
+        with self.assertNumQueries(9):
             resposta = self.client.get(reverse('dashboard'))
             self.assertEqual(len(resposta.context['produtividade_equipe']), 24)
             self.assertEqual(len(resposta.context['ultimos_chamados']), 5)

@@ -1,3 +1,4 @@
+from .test_helpers import dados_situacao
 from datetime import datetime, timedelta, timezone as utc
 import tempfile
 from unittest.mock import patch
@@ -143,7 +144,7 @@ class ErrosResolucaoTests(TestCase):
     def test_anexo_invalido_preserva_texto_e_reabre_formulario_sem_gravacao(self):
         texto = 'Reiniciei o serviço. <script>alert("teste")</script>'
         auditoria = RegistroAuditoria.objects.count()
-        resposta = self.client.post(self.url, {'resolucao': texto,
+        resposta = self.client.post(self.url, {**dados_situacao(self.chamado), 'resolucao': texto,
             'anexo_resolucao': SimpleUploadedFile('erro.pdf', b'<html>arquivo invalido</html>')})
         self.assertEqual(resposta.status_code, 400)
         self.assertTemplateUsed(resposta, 'helpdesk/detalhes_chamado.html')
@@ -162,15 +163,15 @@ class ErrosResolucaoTests(TestCase):
         self.assertEqual(RegistroAuditoria.objects.count(), auditoria)
 
     def test_solucao_vazia_mostra_erro_no_campo(self):
-        resposta = self.client.post(self.url, {'resolucao': '   '})
+        resposta = self.client.post(self.url, {**dados_situacao(self.chamado), 'resolucao': '   '})
         self.assertContains(resposta, 'id_resolucao_error', status_code=400)
         self.assertContains(resposta, 'aria-invalid="true"', status_code=400)
         self.assertTrue(resposta.context['abrir_resolucao'])
         self.assertIn('resolucao', resposta.context['resolucao_form'].errors)
 
     def test_reenvio_corrigido_resolve_uma_unica_vez(self):
-        self.client.post(self.url, {'resolucao': ''})
-        resposta = self.client.post(self.url, {'resolucao': 'Serviço reiniciado e validado',
+        self.client.post(self.url, {**dados_situacao(self.chamado), 'resolucao': ''})
+        resposta = self.client.post(self.url, {**dados_situacao(self.chamado), 'resolucao': 'Serviço reiniciado e validado',
             'anexo_resolucao': SimpleUploadedFile('solucao.pdf', b'%PDF-1.4\nconteudo')})
         self.assertRedirects(resposta, reverse('detalhes_chamado', args=[self.chamado.pk]))
         self.chamado.refresh_from_db()
@@ -184,4 +185,4 @@ class ErrosResolucaoTests(TestCase):
         for usuario in (self.solicitante, self.outro):
             self.client.force_login(usuario)
             self.assertNotContains(self.client.get(detalhes), 'id="modalResolucao"')
-            self.assertEqual(self.client.post(self.url, {'resolucao': ''}).status_code, 403)
+            self.assertEqual(self.client.post(self.url, {**dados_situacao(self.chamado), 'resolucao': ''}).status_code, 403)

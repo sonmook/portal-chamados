@@ -8,6 +8,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
 
+from helpdesk.atendimento import registrar_ciclo_concluido
 from helpdesk.models import Chamado, Comentario, Equipe, IntegranteEquipe, Perfil
 
 
@@ -98,6 +99,9 @@ class Command(BaseCommand):
                     interacao = agora - timedelta(hours=1 if encerrado else 2)
                     Comentario.objects.filter(pk=comentario.pk).update(data_criacao=interacao)
                     Chamado.objects.filter(pk=chamado.pk).update(ultima_interacao_em=interacao)
+                if encerrado:
+                    chamado.refresh_from_db()
+                    registrar_ciclo_concluido(chamado)
                 novos_chamados += 1
         self.stdout.write(self.style.SUCCESS(
             f'Demonstração pronta: {len(credenciais)} novos usuários e {novos_chamados} novos chamados.'))

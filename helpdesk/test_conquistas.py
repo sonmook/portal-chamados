@@ -1,3 +1,4 @@
+from .test_helpers import dados_situacao
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -29,8 +30,8 @@ class ConquistasFixtureMixin:
         return Chamado.objects.create(titulo='Solicitação',descricao='Descrição',solicitante=self.cliente,
             tecnico=self.tecnico,equipe=self.equipe,**extra)
 
-    def fechar(self,t):
-        return self.client.post(reverse('fechar_chamado',args=[t.pk]),{'resolucao':'Configuração corrigida e validada com solicitante.'})
+    def fechar(self,t,**kwargs):
+        return self.client.post(reverse('fechar_chamado',args=[t.pk]),{**dados_situacao(t), 'resolucao':'Configuração corrigida e validada com solicitante.'},**kwargs)
 
     def regra_dados(self,regra,**extra):
         return {'nome':regra.nome,'descricao':regra.descricao,'meta':regra.meta,
@@ -85,7 +86,7 @@ class ConquistasTests(ConquistasFixtureMixin, TestCase):
 
     def test_sem_solucao_ou_sem_responsabilidade_nao_conta(self):
         t=self.chamado()
-        self.assertEqual(self.client.post(reverse('fechar_chamado',args=[t.pk]),{'resolucao':' '}).status_code,400)
+        self.assertEqual(self.client.post(reverse('fechar_chamado',args=[t.pk]),{**dados_situacao(t), 'resolucao':' '}).status_code,400)
         self.client.force_login(self.outro);self.assertEqual(self.fechar(t).status_code,403)
         self.assertFalse(ResolucaoConquista.objects.exists())
         self.assertEqual(registrar_resolucao(t),[])
@@ -184,7 +185,7 @@ class ConquistasTests(ConquistasFixtureMixin, TestCase):
         antes=(Conquista.objects.count(),ResolucaoConquista.objects.count(),RegistroAuditoria.objects.count())
         self.client.get(self.url)
         self.assertEqual(antes,(Conquista.objects.count(),ResolucaoConquista.objects.count(),RegistroAuditoria.objects.count()))
-        r=self.client.post(reverse('fechar_chamado',args=[self.chamado().pk]),{'resolucao':'Corrigido e validado.'},follow=True)
+        r=self.fechar(self.chamado(),follow=True)
         self.assertContains(r,'Conquista desbloqueada: Primeira solução!')
         self.assertContains(self.client.get(reverse('meu_perfil')),'Primeira solução')
 

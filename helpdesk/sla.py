@@ -61,6 +61,8 @@ def processar_chamado(chamado_id, equipe_id, agora):
     # Um aviso de cada tipo por prazo e destinatário; trocar o responsável não perde o aviso do novo técnico.
     prazo_chave = prazo.astimezone(timezone_utc.utc).isoformat(timespec='microseconds')
     evento = f'{tipo}:{chamado.pk}:{prazo_chave}'
+    if chamado.ciclo_atual > 1:
+        evento += f':{chamado.ciclo_atual}'
     resultado[tipo] = gerar(chamado, None, tipo, evento, destinatarios)
     return resultado
 

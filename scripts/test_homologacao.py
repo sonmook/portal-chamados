@@ -115,7 +115,7 @@ aviso=Notificacao.objects.get(destinatario=cliente,tipo='resposta')
 client.force_login(cliente)
 assert client.post(f'/notificacoes/{aviso.pk}/ler/',{},secure=True,HTTP_HOST='localhost').status_code==302
 client.force_login(user)
-response=client.post(f'/chamado/{t.pk}/fechar/',{'resolucao':'Configuração corrigida e validada.'},secure=True,HTTP_HOST='localhost')
+response=client.post(f'/chamado/{t.pk}/fechar/',{'resolucao':'Configuração corrigida e validada.', 'versao_status':t.versao_status, 'versao_atribuicao':t.versao_atribuicao},secure=True,HTTP_HOST='localhost')
 assert response.status_code==302
 assert Conquista.objects.filter(usuario=user,regra__codigo='primeira-solucao').exists()
 assert Notificacao.objects.filter(destinatario=cliente,tipo='resolucao',lida_em__isnull=True).exists()
@@ -166,6 +166,31 @@ assert espera.espera_desde is not None and espera.versao_status==1
 assert HistoricoStatus.objects.filter(chamado=espera,autor=user,status_novo=AGUARDANDO_FORNECEDOR).count()==1
 assert Notificacao.objects.filter(chamado=espera,destinatario=cliente,tipo='status').count()==1
 print('PASS: espera registrada pelo responsável com prazo preservado e notificação autorizada.')
+from helpdesk.models import CicloAtendimento
+recorrente=Chamado.objects.create(titulo='Reabertura preservada no backup',descricao='Fixture de ciclos',
+    solicitante=cliente,tecnico=user,equipe=t.equipe,data_vencimento=agora+timedelta(hours=1))
+def tokens(ticket):
+    ticket.refresh_from_db()
+    return {'versao_status':ticket.versao_status,'versao_atribuicao':ticket.versao_atribuicao}
+for numero in (1,2):
+    client.force_login(user)
+    response=client.post(f'/chamado/{recorrente.pk}/fechar/',{'resolucao':'Solução da homologação',**tokens(recorrente)},secure=True,HTTP_HOST='localhost')
+    assert response.status_code==302, ('Resolver ciclo',numero,response.status_code)
+    client.force_login(cliente)
+    response=client.post(f'/chamado/{recorrente.pk}/reabrir/',{'motivo_reabertura':'Reincidência na homologação',**tokens(recorrente)},secure=True,HTTP_HOST='localhost')
+    assert response.status_code==302, ('Reabrir ciclo',numero,response.status_code)
+recorrente.refresh_from_db()
+assert recorrente.ciclo_atual==3 and recorrente.status=='Em Andamento'
+assert recorrente.data_fechamento is None and recorrente.fechado_por_id is None
+assert CicloAtendimento.objects.filter(chamado=recorrente).count()==2
+assert ResolucaoConquista.objects.filter(chamado=recorrente).count()==1
+assert Notificacao.objects.filter(chamado=recorrente,tipo='resolucao').count()==2
+assert Notificacao.objects.filter(chamado=recorrente,tipo='reabertura').count()==2
+client.force_login(admin)
+relatorio=client.get('/administracao/indicadores/?periodo=sempre',secure=True,HTTP_HOST='localhost')
+assert relatorio.status_code==200
+assert '3 resoluções no período'.encode() in relatorio.content
+print('PASS: duas reaberturas, resultados por ciclo, avisos únicos e conquistas sem duplicação.')
 """)
             compose('stop','alertas_sla','app')
             compose('run','--rm','--no-deps','--entrypoint','python','app','manage.py','backup_homologacao',
@@ -218,6 +243,17 @@ assert HistoricoStatus.objects.filter(chamado=espera,autor__username='validation
     status_novo=AGUARDANDO_FORNECEDOR,motivo=espera.motivo_espera).count()==1
 assert Notificacao.objects.filter(chamado=espera,destinatario__username='validation-client',tipo='status').count()==1
 print('PASS: situação de espera, motivo, histórico e aviso restaurados sem duplicação.')
+from helpdesk.models import CicloAtendimento
+recorrente=Chamado.objects.get(titulo='Reabertura preservada no backup')
+assert recorrente.ciclo_atual==3 and recorrente.status=='Em Andamento'
+assert recorrente.ciclo_iniciado_em is not None and recorrente.data_fechamento is None
+assert list(CicloAtendimento.objects.filter(chamado=recorrente).order_by('numero').values_list('numero',flat=True))==[1,2]
+assert all(c.data_fechamento and c.data_vencimento and c.fechado_por_id for c in recorrente.ciclos_concluidos.all())
+assert HistoricoStatus.objects.filter(chamado=recorrente).count()==4
+assert ResolucaoConquista.objects.filter(chamado=recorrente).count()==1
+assert Notificacao.objects.filter(chamado=recorrente,tipo='resolucao').count()==2
+assert Notificacao.objects.filter(chamado=recorrente,tipo='reabertura').count()==2
+print('PASS: ciclos concluídos, reaberturas, novo prazo e avisos restaurados no chamado original.')
 """,restored=True)
         except Exception:
             subprocess.run([*base,'logs','--tail=60','app','alertas_sla','proxy'],env=docker_env,cwd=ROOT)

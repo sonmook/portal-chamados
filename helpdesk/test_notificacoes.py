@@ -1,3 +1,4 @@
+from .test_helpers import dados_situacao
 from unittest.mock import patch
 from django.contrib.auth.models import User
 from django.db import IntegrityError, transaction
@@ -75,9 +76,9 @@ class NotificacoesTests(TestCase):
 
     def test_resolucao_gera_um_aviso_e_nao_uma_resposta_duplicada(self):
         url=reverse('fechar_chamado',args=[self.t.pk])
-        self.assertEqual(self.client.post(url,{'resolucao':'Funcionamento corrigido e validado.'}).status_code,302)
+        self.assertEqual(self.client.post(url,{**dados_situacao(self.t), 'resolucao':'Funcionamento corrigido e validado.'}).status_code,302)
         aviso=Notificacao.objects.get();self.assertEqual(aviso.tipo,'resolucao');self.assertEqual(aviso.destinatario,self.cliente)
-        self.assertEqual(self.client.post(url,{'resolucao':'Novamente'}).status_code,403)
+        self.assertEqual(self.client.post(url,{**dados_situacao(self.t), 'resolucao':'Novamente'}).status_code,403)
         notificar_resolucao(self.t,self.tec.pk)
         self.assertEqual(Notificacao.objects.count(),1)
 
@@ -175,7 +176,7 @@ class NotificacoesTests(TestCase):
         self.t.refresh_from_db();self.assertEqual(self.t.tecnico,self.tec);self.assertEqual(self.t.versao_atribuicao,0)
         self.client.force_login(self.tec)
         with patch('helpdesk.notificacoes.Notificacao.objects.get_or_create',side_effect=RuntimeError('falha')):
-            with self.assertRaises(RuntimeError):self.client.post(reverse('fechar_chamado',args=[self.t.pk]),{'resolucao':'Corrigido e validado.'})
+            with self.assertRaises(RuntimeError):self.client.post(reverse('fechar_chamado',args=[self.t.pk]),{**dados_situacao(self.t), 'resolucao':'Corrigido e validado.'})
         self.t.refresh_from_db();self.assertEqual(self.t.status,'Aberto');self.assertIsNone(self.t.data_fechamento)
         self.assertFalse(Comentario.objects.filter(chamado=self.t).exists())
 

@@ -14,7 +14,7 @@ from .operacao import resumo_operacional
 from .colunas import COLUNAS, ordem_usuario
 from .periodos import datas_periodo, limites_datas
 from .estados import FINALIZADOS, EM_ESPERA, AGUARDANDO_SOLICITANTE, EM_ANDAMENTO, RESOLVIDO
-from .atendimento import alterar_situacao, ConflitoStatus
+from .atendimento import alterar_situacao, ConflitoStatus, pode_reabrir, reabrir_atendimento
 from .acesso import chamados_acessiveis, equipes_acessiveis, integrante_ativo, pode_distribuir, filtrar_equipe
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -22,8 +22,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.contrib import messages
 
-from .models import Chamado, Comentario, Equipe, IntegranteEquipe, RespostaPronta
-from .forms import ChamadoForm, ComentarioForm, NovoUsuarioForm, EditarUsuarioForm, ResolucaoForm, RedistribuirChamadoForm, SituacaoForm
+from .models import Chamado, Comentario, Equipe, IntegranteEquipe, RespostaPronta, CicloAtendimento
+from .forms import ChamadoForm, ComentarioForm, NovoUsuarioForm, EditarUsuarioForm, ResolucaoForm, RedistribuirChamadoForm, SituacaoForm, ReaberturaForm
 
 
 @login_required
@@ -37,12 +37,15 @@ def dashboard(request):
     hoje = timezone.localdate()
     
     base_chamados = chamados_acessiveis(request.user)
+    base_ciclos = CicloAtendimento.objects.filter(chamado_id__in=base_chamados.values('pk'))
     equipe_filter = request.GET.get('equipe', '')
+    base_ciclos = filtrar_equipe(base_ciclos, equipe_filter)
     base_chamados = filtrar_equipe(base_chamados, equipe_filter)
 
     inicio, fim = datas_periodo(periodo, hoje=hoje)
     if inicio:
         limite_inicial, limite_final = limites_datas(inicio, fim)
+        base_ciclos = base_ciclos.filter(chamado__data_criacao__gte=limite_inicial, chamado__data_criacao__lt=limite_final)
         base_chamados = base_chamados.filter(
             data_criacao__gte=limite_inicial, data_criacao__lt=limite_final,
         )
@@ -55,22 +58,22 @@ def dashboard(request):
         'em_espera': Count('pk', filter=Q(status__in=EM_ESPERA)),
         'resolvidos': Count('pk', filter=finalizados),
         'vencidos': Count('pk', filter=Q(data_vencimento__lt=timezone.now()) & ~finalizados),
-        'sla_sem_dados': Count('pk', filter=finalizados & (
-            Q(data_fechamento__isnull=True) | Q(data_vencimento__isnull=True)
-        )),
         **{f'categoria_{i}': Count('pk', filter=Q(categoria=categoria))
            for i, categoria in enumerate(categorias)},
     }
-    if request.user.is_staff:
-        agregacoes.update(
-            dentro_sla=Count('pk', filter=finalizados & Q(data_fechamento__lte=F('data_vencimento'))),
-            fora_sla=Count('pk', filter=finalizados & Q(data_fechamento__gt=F('data_vencimento'))),
-            tmr=Avg(ExpressionWrapper(
-                Coalesce('data_fechamento', 'data_atualizacao') - F('data_criacao'),
-                output_field=DurationField(),
-            ), filter=finalizados),
-        )
     metricas = base_chamados.aggregate(**agregacoes)
+    agregacoes_ciclos = dict(
+        ciclos_resolvidos=Count('pk'),
+        sla_sem_dados=Count('pk', filter=Q(data_fechamento__isnull=True) | Q(data_vencimento__isnull=True)),
+    )
+    if request.user.is_staff:
+        agregacoes_ciclos.update(
+            dentro_sla=Count('pk', filter=Q(data_fechamento__lte=F('data_vencimento'))),
+            fora_sla=Count('pk', filter=Q(data_fechamento__gt=F('data_vencimento'))),
+            tmr=Avg(ExpressionWrapper(Coalesce('data_fechamento', 'data_atualizacao') - F('data_criacao'),
+                output_field=DurationField())),
+        )
+    metricas.update(base_ciclos.aggregate(**agregacoes_ciclos))
     produtividade_equipe = []
     minha_produtividade = tmr_horas = 0
     if request.user.is_staff:
@@ -79,10 +82,10 @@ def dashboard(request):
         if not request.user.is_superuser:
             membros = membros.filter(Q(pk__in=IntegranteEquipe.objects.filter(
                 equipe_id__in=equipes_acessiveis(request.user).values('pk')
-            ).values('usuario_id')) | Q(pk__in=base_chamados.values('fechado_por_id')) | Q(pk=request.user.pk))
+            ).values('usuario_id')) | Q(pk__in=base_ciclos.values('fechado_por_id')) | Q(pk=request.user.pk))
         membros = membros.annotate(
-            total_fechados=Count('chamados_fechados', filter=Q(
-                chamados_fechados__in=base_chamados.filter(status__in=FINALIZADOS)
+            total_fechados=Count('ciclos_concluidos', filter=Q(
+                ciclos_concluidos__in=base_ciclos
             ))
         ).order_by('-total_fechados', 'pk')
         for membro in membros:
@@ -100,7 +103,7 @@ def dashboard(request):
         'equipes_filtro': equipes_acessiveis(request.user), 'equipe_filter': equipe_filter,
         'tmr_horas': tmr_horas,
         'em_espera': metricas['em_espera'],
-        **{campo: metricas[campo] for campo in ('total', 'abertos', 'resolvidos', 'vencidos', 'sla_sem_dados')},
+        **{campo: metricas[campo] for campo in ('total', 'abertos', 'resolvidos', 'vencidos', 'sla_sem_dados', 'ciclos_resolvidos')},
         'ultimos_chamados': base_chamados.select_related('solicitante').order_by('-data_criacao')[:5],
         'dados_grafico': [metricas[f'categoria_{i}'] for i in range(len(categorias))],
         'dados_sla': [metricas.get('dentro_sla', 0), metricas.get('fora_sla', 0)],
@@ -227,14 +230,20 @@ def _exigir_responsavel(user, chamado):
 
 
 def _contexto_detalhes(usuario, chamado, *, form=None, resolucao_form=None, situacao_form=None,
-        pagina_historico=None):
+        pagina_historico=None, reabertura_form=None, pagina_ciclos=None):
     ativo = chamado.status not in FINALIZADOS and chamado.equipe.ativa
     tecnico_responsavel = ativo and chamado.tecnico_id == usuario.pk and integrante_ativo(usuario, chamado.equipe_id)
     return {
         'chamado': chamado,
         'comentarios': chamado.comentarios.select_related('autor', 'autor__perfil').all().order_by('data_criacao'),
         'form': form if form is not None else ComentarioForm(),
-        'resolucao_form': resolucao_form if resolucao_form is not None else ResolucaoForm(),
+        'resolucao_form': resolucao_form if resolucao_form is not None else ResolucaoForm(initial={
+            'versao_status': chamado.versao_status, 'versao_atribuicao': chamado.versao_atribuicao}),
+        'reabertura_form': reabertura_form if reabertura_form is not None else ReaberturaForm(initial={
+            'versao_status': chamado.versao_status, 'versao_atribuicao': chamado.versao_atribuicao}),
+        'pode_reabrir': pode_reabrir(usuario, chamado),
+        'ciclos_concluidos': Paginator(chamado.ciclos_concluidos.select_related('equipe', 'fechado_por'), 10).get_page(pagina_ciclos),
+        'ciclos_expandidos': bool(pagina_ciclos),
         'abrir_resolucao': resolucao_form is not None and bool(resolucao_form.errors),
         'situacao_form': situacao_form if situacao_form is not None else SituacaoForm(initial={
             'status': chamado.status, 'versao_status': chamado.versao_status,
@@ -255,7 +264,8 @@ def _contexto_detalhes(usuario, chamado, *, form=None, resolucao_form=None, situ
 @transaction.atomic
 def detalhes_chamado(request, id):
     chamado = _chamado_visivel(request.user, id, bloquear=request.method == 'POST')
-    contexto = _contexto_detalhes(request.user, chamado, pagina_historico=request.GET.get('historico_page'))
+    contexto = _contexto_detalhes(request.user, chamado, pagina_historico=request.GET.get('historico_page'),
+        pagina_ciclos=request.GET.get('ciclos_page'))
     if request.method == 'POST':
         if not contexto['pode_responder']:
             raise PermissionDenied
@@ -317,7 +327,9 @@ def fechar_chamado(request, id):
         contexto = _contexto_detalhes(request.user, chamado, resolucao_form=form)
         return render(request, 'helpdesk/detalhes_chamado.html', contexto, status=400)
     try:
-        alterar_situacao(chamado, request.user, RESOLVIDO, 'Solução registrada pelo responsável.', notificar=False)
+        alterar_situacao(chamado, request.user, RESOLVIDO, 'Solução registrada pelo responsável.', notificar=False,
+            versao_esperada=form.cleaned_data['versao_status'],
+            atribuicao_esperada=form.cleaned_data['versao_atribuicao'])
     except ConflitoStatus:
         form.add_error(None, 'O chamado foi alterado. Reabra o atendimento antes de registrar a solução.')
         contexto = _contexto_detalhes(request.user, chamado, resolucao_form=form)
@@ -336,6 +348,30 @@ def fechar_chamado(request, id):
         messages.success(request, f'Conquista desbloqueada: {conquista.nome}{" · "+conquista.get_nivel_display() if conquista.nivel else ""}!')
     notificar_resolucao(chamado, request.user.pk)
     return redirect('detalhes_chamado', id=chamado.id)
+
+
+@login_required
+@require_POST
+@transaction.atomic
+def reabrir_chamado(request, id):
+    chamado = _chamado_visivel(request.user, id)
+    if not pode_reabrir(request.user, chamado):
+        raise PermissionDenied
+    form = ReaberturaForm(request.POST)
+    codigo = 400
+    if form.is_valid():
+        try:
+            reabrir_atendimento(chamado, request.user, form.cleaned_data['motivo_reabertura'],
+                versao_esperada=form.cleaned_data['versao_status'],
+                atribuicao_esperada=form.cleaned_data['versao_atribuicao'])
+        except ConflitoStatus:
+            form.add_error(None, 'O chamado foi alterado. Carregue os dados atuais antes de reabrir.')
+            codigo = 409
+        else:
+            messages.success(request, 'Chamado reaberto. Um novo ciclo de atendimento e SLA foi iniciado.')
+            return redirect('detalhes_chamado', id=chamado.pk)
+    contexto = _contexto_detalhes(request.user, chamado, reabertura_form=form)
+    return render(request, 'helpdesk/detalhes_chamado.html', contexto, status=codigo)
 
 
 @login_required

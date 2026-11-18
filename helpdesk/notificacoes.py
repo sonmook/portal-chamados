@@ -60,7 +60,20 @@ def notificar_resposta(comentario):
 
 def notificar_resolucao(chamado, ator_id):
     chamado = Chamado.objects.get(pk=chamado.pk)
-    gerar(chamado, ator_id, 'resolucao', f'resolucao:{chamado.pk}', participantes(chamado))
+    # Mantém a chave dos avisos já existentes do primeiro ciclo.
+    evento = f'resolucao:{chamado.pk}' if chamado.ciclo_atual == 1 else f'resolucao:{chamado.pk}:{chamado.ciclo_atual}'
+    gerar(chamado, ator_id, 'resolucao', evento, participantes(chamado))
+
+
+def notificar_reabertura(chamado, ator_id):
+    candidatos = participantes(chamado)
+    if not chamado.tecnico_id:
+        coordenadores = set(User.objects.filter(is_active=True, is_staff=True,
+            vinculos_equipes__equipe_id=chamado.equipe_id,
+            vinculos_equipes__coordenador=True).values_list('pk', flat=True))
+        candidatos |= coordenadores or set(User.objects.filter(is_active=True, is_staff=True,
+            is_superuser=True).values_list('pk', flat=True))
+    gerar(chamado, ator_id, 'reabertura', f'reabertura:{chamado.pk}:{chamado.ciclo_atual}', candidatos)
 
 
 def notificar_status(chamado, ator_id):

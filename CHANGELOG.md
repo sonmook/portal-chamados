@@ -1,5 +1,16 @@
 # Histórico de atualizações
 
+## v1.13.0 — Reabertura e ciclos de atendimento
+
+- Solicitante e técnico responsável ativo podem reabrir Resolvido/Fechado com motivo obrigatório, preservando número, conversa e soluções anteriores.
+- Novo ciclo usa início na reabertura e prazo pela prioridade/calendário vigentes. Responsável elegível é mantido; sem responsável elegível volta à fila e equipe inativa usa a triagem ativa.
+- Histórico com autor/data/motivo, auditoria sem cópia do motivo, versões de situação/atribuição e transação única para reabertura/avisos. Formulário de resolução também exige versões para impedir que uma tela de ciclo anterior encerre o novo atendimento.
+- Resultados por ciclo preservam equipe, autor, início, prazo e fechamento. Detalhe oferece histórico paginado; indicadores e rankings contam ciclos concluídos, sem apagar a primeira resolução. Contagens de chamados por situação continuam atuais. Conquistas não duplicam por reabertura.
+- Avisos de reabertura, resolução e SLA são deduplicados por ciclo; leituras antigas permanecem. Sem responsável/coordenador elegível, a reabertura avisa administradores ativos.
+- Migração 0028 adiciona ciclos e preserva resultados de finalizados existentes, inclusive dados ausentes, sem reabrir, recalcular prazo ou gerar aviso/conquista retroativa.
+- Homologação verifica duas reaberturas, resoluções, indicadores e backup/restauração dos ciclos. Sem nova dependência.
+- Notas em `docs/releases/v1.13.0.md` e regras em `docs/reabertura-chamados.md`.
+
 ## v1.12.0 — Estados de espera do atendimento
 
 - Situações Aguardando solicitante e Aguardando fornecedor, com motivo obrigatório, data de início e indicação da próxima ação.

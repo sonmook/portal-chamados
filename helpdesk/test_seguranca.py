@@ -102,7 +102,7 @@ class SegurancaTests(TestCase):
         for classe, dados, campo in [
             (ChamadoForm, {'titulo':'Teste','descricao':'Dados','prioridade':'Normal','categoria':'Software'}, 'anexo'),
             (ComentarioForm, {'texto':'Resposta'}, 'anexo'),
-            (ResolucaoForm, {'resolucao':'Resolvido'}, 'anexo_resolucao'),
+            (ResolucaoForm, {'resolucao':'Resolvido', 'versao_status':0, 'versao_atribuicao':0}, 'anexo_resolucao'),
         ]:
             with self.subTest(classe=classe):
                 form = classe(dados, {campo: SimpleUploadedFile('invalido.pdf', b'<html>')})

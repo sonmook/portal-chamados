@@ -25,3 +25,10 @@ def restaurar_migracoes_atuais():
     from django.db.migrations.executor import MigrationExecutor
     executor = MigrationExecutor(connection)
     executor.migrate(executor.loader.graph.leaf_nodes('helpdesk'))
+
+
+def registrar_resultados_fixture():
+    from .atendimento import registrar_ciclo_concluido
+    from .models import Chamado
+    for chamado in Chamado.objects.filter(status__in=['Resolvido', 'Fechado']):
+        registrar_ciclo_concluido(chamado)
