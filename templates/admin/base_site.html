@@ -1,0 +1,10 @@
+{% extends "admin/base.html" %}
+{% load static %}
+{% block title %}{{ title }} | Nexaltri{% endblock %}
+{% block extrastyle %}{{ block.super }}
+<link rel="icon" href="{% static 'helpdesk/brand/favicon.svg' %}" type="image/svg+xml">
+<link rel="stylesheet" href="{% static 'helpdesk/css/fonts.css' %}">
+<link rel="stylesheet" href="{% static 'helpdesk/css/admin-nexaltri.css' %}">
+{% endblock %}
+{% block branding %}<div id="site-name"><a href="{% url 'admin:index' %}"><img src="{% static 'helpdesk/brand/logo-claro.svg' %}" width="168" height="44" alt="Nexaltri"><span>Administração</span></a></div>{% endblock %}
+{% block nav-global %}{% endblock %}

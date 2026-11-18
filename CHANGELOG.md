@@ -1,5 +1,15 @@
 # Histórico de atualizações
 
+## v1.15.0 — Identidade Nexaltri
+
+- Marca Nexaltri aplicada a login, navegação, títulos, perfis, relatório e Django Admin. Nome/descritor novos; rotas e comandos de instalação preservados.
+- Monograma N e wordmark em SVG com contornos, assinaturas clara/escura, favicon SVG/PNG e ícone de 180px. Arquivos independentes de fontes instaladas.
+- Fontes Manrope/Inter locais com licenças OFL; navegação clara, turquesa/azul-marinho e azul complementar. Ações principais usam texto azul-marinho sobre turquesa para contraste; cores de status e SLA continuam semânticas.
+- Login com nova composição responsiva, mantendo campos, CSRF, redirecionamento, Google condicional e controle de visibilidade da senha. Cache de CSS/ícones atualizado pela versão na URL.
+- Novo check visual em Chromium com banco temporário e dados fictícios: login, menu, fontes, imagens, contraste e overflow em desktop/tablet/celular. Capturas ficam como artefato da CI.
+- Homologação verifica novas marcas/fontes em HTTPS e mantém todos os cenários de atendimento, notas, ciclos e restauração. Publicador aceita notas Nexaltri e metadados históricos Portal de TI.
+- Sem nova migração ou dependência de execução. Playwright é instalado apenas no job visual. Notas em `docs/releases/v1.15.0.md`; especificações em `docs/identidade-visual.md`.
+
 ## v1.14.0 — Notas internas da TI
 
 - Notas internas com formulário próprio e anexos privados, disponíveis aos técnicos da equipe atual e administradores em chamados/equipes ativos.

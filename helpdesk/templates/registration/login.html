@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrar — Portal de TI</title>
+    <title>Entrar — Nexaltri</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -42,26 +42,28 @@
     <div class="container-fluid p-0">
         <div class="row g-0 min-vh-100">
             
-            <div class="login-intro col-md-6 col-lg-7 d-none d-md-flex flex-column align-items-center justify-content-center text-white" style="background: linear-gradient(135deg, #212529 0%, #000000 100%);">
-                <div class="text-center p-5">
-                    <img class="portal-login-symbol mb-4" src="{% static 'helpdesk/brand/simbolo.svg' %}" width="96" height="96" alt="">
-                    <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -1px;">Portal de TI</h1>
-                    <p class="lead text-secondary">Central de Suporte de TI</p>
+            <div class="login-intro col-md-6 col-lg-7 d-none d-md-flex flex-column align-items-center justify-content-center text-white">
+                <div class="nexaltri-login-copy">
+                    <img class="nexaltri-login-logo" src="{% static 'helpdesk/brand/logo-claro.svg' %}?v={{ portal_version }}" width="270" height="70" alt="Nexaltri">
+                    <p class="login-eyebrow">Gestão de chamados e atendimento de TI</p>
+                    <h1 class="login-title">Clareza em cada<br>solicitação.</h1>
+                    <p class="login-description">Pessoas, equipes e soluções conectadas. Acompanhe cada atendimento, do primeiro contato à resolução.</p>
+                    <div class="login-principles"><span><i class="bi bi-diagram-3" aria-hidden="true"></i>Equipes conectadas</span><span><i class="bi bi-clock-history" aria-hidden="true"></i>Histórico preservado</span></div>
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-5 d-flex align-items-center justify-content-center p-4 p-sm-5 bg-white shadow-lg z-1">
+            <div class="login-form-panel col-md-6 col-lg-5 d-flex align-items-center justify-content-center p-4 p-sm-5 bg-white z-1">
                 <div class="w-100" style="max-width: 400px;">
                     
                     <div class="text-center mb-5">
                         <div class="d-md-none mb-3">
-                            <img src="{% static 'helpdesk/brand/logo.svg' %}" width="258" height="60" alt="Portal de TI — Central de suporte">
+                            <img class="portal-login-mobile-logo" src="{% static 'helpdesk/brand/logo.svg' %}?v={{ portal_version }}" width="224" height="58" alt="Nexaltri">
                         </div>
-                        <h2 class="fw-bold text-dark" style="letter-spacing: -1px;">Bem-vindo(a)</h2>
+                        <p class="login-form-eyebrow">Bem-vindo à Nexaltri</p>
+                        <h2 class="login-form-heading text-dark">Entre na sua central</h2>
                         <p class="text-muted small">Faça login para gerenciar as suas solicitações</p>
                     </div>
 
-                    <p class="portal-login-version text-muted small text-center">Versão {{ portal_version }}</p>
                     <form method="post">
                         {% csrf_token %}
                         
@@ -89,7 +91,7 @@
                             <input type="hidden" name="next" value="{{ next }}">
                         {% endif %}
                         
-                        <button type="submit" class="btn btn-dark w-100 py-3 fw-bold rounded-3 shadow-sm hover-btn mb-4 d-flex justify-content-center align-items-center gap-2">
+                        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-3 hover-btn mb-4 d-flex justify-content-center align-items-center gap-2">
                             ENTRAR <i class="bi bi-box-arrow-in-right fs-5"></i>
                         </button>
 
@@ -108,6 +110,7 @@
                         </a>
                         {% endif %}
                     </form>
+                    <p class="portal-login-version text-center">Nexaltri · Versão {{ portal_version }}</p>
                     
                 </div>
             </div>

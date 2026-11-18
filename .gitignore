@@ -29,3 +29,6 @@ backups/
 
 # Trava local do inicializador (sem dados do portal).
 .portal-local.lock
+
+# Capturas e resultados dos testes visuais com dados fictícios.
+artifacts/

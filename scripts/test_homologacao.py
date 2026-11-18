@@ -54,7 +54,9 @@ def main():
             # Somente loopback local: não enviar a homologação ao proxy de saída.
             opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), urllib.request.HTTPSHandler(context=context))
             for path in ['/contas/login/', '/static/helpdesk/brand/simbolo.svg',
-                         '/static/helpdesk/brand/favicon-32.png', '/static/helpdesk/brand/apple-touch-icon.png']:
+                         '/static/helpdesk/brand/favicon-32.png', '/static/helpdesk/brand/apple-touch-icon.png', '/static/helpdesk/brand/logo.svg',
+                         '/static/helpdesk/brand/logo-claro.svg', '/static/helpdesk/brand/favicon.svg',
+                         '/static/helpdesk/fonts/inter-latin-var.woff', '/static/helpdesk/fonts/manrope-latin-var.woff']:
                 for attempt in range(20):
                     try:
                         with opener.open('https://localhost:18443'+path,timeout=5) as response:
@@ -63,7 +65,10 @@ def main():
                             if path == '/contas/login/':
                                 version = (ROOT/'VERSION').read_text(encoding='utf-8').strip()
                                 assert f'Versão {version}'.encode('utf-8') in content
-                                assert b'helpdesk/brand/simbolo.svg' in content
+                                assert b'helpdesk/brand/logo-claro.svg' in content
+                                assert b'Nexaltri' in content
+                            elif path.endswith('.woff'):
+                                assert content.startswith(b'wOFF'), path
                             elif path.endswith('.png'):
                                 assert content.startswith(b'\x89PNG\r\n\x1a\n'), path
                             else:

@@ -1,47 +1,52 @@
 /* Identidade compartilhada. Mantém os componentes e estados do Bootstrap. */
 :root {
-    --portal-ink: #172b45;
-    --portal-muted: #52647a;
+    --nexaltri-navy: #101d37;
+    --nexaltri-teal: #14b8a6;
+    --nexaltri-blue: #638cff;
+    --nexaltri-ice: #f4f7fb;
+    --portal-ink: var(--nexaltri-navy);
+    --portal-muted: #526179;
     --portal-line: #dce4ee;
-    --portal-blue: #245cce;
-    --bs-primary: #245cce;
-    --bs-primary-rgb: 36, 92, 206;
+    --portal-blue: #0f766e;
+    --bs-primary: #365ec4;
+    --bs-primary-rgb: 54, 94, 196;
+    --bs-dark-rgb: 16, 29, 55;
     --bs-body-color: #24364c;
-    --bs-body-font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    --bs-body-font-family: "Inter", system-ui, -apple-system, sans-serif;
     --bs-border-color: #dce4ee;
-    --bs-link-color: #245cce;
-    --bs-link-hover-color: #19469f;
+    --bs-link-color: #087f76;
+    --bs-link-hover-color: #075f59;
 }
 body { background: #f4f7fb !important; line-height: 1.55; }
-h1, h2, h3, h4, h5 { color: var(--portal-ink); letter-spacing: -.025em; }
+h1, h2, h3, h4, h5, h6 { font-family: "Manrope", system-ui, sans-serif; color: var(--portal-ink); letter-spacing: -.025em; }
 h1, h2 { font-weight: 750; }
 .text-muted { color: var(--portal-muted) !important; }
 .container { max-width: 1440px; padding-inline: 28px; }
-.portal-navbar { background: #15283f; padding-block: 14px; box-shadow: 0 3px 16px #15283f14; }
+.portal-navbar { background: #fff; padding-block: 12px; border-bottom: 1px solid var(--portal-line); box-shadow: 0 3px 18px #101d3705; }
 .portal-navbar .navbar-brand { display: inline-flex; align-items: center; gap: 10px; margin-right: 28px; font-size: 1.15rem; letter-spacing: -.02em; }
 .portal-brand-mark { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: #3974e6; color: white; font-size: .85rem; letter-spacing: .02em; }
 .portal-navbar .navbar-nav { gap: 4px; }
-.portal-navbar .nav-link { color: #c9d5e5; border-radius: 8px; padding: 9px 12px !important; font-size: .9rem; font-weight: 550; }
-.portal-navbar .nav-link:hover { color: #fff; background: #ffffff0d; }
-.portal-navbar .nav-link.active { background: #2b4260; color: #fff; }
+.portal-navbar .nav-link { color: #526179; border-radius: 8px; padding: 9px 12px !important; font-size: .9rem; font-weight: 550; }
+.portal-navbar .nav-link:hover { color: #075f59; background: #eff9f7; }
+.portal-navbar .nav-link.active { background: #e2f6f1; color: #075f59; }
 .portal-account { display: flex; align-items: center; gap: 16px; color: #e0e8f3; font-size: .85rem; margin-left: 16px; }
 .portal-username { max-width: 190px; overflow-wrap: anywhere; }
 .portal-navbar .btn { min-height: 36px; border-color: #69809e; padding-inline: 14px; }
 .portal-skip { position: fixed; top: 8px; left: 12px; z-index: 2000; padding: 12px 18px; background: white; border: 2px solid var(--portal-blue); border-radius: 8px; transform: translateY(-150%); }
 .portal-skip:focus { transform: translateY(0); }
-:focus-visible { outline: 3px solid #3876df !important; outline-offset: 3px; }
+:focus-visible { outline: 3px solid #0f766e !important; outline-offset: 3px; }
 #conteudo-principal { padding-bottom: 36px; }
 .card { border: 1px solid var(--portal-line) !important; border-radius: 14px; box-shadow: 0 4px 16px #24364c06 !important; }
 .card-header { border-bottom-color: var(--portal-line); }
 .card-header:first-child { border-radius: 13px 13px 0 0; }
 .card-header.bg-primary h4, .card-header.bg-primary p, .card-header.bg-dark h4 { color: white; }
 .btn { --bs-btn-border-radius: .55rem; font-weight: 600; transition: background-color .15s, border-color .15s; }
-.btn-primary { --bs-btn-bg: #245cce; --bs-btn-border-color: #245cce; --bs-btn-hover-bg: #19469f; --bs-btn-hover-border-color: #19469f; --bs-btn-active-bg: #19469f; }
+.btn-primary { --bs-btn-color: #101d37; --bs-btn-bg: #14b8a6; --bs-btn-border-color: #14b8a6; --bs-btn-hover-color: #101d37; --bs-btn-hover-bg: #12aa99; --bs-btn-hover-border-color: #12aa99; --bs-btn-active-color: #101d37; --bs-btn-active-bg: #0f9c8d; --bs-btn-active-border-color: #0f9c8d; --bs-btn-disabled-color: #101d37; --bs-btn-disabled-bg: #14b8a6; --bs-btn-disabled-border-color: #14b8a6; --bs-btn-focus-shadow-rgb: 20, 184, 166; }
 .btn-dark { --bs-btn-bg: #203a59; --bs-btn-border-color: #203a59; --bs-btn-hover-bg: #15283f; }
 .btn:not(.btn-sm) { min-height: 42px; }
 .btn-sm { min-height: 34px; }
 .form-control, .form-select { border-radius: 8px; border-color: #cbd6e3; min-height: 40px; }
-.form-control:focus, .form-select:focus { border-color: #3876df; box-shadow: 0 0 0 3px #245cce1c; }
+.form-control:focus, .form-select:focus { border-color: #0f766e; box-shadow: 0 0 0 3px #14b8a622; }
 form label { color: var(--portal-ink); }
 .form-text { color: var(--portal-muted); }
 .errorlist { padding: 12px 12px 12px 30px; background: #fff1f0; color: #9c2927; border-radius: 8px; }
@@ -63,7 +68,7 @@ form label { color: var(--portal-ink); }
 .ticket-subject { min-width: 220px; max-width: 330px; overflow-wrap: anywhere; }
 .ticket-table { min-width: 1150px; }
 .table-hint { font-size: .8rem; color: var(--portal-muted); margin: 10px 2px; }
-.portal-login .login-intro { background: linear-gradient(145deg, #15283f, #234b7b) !important; }
+.portal-login .login-intro { background: #101d37 !important; }
 .portal-login .login-intro .text-secondary { color: #c4d5eb !important; }
 .portal-login .login-intro h1 { color: white; }
 .portal-login .password-toggle { min-width: 40px; min-height: 40px; right: 6px; }
@@ -115,7 +120,7 @@ form label { color: var(--portal-ink); }
 #conteudo-principal form select { max-width: 100%; }
 #conteudo-principal form select:not(.form-select) { width: 100%; min-height: 40px; padding: 8px 12px; border: 1px solid #cbd6e3; border-radius: 8px; background-color: white; color: var(--portal-ink); }
 .card-header { overflow-wrap: anywhere; }
-/* Marca própria do Portal de TI; versão vem do arquivo VERSION. */
+/* Identidade Nexaltri; versão vem do arquivo VERSION. */
 .portal-navbar .nav-link .bi { margin-right: 4px; }
 .portal-brand-mark { flex-shrink: 0; }
 .portal-version { padding: 3px 8px; border: 1px solid #69809e; border-radius: 6px; color: #e0e8f3; font-size: .75rem; white-space: nowrap; }
@@ -174,7 +179,7 @@ form label { color: var(--portal-ink); }
 .conquista-opcoes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .conquista-opcao { display: flex; align-items: center; gap: 8px; padding: 12px; border: 1px solid var(--portal-line); border-radius: 10px; cursor: pointer; font-size: .9rem; }
 .conquista-opcao:has(input:checked) { border-color: var(--medalha); background: var(--medalha-suave); }
-.conquista-opcao:focus-within { outline: 3px solid #3876df; outline-offset: 2px; }
+.conquista-opcao:focus-within { outline: 3px solid #0f766e; outline-offset: 2px; }
 @media (max-width: 399.98px) { .conquista-opcoes { grid-template-columns: minmax(0, 1fr); } }
 .conquista-colecao { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 20px 24px; border-radius: 14px; background: #eaf0fc; color: #24446e; }
 .conquista-colecao .conquista-chamada { color: #365b8e; }
@@ -515,3 +520,37 @@ form label { color: var(--portal-ink); }
     .respostas-filtros { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .respostas-filtros input, .respostas-filtros select { grid-column: 1 / -1; }
 }
+
+/* Aplicação da identidade Nexaltri; estados de atendimento mantêm suas cores semânticas. */
+.portal-brand-logo { display: block; width: 174px; max-width: 100%; height: auto; }
+.portal-navbar .navbar-brand { margin-right: 32px; }
+.portal-navbar .navbar-toggler { border-color: var(--portal-line); }
+.portal-navbar .portal-account { color: var(--portal-ink); }
+.portal-navbar .portal-profile-link { color: #31415b; }
+.portal-navbar .portal-profile-link:hover { color: #075f59; }
+.portal-navbar .portal-version { color: #526179; border-color: var(--portal-line); background: #f4f7fb; }
+.portal-navbar .btn { border-color: #cbd6e3; }
+.portal-navbar .portal-notificacoes { color: #31415b; }
+.portal-navbar .portal-notificacoes:hover, .portal-navbar .portal-notificacoes.ativa { color: #075f59; background: #e2f6f1; }
+.portal-navbar .portal-notificacoes-contador { color: #101d37; background: #94e6d9; border-color: white; }
+.portal-avatar { background: #e2f6f1; color: #075f59; }
+.btn-outline-primary { --bs-btn-color: #0f766e; --bs-btn-border-color: #0f766e; --bs-btn-hover-color: #101d37; --bs-btn-hover-bg: #e2f6f1; --bs-btn-hover-border-color: #0f766e; --bs-btn-active-bg: #14b8a6; --bs-btn-active-border-color: #14b8a6; --bs-btn-active-color: #101d37; }
+.btn-dark { --bs-btn-bg: #101d37; --bs-btn-border-color: #101d37; --bs-btn-hover-bg: #263956; --bs-btn-hover-border-color: #263956; }
+.card-header.bg-dark :is(h2,h3,h4,h5,h6), .card-header.bg-primary :is(h2,h3,h4,h5,h6) { color: #fff; }
+.portal-login .login-intro { position: relative; overflow: hidden; padding: clamp(32px, 5vw, 80px); }
+.nexaltri-login-copy { position: relative; z-index: 1; width: 100%; max-width: 540px; }
+.nexaltri-login-logo { width: 270px; max-width: 100%; height: auto; margin-bottom: 64px; }
+.portal-login .login-eyebrow { color: #6ee0cf; font-size: .75rem; font-weight: 650; letter-spacing: .13em; text-transform: uppercase; }
+.portal-login .login-title { font-size: clamp(2rem, 3.3vw, 3.5rem); font-weight: 800; line-height: 1.14; letter-spacing: -.045em; margin: 18px 0 24px; }
+.portal-login .login-description { color: #c4cede; max-width: 430px; font-size: 1.05rem; line-height: 1.75; }
+.login-principles { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 40px; padding-top: 24px; border-top: 1px solid #ffffff24; font-size: .8rem; color: #e1e8f2; }
+.login-principles .bi { color: #5cd8c7; margin-right: 6px; }
+.portal-login .login-form-panel { min-height: 100vh; }
+.portal-login .login-form-eyebrow { color: #087f76; font-size: .72rem; letter-spacing: .12em; font-weight: 700; text-transform: uppercase; }
+.portal-login .login-form-heading { font-family: "Manrope", system-ui, sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -.035em; }
+.portal-login .portal-login-version { margin: 28px 0 0; font-size: .75rem; color: #64738a; }
+.portal-login .portal-login-mobile-logo { width: 224px; max-width: 100%; height: auto; }
+.portal-login .form-floating .form-control { background: #f8fafc; border-color: #dce4ee !important; }
+.portal-login .form-control:focus { border-color: #0f766e !important; }
+@media (max-width: 1399.98px) { .portal-navbar .portal-account { border-top-color: var(--portal-line); } }
+@media (max-width: 767.98px) { .portal-login .login-form-panel { padding: 32px 24px !important; } .portal-login .login-form-heading { font-size: 1.6rem; } }

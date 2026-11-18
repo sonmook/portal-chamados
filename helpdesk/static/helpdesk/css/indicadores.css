@@ -1,4 +1,4 @@
-/* Relatório integrado à identidade compartilhada do Portal de TI. */
+/* Relatório integrado à identidade compartilhada do Nexaltri. */
 .performance { --rel-borda: var(--portal-line); color: var(--bs-body-color); margin-top: 1.5rem; }
 .performance .rel-header { background: #fff; color: var(--portal-ink); border: 1px solid var(--portal-line); border-top: 3px solid var(--portal-blue); padding: 1.5rem; border-radius: 14px; margin-bottom: 1.25rem; }
 .performance .rel-header p { color: var(--portal-muted); margin-bottom: .3rem; }

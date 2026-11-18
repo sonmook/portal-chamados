@@ -4,7 +4,7 @@
 <head>  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dashboard - Portal de TI</title>
+    <title>Dashboard - Nexaltri</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
@@ -246,6 +246,7 @@
     {{ dados_sla|json_script:"dados-sla" }}
 
     <script>
+        Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
         // Inicializa o Gráfico de Categorias (Formato Doughnut)
         if(document.getElementById('graficoCategorias')) {
             const ctx = document.getElementById('graficoCategorias').getContext('2d');
@@ -259,7 +260,7 @@
                         label: 'Quantidade',
                         data: dadosDoBanco,
                         backgroundColor: [
-                            '#0d6efd', '#6c757d', '#dc3545', '#ffc107', '#198754' 
+                            '#14b8a6', '#638cff', '#101d37', '#94a3b8', '#0f766e'
                         ],
                         borderWidth: 2,
                         hoverOffset: 10 

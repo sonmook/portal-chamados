@@ -63,6 +63,10 @@ class AdminLoginTests(TestCase):
     def test_login_admin_e_registros_preservados(self):
         resposta = self.client.post(self.url, {**self.dados, 'password': 'test-only-password'})
         self.assertRedirects(resposta, reverse('admin:index'))
+        inicio = self.client.get(reverse('admin:index'))
+        self.assertTemplateUsed(inicio, 'admin/base_site.html')
+        self.assertContains(inicio, 'helpdesk/brand/logo-claro.svg')
+        self.assertContains(inicio, 'helpdesk/css/admin-nexaltri.css')
         self.assertEqual(self.client.get(reverse('admin:auth_user_changelist')).status_code, 200)
         self.assertEqual(self.client.get(self.url).status_code, 302)
 
