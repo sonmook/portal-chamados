@@ -9,11 +9,11 @@ from .models import Chamado, Comentario
 CAMPOS = {
     User: ('username', 'email', 'first_name', 'last_name', 'password', 'is_active', 'is_staff', 'is_superuser'),
     Chamado: ('titulo', 'descricao', 'categoria', 'prioridade', 'status', 'solicitante_id', 'tecnico_id', 'equipe_id', 'fechado_por_id', 'data_vencimento', 'data_fechamento', 'anexo'),
-    Comentario: ('chamado_id', 'autor_id', 'texto', 'anexo'),
+    Comentario: ('chamado_id', 'autor_id', 'texto', 'anexo', 'interna'),
 }
 VALORES = {'is_active', 'is_staff', 'is_superuser', 'categoria', 'prioridade', 'status',
            'solicitante_id', 'tecnico_id', 'equipe_id', 'fechado_por_id', 'chamado_id', 'autor_id',
-           'data_vencimento', 'data_fechamento'}
+           'data_vencimento', 'data_fechamento', 'interna'}
 
 
 def snapshot(instancia):

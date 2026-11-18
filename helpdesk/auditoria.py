@@ -94,6 +94,7 @@ CAMPOS = {
     'password': 'Senha', 'titulo': 'Título', 'descricao': 'Descrição', 'texto': 'Texto',
     'status': 'Status', 'categoria': 'Categoria', 'prioridade': 'Prioridade', 'anexo': 'Anexo',
     'ciclo_atual': 'Ciclo de atendimento',
+    'interna': 'Nota interna',
     'tecnico_id': 'ID do responsável', 'solicitante_id': 'ID do solicitante', 'equipe_id': 'ID da equipe',
     'data_vencimento': 'Prazo SLA', 'data_fechamento': 'Data de resolução', 'motivo': 'Motivo',
     'ativa': 'Ativa', 'meta': 'Meta', 'nome': 'Nome', 'integrantes': 'Integrantes',

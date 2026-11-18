@@ -1,6 +1,6 @@
 from django.db.models import Exists, OuterRef, Q
 
-from .models import Chamado, Equipe, IntegranteEquipe
+from .models import Chamado, Comentario, Equipe, IntegranteEquipe
 from .estados import FINALIZADOS
 
 
@@ -48,6 +48,26 @@ def integrante_ativo(usuario, equipe_id):
     return usuario.is_active and usuario.is_staff and IntegranteEquipe.objects.filter(
         usuario_id=usuario.pk, equipe_id=equipe_id, equipe__ativa=True,
     ).exists()
+
+
+def chamados_com_acesso_interno(usuario):
+    """Ser solicitante ou autor de uma nota não concede acesso ao conteúdo interno."""
+    if not usuario.is_active:
+        return Chamado.objects.none()
+    if usuario.is_superuser:
+        return Chamado.objects.all()
+    if usuario.is_staff:
+        return Chamado.objects.filter(equipe_id__in=equipes_acessiveis(usuario).values('pk'))
+    return Chamado.objects.none()
+
+
+def pode_ver_notas(usuario, chamado):
+    return usuario.is_active and (usuario.is_superuser or integrante_ativo(usuario, chamado.equipe_id))
+
+
+def comentarios_acessiveis(usuario):
+    return Comentario.objects.filter(chamado_id__in=chamados_acessiveis(usuario).values('pk')).filter(
+        Q(interna=False) | Q(chamado_id__in=chamados_com_acesso_interno(usuario).values('pk')))
 
 
 def pode_distribuir(usuario, chamado):

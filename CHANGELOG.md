@@ -1,5 +1,16 @@
 # Histórico de atualizações
 
+## v1.14.0 — Notas internas da TI
+
+- Notas internas com formulário próprio e anexos privados, disponíveis aos técnicos da equipe atual e administradores em chamados/equipes ativos.
+- Visibilidade aplicada no servidor ao detalhe, download, Admin, notificações, sino e ações de leitura. Ser solicitante ou autor não concede acesso interno por si só. Mudanças de equipe/vínculo/papel revalidam o acesso.
+- Histórico técnico distingue as notas; quem tem apenas acesso público não recebe texto, metadados, marcador ou link. A nova equipe de atendimento pode consultar o histórico interno; a equipe anterior perde a permissão que não tiver mais.
+- Prazo, status/espera, ciclo e última interação pública preservados. Formulário protegido por POST/CSRF e versões de situação/atribuição; gravação, auditoria e avisos transacionais. Erros mantêm o rascunho de texto.
+- Avisos internos únicos por nota/destinatário, sem envio ao solicitante ou resposta pública duplicada; fallback à coordenação/admin quando não há responsável elegível. Auditoria registra classificação sem conteúdo ou nome de arquivo.
+- Detalhe e retornos de seus formulários usam no-store; anexos mantêm cabeçalhos privados. Comentários continuam sem edição/exclusão no Admin.
+- Migração 0029 adiciona classificação interna e novo tipo de aviso, mantendo comentários anteriores públicos e leituras existentes. Homologação verifica notas/anexos/avisos e restrição de acesso após backup/restauração.
+- Notas em `docs/releases/v1.14.0.md` e regras em `docs/notas-internas.md`. Sem dependência nova. Código anterior não deve ser usado contra um banco que já contenha notas internas.
+
 ## v1.13.0 — Reabertura e ciclos de atendimento
 
 - Solicitante e técnico responsável ativo podem reabrir Resolvido/Fechado com motivo obrigatório, preservando número, conversa e soluções anteriores.

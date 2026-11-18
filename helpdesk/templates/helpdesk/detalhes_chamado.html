@@ -137,13 +137,15 @@
                 <div class="d-flex flex-column gap-3 mb-4 ticket-conversation">
                     {% for comentario in comentarios %}
                         
-                        <div class="card border-0 shadow-sm {% if comentario.autor.is_staff %}bg-primary-subtle border-start border-4 border-primary ms-5{% else %}bg-white border-start border-4 border-secondary me-5{% endif %}">
+                        <div class="card border-0 shadow-sm {% if comentario.interna %}bg-warning-subtle border-start border-4 border-warning{% elif comentario.autor.is_staff %}bg-primary-subtle border-start border-4 border-primary ms-5{% else %}bg-white border-start border-4 border-secondary me-5{% endif %}">
                             <div class="card-body p-3">
                                 <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-2">
                                     <div class="fw-bold small d-flex align-items-center gap-2">
                                         {% include 'helpdesk/componentes/avatar.html' with pessoa=comentario.autor %}
                                         {{ comentario.autor.username }}
-                                        {% if comentario.autor.is_staff %}
+                                        {% if comentario.interna %}
+                                            <span class="badge text-bg-warning ms-1"><i class="bi bi-lock" aria-hidden="true"></i> Nota interna · TI</span>
+                                        {% elif comentario.autor.is_staff %}
                                             <span class="badge bg-primary ms-1" style="font-size: 0.65rem;">TI / Suporte</span>
                                         {% endif %}
                                     </div>
@@ -157,7 +159,7 @@
                                 {% if comentario.anexo %}
                                 <div class="mt-3 pt-2 border-top">
                                     <a href="{% url 'baixar_anexo_comentario' chamado.id comentario.id %}" target="_blank" class="btn btn-sm btn-outline-secondary">
-                                        <i class="bi bi-file-earmark-arrow-down"></i> Baixar Anexo
+                                        <i class="bi bi-file-earmark-arrow-down"></i> {% if comentario.interna %}Baixar anexo privado{% else %}Baixar Anexo{% endif %}
                                     </a>
                                 </div>
                                 {% endif %}
@@ -216,6 +218,7 @@
                         <small>Para retomar o atendimento, registre uma reabertura com justificativa.</small>
                     </div>
                 {% endif %}
+                {% if pode_adicionar_nota %}{% include 'helpdesk/componentes/formulario_nota.html' %}{% endif %}
             </div>    
 
             <div class="col-lg-4">

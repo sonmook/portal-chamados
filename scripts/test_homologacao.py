@@ -191,6 +191,31 @@ relatorio=client.get('/administracao/indicadores/?periodo=sempre',secure=True,HT
 assert relatorio.status_code==200
 assert '3 resoluções no período'.encode() in relatorio.content
 print('PASS: duas reaberturas, resultados por ciclo, avisos únicos e conquistas sem duplicação.')
+espera.refresh_from_db()
+avisos_cliente=Notificacao.objects.filter(destinatario=cliente).count()
+response=client.post(f'/chamado/{espera.pk}/notas-internas/',{'nota-texto':'Diagnóstico privado da homologação',
+    'nota-anexo':SimpleUploadedFile('privado.pdf',b'%PDF-1.7 nota interna fixture'),
+    'nota-versao_status':espera.versao_status,'nota-versao_atribuicao':espera.versao_atribuicao},
+    secure=True,HTTP_HOST='localhost')
+assert response.status_code==302, ('Nota interna',response.status_code)
+nota=Comentario.objects.get(texto='Diagnóstico privado da homologação')
+assert nota.interna and nota.autor_id==admin.pk
+assert Notificacao.objects.filter(destinatario=cliente).count()==avisos_cliente
+assert Notificacao.objects.filter(chamado=espera,tipo='nota_interna',destinatario=user).count()==1
+client.force_login(cliente)
+response=client.get(f'/chamado/{espera.pk}/',secure=True,HTTP_HOST='localhost')
+assert response.status_code==200 and nota.texto.encode() not in response.content
+anexo_url=f'/chamado/{espera.pk}/comentario/{nota.pk}/anexo/'
+assert client.get(anexo_url,secure=True,HTTP_HOST='localhost').status_code==404
+client.force_login(user)
+response=client.get(f'/chamado/{espera.pk}/',secure=True,HTTP_HOST='localhost')
+assert response.status_code==200 and nota.texto.encode() in response.content
+assert 'no-store' in response['Cache-Control']
+response=client.get(anexo_url,secure=True,HTTP_HOST='localhost')
+assert response.status_code==200 and b''.join(response.streaming_content)==b'%PDF-1.7 nota interna fixture'
+espera.refresh_from_db()
+assert espera.status==AGUARDANDO_FORNECEDOR and espera.ultima_interacao_em is None
+print('PASS: nota e anexo internos acessíveis à TI e ocultos ao solicitante; conversa pública preservada.')
 """)
             compose('stop','alertas_sla','app')
             compose('run','--rm','--no-deps','--entrypoint','python','app','manage.py','backup_homologacao',
@@ -254,6 +279,16 @@ assert ResolucaoConquista.objects.filter(chamado=recorrente).count()==1
 assert Notificacao.objects.filter(chamado=recorrente,tipo='resolucao').count()==2
 assert Notificacao.objects.filter(chamado=recorrente,tipo='reabertura').count()==2
 print('PASS: ciclos concluídos, reaberturas, novo prazo e avisos restaurados no chamado original.')
+from helpdesk.acesso import comentarios_acessiveis
+nota=Comentario.objects.get(texto='Diagnóstico privado da homologação')
+assert nota.interna and nota.anexo.read()==b'%PDF-1.7 nota interna fixture'
+cliente=User.objects.get(username='validation-client')
+tecnico=User.objects.get(username='validation-only')
+assert not comentarios_acessiveis(cliente).filter(pk=nota.pk).exists()
+assert comentarios_acessiveis(tecnico).filter(pk=nota.pk).exists()
+assert Notificacao.objects.filter(chamado=nota.chamado,tipo='nota_interna',destinatario=tecnico).count()==1
+assert not Notificacao.objects.filter(tipo='nota_interna',destinatario=cliente).exists()
+print('PASS: nota interna, anexo, aviso e restrição de acesso preservados na restauração.')
 """,restored=True)
         except Exception:
             subprocess.run([*base,'logs','--tail=60','app','alertas_sla','proxy'],env=docker_env,cwd=ROOT)

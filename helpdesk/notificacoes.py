@@ -10,15 +10,16 @@ from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 from django.views.decorators.cache import never_cache
 
-from .acesso import chamados_acessiveis
-from .models import Chamado, IntegranteEquipe, Notificacao
+from .acesso import chamados_acessiveis, chamados_com_acesso_interno
+from .models import Chamado, Comentario, IntegranteEquipe, Notificacao
 
 
 def notificacoes_visiveis(usuario):
     if not usuario.is_authenticated or not usuario.is_active:
         return Notificacao.objects.none()
     return Notificacao.objects.filter(destinatario_id=usuario.pk,
-        chamado_id__in=chamados_acessiveis(usuario).order_by().values('pk'))
+        chamado_id__in=chamados_acessiveis(usuario).order_by().values('pk')).filter(
+            ~Q(tipo='nota_interna') | Q(chamado_id__in=chamados_com_acesso_interno(usuario).values('pk')))
 
 
 def participantes(chamado):
@@ -36,6 +37,9 @@ def gerar(chamado, ator_id, tipo, evento, candidatos):
         equipe__ativa=True).values('usuario_id')
     aptos = User.objects.filter(is_active=True, pk__in=candidatos).exclude(pk=ator_id).filter(
         Q(pk=chamado.solicitante_id) | Q(is_superuser=True) | Q(is_staff=True, pk__in=membros))
+    if tipo == 'nota_interna':
+        aptos = aptos.exclude(pk=chamado.solicitante_id).filter(
+            Q(is_superuser=True) | Q(is_staff=True, pk__in=membros))
     total = 0
     for destinatario in aptos.values_list('pk', flat=True):
         _, criada = Notificacao.objects.get_or_create(destinatario_id=destinatario, evento=evento,
@@ -54,7 +58,20 @@ def notificar_atribuicao(chamado, ator_id, tecnico_anterior, equipe_anterior):
 
 
 def notificar_resposta(comentario):
-    chamado = Chamado.objects.get(pk=comentario.chamado_id)
+    # A classificação persistida decide o canal, mesmo se o objeto do chamador estiver antigo.
+    comentario = Comentario.objects.select_related('chamado').get(pk=comentario.pk)
+    chamado = comentario.chamado
+    if comentario.interna:
+        candidatos = set(User.objects.filter(pk=chamado.tecnico_id, is_active=True, is_staff=True,
+            vinculos_equipes__equipe_id=chamado.equipe_id, vinculos_equipes__equipe__ativa=True).values_list('pk', flat=True))
+        if not candidatos:
+            candidatos = set(User.objects.filter(is_active=True, is_staff=True,
+                vinculos_equipes__equipe_id=chamado.equipe_id,
+                vinculos_equipes__coordenador=True).values_list('pk', flat=True))
+            if not candidatos:
+                candidatos = set(User.objects.filter(is_active=True, is_staff=True,
+                    is_superuser=True).values_list('pk', flat=True))
+        return gerar(chamado, comentario.autor_id, 'nota_interna', f'nota_interna:{comentario.pk}', candidatos)
     gerar(chamado, comentario.autor_id, 'resposta', f'resposta:{comentario.pk}', participantes(chamado))
 
 
