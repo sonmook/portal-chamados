@@ -1,3 +1,4 @@
+from .test_helpers import registrar_resultados_fixture
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 from django.db.models import F
@@ -26,14 +27,17 @@ class IndicadoresTests(TestCase):
 
     def test_apenas_administradores_por_url_direta(self):
         self.client.logout()
+        registrar_resultados_fixture()
         self.assertEqual(self.client.get(self.url).status_code, 302)
         for usuario in (self.tecnico, User.objects.create_user('cliente')):
             self.client.force_login(usuario)
+            registrar_resultados_fixture()
             self.assertEqual(self.client.get(self.url).status_code, 403)
         self.client.force_login(self.admin)
         self.assertEqual(self.client.post(self.url).status_code, 405)
         self.admin.is_active = False
         self.admin.save()
+        registrar_resultados_fixture()
         self.assertEqual(self.client.get(self.url).status_code, 302)
 
     def test_resolucao_unica_sem_multiplicar_comentarios_ou_integrantes(self):
@@ -43,6 +47,7 @@ class IndicadoresTests(TestCase):
         IntegranteEquipe.objects.create(usuario=self.admin, equipe=self.equipe)
         for i in range(3):
             Comentario.objects.create(chamado=chamado, autor=self.admin, texto=str(i))
+        registrar_resultados_fixture()
         r = self.client.get(self.url, {'periodo': 'hoje'})
         self.assertEqual(r.context['resumo']['resolvidos'], 2)
         self.assertEqual(r.context['resumo']['criados'], 0)
@@ -56,6 +61,7 @@ class IndicadoresTests(TestCase):
         for instante in (datetime(2025, 3, 1), datetime(2025, 3, 2, 23, 59, 59), datetime(2025, 3, 3)):
             self.chamado(equipe=equipe, fechamento=timezone.make_aware(instante))
         self.chamado(fechamento=timezone.make_aware(datetime(2025, 3, 1)))
+        registrar_resultados_fixture()
         r = self.client.get(self.url, {'periodo': 'personalizado', 'inicio': '2025-03-01', 'fim': '2025-03-02', 'equipe': equipe.pk})
         self.assertEqual(r.context['resumo']['resolvidos'], 2)
         self.assertEqual(len(r.context['equipes']), 1)
@@ -66,10 +72,12 @@ class IndicadoresTests(TestCase):
         outro = self.chamado()
         Chamado.objects.filter(pk=chamado.pk).update(data_fechamento=None)
         Chamado.objects.filter(pk=outro.pk).update(data_vencimento=None, data_criacao=timezone.now()+timedelta(days=1))
+        registrar_resultados_fixture()
         r = self.client.get(self.url, {'periodo': 'sempre'})
         self.assertEqual(r.context['resumo']['resolvidos'], 2)
         self.assertEqual(r.context['resumo']['sem_sla'], 2)
         self.assertIsNone(r.context['resumo']['tmr_horas'])
+        registrar_resultados_fixture()
         self.assertEqual(self.client.get(self.url, {'periodo': 'hoje'}).context['resumo']['resolvidos'], 1)
 
     def test_filtros_invalidos_nao_exibem_resultados_enganosos(self):
@@ -77,6 +85,7 @@ class IndicadoresTests(TestCase):
                       {'periodo': 'personalizado', 'inicio': '2025-03-03', 'fim': '2025-03-01'},
                       {'periodo': 'personalizado', 'inicio': '2025-02-30', 'fim': '2025-03-01'},
                       {'equipe': '99999999'}):
+            registrar_resultados_fixture()
             r = self.client.get(self.url, dados)
             self.assertEqual(r.status_code, 200)
             self.assertTrue(r.context['form'].errors)
@@ -90,6 +99,7 @@ class IndicadoresTests(TestCase):
             Chamado.objects.filter(pk=chamado.pk).update(data_vencimento=agora-timedelta(days=dias, hours=1))
         with patch('helpdesk.indicadores.timezone.localdate', return_value=agora.date()):
             for periodo, esperado in (('hoje', 1), ('7dias', 2), ('mes', 4), ('sempre', 5)):
+                registrar_resultados_fixture()
                 r = self.client.get(self.url, {'periodo': periodo})
                 self.assertEqual(r.context['resumo']['resolvidos'], esperado)
                 self.assertEqual(r.context['resumo']['fora_sla'], esperado)
@@ -98,9 +108,11 @@ class IndicadoresTests(TestCase):
     def test_paginacao_preserva_filtros_e_ordem(self):
         for _ in range(26):
             self.chamado()
+        registrar_resultados_fixture()
         r = self.client.get(self.url, {'periodo': 'sempre', 'equipe': self.equipe.pk})
         self.assertEqual(len(r.context['pagina']), 25)
         self.assertContains(r, 'periodo=sempre')
+        registrar_resultados_fixture()
         segunda = self.client.get(self.url, {'periodo': 'sempre', 'page': 2})
         self.assertEqual(len(segunda.context['pagina']), 1)
         self.assertTrue(set(c.pk for c in r.context['pagina']).isdisjoint(c.pk for c in segunda.context['pagina']))
@@ -116,12 +128,13 @@ class IndicadoresTests(TestCase):
         Chamado.objects.filter(pk=ativo.pk).update(data_criacao=timezone.now(), data_fechamento=None,
             data_vencimento=timezone.now()-timedelta(days=1), categoria='Rede', tecnico=None)
         Comentario.objects.create(chamado=fora, autor=self.admin, texto='Não multiplicar')
+        registrar_resultados_fixture()
         r = self.client.get(self.url, {'periodo': 'hoje'})
         resumo = r.context['resumo']
         self.assertEqual((resumo['criados'], resumo['resolvidos'], resumo['fora_sla']), (1, 3, 1))
         self.assertEqual((resumo['sla_percentual'], resumo['fora_sla_percentual']), (50, 50))
         self.assertEqual((resumo['sem_responsavel'], resumo['ativos_vencidos']), (1, 1))
-        self.assertEqual(list(r.context['pagina_violados']), [fora])
+        self.assertEqual([c.chamado_id for c in r.context['pagina_violados']], [fora.pk])
         self.assertEqual(r.context['categorias'], [{'categoria': 'Rede', 'nome': 'Rede/Internet', 'total': 1, 'percentual': 100}])
         self.assertEqual([(l['nome'], l['total'], l['proporcao']) for l in r.context['analistas']],
             [('tecnico', 2, 100), ('Não registrado', 1, 50)])
@@ -137,11 +150,13 @@ class IndicadoresTests(TestCase):
             chamado = self.chamado()
             Chamado.objects.filter(pk=chamado.pk).update(solicitante=usuario, data_criacao=timezone.now())
         Chamado.objects.filter(pk=chamado.pk).update(equipe=outra)
+        registrar_resultados_fixture()
         r = self.client.get(self.url, {'periodo': 'hoje', 'equipe': self.equipe.pk})
         self.assertEqual(len(r.context['solicitantes']), 20)
         self.assertEqual([l['nome'] for l in r.context['solicitantes']], [f'solicitante{i:02}' for i in range(20)])
         self.assertEqual(r.context['analistas'][0]['total'], 21)
         self.assertEqual(sum(l['total'] for l in r.context['categorias']), 21)
+        registrar_resultados_fixture()
         self.assertEqual(self.client.get(self.url, {'periodo': 'personalizado', 'inicio': '2020-01-01',
             'fim': '2020-01-02'}).context['analistas'], [])
 
@@ -151,6 +166,7 @@ class IndicadoresTests(TestCase):
             Chamado.objects.filter(pk=chamado.pk).update(data_vencimento=timezone.now()-timedelta(days=1))
         igual = self.chamado()
         Chamado.objects.filter(pk=igual.pk).update(data_vencimento=F('data_fechamento'))
+        registrar_resultados_fixture()
         r = self.client.get(self.url, {'periodo': 'sempre', 'equipe': self.equipe.pk, 'page_sla': 2})
         self.assertEqual(len(r.context['pagina_violados']), 1)
         self.assertEqual(len(r.context['pagina']), 25)

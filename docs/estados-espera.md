@@ -24,7 +24,7 @@ O formulário inclui versões da situação e da atribuição. Uma tela anterior
 
 A retomada por mensagem do solicitante usa o aviso de resposta já existente; não cria um segundo aviso de situação para o mesmo retorno. Mensagem inválida não retoma o atendimento. Falha na mensagem ou na transação reverte também a transição.
 
-Transferir ou devolver à fila preserva a situação e o histórico: a equipe de destino continua vendo a pendência. Chamados aguardando permanecem pendências para remoção de integrante, desativação de técnico ou equipe. Resolvido e Fechado continuam terminais; reabertura será uma entrega própria.
+Transferir ou devolver à fila preserva a situação e o histórico: a equipe de destino continua vendo a pendência. Chamados aguardando permanecem pendências para remoção de integrante, desativação de técnico ou equipe. Resolvido e Fechado exigem o fluxo explícito de [reabertura](reabertura-chamados.md), disponível desde a v1.13.0.
 
 ## SLA e indicadores
 

@@ -1,3 +1,4 @@
+from .test_helpers import dados_situacao
 from .test_helpers import integrar_triagem, dados_atribuicao
 from datetime import timedelta
 from html import unescape
@@ -44,7 +45,7 @@ class UltimaInteracaoTests(TestCase):
         instante += timedelta(hours=1)
         with patch('django.utils.timezone.now', return_value=instante):
             self.assertEqual(self.client.post(reverse('fechar_chamado', args=[self.chamado.pk]),
-                                             {'resolucao': 'Funcionamento validado'}).status_code, 302)
+                                             {**dados_situacao(self.chamado), 'resolucao': 'Funcionamento validado'}).status_code, 302)
         self.chamado.refresh_from_db()
         self.assertEqual(self.chamado.status, 'Resolvido')
         self.assertEqual(self.chamado.ultima_interacao_em, instante)
@@ -92,7 +93,7 @@ class UltimaInteracaoTests(TestCase):
         self.client.force_login(self.tecnico)
         with patch('helpdesk.models.Chamado.save', side_effect=RuntimeError('falha')):
             with self.assertRaises(RuntimeError):
-                self.client.post(reverse('fechar_chamado', args=[self.chamado.pk]), {'resolucao': 'Solução'})
+                self.client.post(reverse('fechar_chamado', args=[self.chamado.pk]), {**dados_situacao(self.chamado), 'resolucao': 'Solução'})
         self.chamado.refresh_from_db()
         self.assertIsNone(self.chamado.ultima_interacao_em)
         self.assertFalse(Comentario.objects.filter(chamado=self.chamado).exists())

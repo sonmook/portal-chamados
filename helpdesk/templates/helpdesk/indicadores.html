@@ -24,7 +24,7 @@
 <div class="col-6 col-lg-3"><div class="card card-body h-100"><span class="rel-label">Dentro do SLA · resoluções</span><strong class="rel-kpi rel-success">{% if resumo.sla_percentual != None %}{{ resumo.sla_percentual }}%{% else %}—{% endif %}</strong><span class="rel-note">{{ resumo.dentro_sla }} de {{ resumo.sla_conhecidos }} com SLA conhecido</span></div></div>
 <div class="col-6 col-lg-3"><div class="card card-body h-100"><span class="rel-label">Sem responsável</span><strong class="rel-kpi">{{ resumo.sem_responsavel }}</strong><span class="rel-note">Chamados ativos agora</span></div></div>
 </div>
-<p class="rel-note mt-3">Resoluções são filtradas pela data de fechamento; aberturas, pela data de criação. Ativos agora mostram a situação atual da equipe selecionada, independentemente do período.</p>
+<p class="rel-note mt-3">Cada ciclo concluído conta uma resolução, preservada após reabertura. Resoluções são filtradas pela data de fechamento; aberturas, pela data de criação. Ativos agora mostram a situação atual da equipe selecionada, independentemente do período.</p>
 <div class="rel-surface small">{{ resumo.resolvidos }} resoluções no período · {{ resumo.ativos }} ativos agora · <strong>{{ resumo.ativos_vencidos }} ativos vencidos agora</strong> (não incluídos no SLA das resoluções) · Tempo médio de resolução: {% if resumo.tmr_horas != None %}{{ resumo.tmr_horas }} h{% else %}Sem dados{% endif %}.</div>
 </section>
 <section aria-labelledby="panorama-titulo">
@@ -36,19 +36,19 @@
 <div class="rel-track my-2"><span class="rel-bar" style="width: {{ resumo.sla_percentual|default_if_none:0|unlocalize }}%"></span></div>
 <div class="d-flex justify-content-between small"><span class="rel-danger">SLA violado{% if resumo.fora_sla_percentual != None %} ({{ resumo.fora_sla_percentual }}%){% endif %}</span><strong>{{ resumo.fora_sla }}</strong></div>
 <div class="rel-track my-2"><span class="rel-bar rel-bar-danger" style="width: {{ resumo.fora_sla_percentual|default_if_none:0|unlocalize }}%"></span></div>
-<p class="rel-note mb-0">{{ resumo.sem_sla }} resolução(ões) sem dados de SLA. {{ resumo.sem_data }} sem data de fechamento neste recorte. Registros sem data de fechamento aparecem apenas em Todo o histórico. O tempo médio usa somente datas de fechamento iguais ou posteriores à criação.</p>
+<p class="rel-note mb-0">{{ resumo.sem_sla }} resolução(ões) sem dados de SLA. {{ resumo.sem_data }} sem data de fechamento neste recorte. Registros sem data de fechamento aparecem apenas em Todo o histórico. O tempo médio usa somente datas de fechamento iguais ou posteriores ao início do ciclo.</p>
 </div></div>
 <div class="col-md-6"><div class="rel-surface h-100"><h3>Distribuição por categoria</h3><p class="rel-note">Chamados criados no período.</p>
 {% for categoria in categorias %}<div class="mb-3"><div class="d-flex justify-content-between small"><span>{{ categoria.nome }} ({{ categoria.percentual }}%)</span><strong>{{ categoria.total }}</strong></div><div class="rel-track mt-1"><span class="rel-bar" style="width: {{ categoria.percentual|unlocalize }}%"></span></div></div>{% empty %}<p class="rel-note">Nenhum chamado criado no período.</p>{% endfor %}
 </div></div></div>
 </section>
 <section aria-labelledby="equipes-titulo"><h2 id="equipes-titulo" class="h4">Desempenho por equipe</h2>
-<p class="text-muted">Atribuição à equipe registrada no chamado, incluindo equipes inativas. O SLA percentual considera apenas resoluções com prazo e fechamento conhecidos.</p>
+<p class="text-muted">Atribuição à equipe registrada na conclusão do ciclo, incluindo equipes inativas. O SLA percentual considera apenas resoluções com prazo e fechamento conhecidos.</p>
 <div class="table-responsive"><table class="table"><thead><tr><th scope="col">Equipe</th><th scope="col">Resoluções</th><th scope="col">Dentro do SLA</th><th scope="col">Tempo médio</th></tr></thead><tbody>
 {% for linha in equipes %}<tr><th scope="row">{{ linha.equipe.nome }}{% if not linha.equipe.ativa %} <span class="badge text-bg-secondary">Inativa</span>{% endif %}</th><td>{{ linha.total }}</td><td>{% if linha.sla_percentual != None %}{{ linha.sla_percentual }}%{% else %}Sem dados{% endif %}</td><td>{% if linha.tmr_horas != None %}{{ linha.tmr_horas }} h{% else %}Sem dados{% endif %}</td></tr>{% endfor %}
 </tbody></table></div></section>
 
-<section aria-labelledby="analistas-titulo"><h2 id="analistas-titulo">Chamados resolvidos por analista</h2>
+<section aria-labelledby="analistas-titulo"><h2 id="analistas-titulo">Ciclos concluídos por analista</h2>
 <p class="rel-note">Autor registrado em cada resolução, incluindo contas inativas. Ausências históricas aparecem como Não registrado. Barras proporcionais ao maior volume.</p>
 <div class="table-responsive"><table class="table"><thead><tr><th scope="col">Analista</th><th scope="col">Proporção</th><th scope="col" class="text-end">Resoluções</th></tr></thead><tbody>
 {% for linha in analistas %}<tr><th scope="row">{{ linha.nome }}</th><td class="rel-ranking-bar align-middle"><span class="rel-track"><span class="rel-bar" style="width: {{ linha.proporcao|unlocalize }}%"></span></span></td><td class="text-end">{{ linha.total }}</td></tr>{% empty %}<tr><td colspan="3">Nenhuma resolução encontrada.</td></tr>{% endfor %}
@@ -58,14 +58,14 @@
 <div class="table-responsive"><table class="table"><thead><tr><th scope="col">Posição</th><th scope="col">Solicitante</th><th scope="col" class="text-end">Chamados</th></tr></thead><tbody>
 {% for linha in solicitantes %}<tr><td>{{ forloop.counter }}</td><th scope="row">{{ linha.nome }}</th><td class="text-end">{{ linha.total }}</td></tr>{% empty %}<tr><td colspan="3">Nenhum chamado criado no período.</td></tr>{% endfor %}
 </tbody></table></div></section>
-<section aria-labelledby="violados-titulo"><h2 id="violados-titulo">Chamados com SLA violado · resoluções</h2>
-<p class="rel-note">{{ resumo.fora_sla }} chamado(s) resolvido(s) após o vencimento no período. Ativos vencidos não fazem parte desta lista.</p>
-<div class="rel-surface rel-links">{% for chamado in pagina_violados %}<a href="{% url 'detalhes_chamado' chamado.pk %}" title="{{ chamado.titulo }}">#{{ chamado.pk }} — {{ chamado.titulo }}</a>{% empty %}<span class="rel-note">Nenhuma resolução fora do prazo.</span>{% endfor %}</div>
+<section aria-labelledby="violados-titulo"><h2 id="violados-titulo">Ciclos com SLA violado · resoluções</h2>
+<p class="rel-note">{{ resumo.fora_sla }} ciclo(s) concluído(s) após o vencimento no período. Ativos vencidos não fazem parte desta lista.</p>
+<div class="rel-surface rel-links">{% for chamado in pagina_violados %}<a href="{% url 'detalhes_chamado' chamado.chamado_id %}" title="{{ chamado.chamado.titulo }}">#{{ chamado.chamado_id }} — {{ chamado.chamado.titulo }} · ciclo {{ chamado.numero }}</a>{% empty %}<span class="rel-note">Nenhuma resolução fora do prazo.</span>{% endfor %}</div>
 {% if pagina_violados.has_other_pages %}<nav aria-label="Paginação do SLA violado">{% if pagina_violados.has_previous %}<a href="?{{ filtros_sla_url }}&amp;page_sla={{ pagina_violados.previous_page_number }}#violados-titulo">Anterior</a>{% endif %} <span>Página {{ pagina_violados.number }} de {{ pagina_violados.paginator.num_pages }}</span> {% if pagina_violados.has_next %}<a href="?{{ filtros_sla_url }}&amp;page_sla={{ pagina_violados.next_page_number }}#violados-titulo">Próxima</a>{% endif %}</nav>{% endif %}
 </section>
-<section aria-labelledby="resolvidos-titulo"><h2 id="resolvidos-titulo" class="h4">Chamados resolvidos</h2>
+<section aria-labelledby="resolvidos-titulo"><h2 id="resolvidos-titulo" class="h4">Ciclos concluídos</h2>
 <div class="table-responsive"><table class="table"><thead><tr><th scope="col">Chamado</th><th scope="col">Equipe</th><th scope="col">Resolvido por</th><th scope="col">Fechamento</th><th scope="col">SLA</th></tr></thead><tbody>
-{% for chamado in pagina %}<tr><td><a href="{% url 'detalhes_chamado' chamado.pk %}">#{{ chamado.pk }} — {{ chamado.titulo }}</a></td><td>{{ chamado.equipe.nome }}</td><td>{% if chamado.fechado_por %}{{ chamado.fechado_por.get_full_name|default:chamado.fechado_por.username }}{% else %}Não registrado{% endif %}</td><td>{{ chamado.data_fechamento|date:'d/m/Y H:i'|default:'Não registrada' }}</td><td>{% if not chamado.data_fechamento or not chamado.data_vencimento %}Sem dados{% elif chamado.data_fechamento <= chamado.data_vencimento %}Dentro do prazo{% else %}Fora do prazo{% endif %}</td></tr>
+{% for chamado in pagina %}<tr><td><a href="{% url 'detalhes_chamado' chamado.chamado_id %}">#{{ chamado.chamado_id }} — {{ chamado.chamado.titulo }} · ciclo {{ chamado.numero }}</a></td><td>{{ chamado.equipe.nome }}</td><td>{% if chamado.fechado_por %}{{ chamado.fechado_por.get_full_name|default:chamado.fechado_por.username }}{% else %}Não registrado{% endif %}</td><td>{{ chamado.data_fechamento|date:'d/m/Y H:i'|default:'Não registrada' }}</td><td>{% if not chamado.data_fechamento or not chamado.data_vencimento %}Sem dados{% elif chamado.data_fechamento <= chamado.data_vencimento %}Dentro do prazo{% else %}Fora do prazo{% endif %}</td></tr>
 {% empty %}<tr><td colspan="5">Nenhuma resolução encontrada para os filtros selecionados.</td></tr>{% endfor %}
 </tbody></table></div>
 {% if pagina.has_other_pages %}<nav aria-label="Paginação das resoluções">{% if pagina.has_previous %}<a href="?{{ filtros_url }}&amp;page={{ pagina.previous_page_number }}">Anterior</a>{% endif %} <span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span> {% if pagina.has_next %}<a href="?{{ filtros_url }}&amp;page={{ pagina.next_page_number }}">Próxima</a>{% endif %}</nav>{% endif %}

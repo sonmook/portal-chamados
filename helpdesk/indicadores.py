@@ -1,4 +1,4 @@
-"""Indicadores administrativos: uma resolução por chamado, sem joins de integrantes."""
+"""Indicadores administrativos: uma resolução por ciclo concluído, sem joins de integrantes."""
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_GET
 
 from .acesso import FINALIZADOS
-from .models import Chamado, Equipe
+from .models import Chamado, Equipe, CicloAtendimento
 from .periodos import datas_periodo, limites_datas
 
 
@@ -96,7 +96,9 @@ def painel(request):
             base = base.filter(equipe=dados['equipe'])
         # Aberturas usam criação; resoluções usam fechamento, mesmo se abertas antes.
         abertos = base
-        resolvidos = base.filter(status__in=FINALIZADOS)
+        resolvidos = CicloAtendimento.objects.all()
+        if dados['equipe']:
+            resolvidos = resolvidos.filter(equipe=dados['equipe'])
         if inicio:
             limite_inicial, limite_final = limites_datas(inicio, fim)
             abertos = abertos.filter(data_criacao__gte=limite_inicial, data_criacao__lt=limite_final)
@@ -115,9 +117,9 @@ def painel(request):
         analistas = ranking(resolvidos, 'fechado_por')
         solicitantes = ranking(abertos, 'solicitante', limite=20)
         violados = resolvidos.filter(data_fechamento__gt=F('data_vencimento'))
-        pagina_violados = Paginator(violados.order_by('-data_fechamento', '-pk'), 25).get_page(request.GET.get('page_sla'))
+        pagina_violados = Paginator(violados.select_related('chamado').order_by('-data_fechamento', '-pk'), 25).get_page(request.GET.get('page_sla'))
 
-        # Agrupamento pelo FK do chamado: vínculos e comentários não multiplicam resoluções.
+        # Equipe e técnico do ciclo concluído permanecem após reabertura/transferência.
         grupos = resolvidos.values('equipe_id').annotate(total=Count('pk'),
             dentro_sla=Count('pk', filter=Q(data_fechamento__lte=F('data_vencimento'))),
             fora_sla=Count('pk', filter=Q(data_fechamento__gt=F('data_vencimento'))),
@@ -128,7 +130,7 @@ def painel(request):
         if dados['equipe']:
             equipes = equipes.filter(pk=dados['equipe'].pk)
         linhas = [{'equipe': equipe, **por_equipe.get(equipe.pk, {'total': 0, 'sla_percentual': None, 'tmr_horas': None})} for equipe in equipes]
-        pagina = Paginator(resolvidos.select_related('equipe', 'fechado_por').order_by('-data_fechamento', '-pk'), 25).get_page(request.GET.get('page'))
+        pagina = Paginator(resolvidos.select_related('chamado', 'equipe', 'fechado_por').order_by('-data_fechamento', '-pk'), 25).get_page(request.GET.get('page'))
         filtros_resolucoes = parametros.copy()
         filtros_resolucoes.pop('page', None)
         filtros_sla = parametros.copy()

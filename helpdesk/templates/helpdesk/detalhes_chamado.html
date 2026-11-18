@@ -130,6 +130,7 @@
                     </div>
                 </div>
 
+                {% include 'helpdesk/componentes/ciclos_atendimento.html' %}
                 {% include 'helpdesk/componentes/historico_status.html' %}
                 <h6 class="fw-bold mb-3 text-muted text-uppercase small"><i class="bi bi-chat-text"></i> Histórico de Interações</h6>
 
@@ -212,7 +213,7 @@
                     <div class="alert alert-success shadow-sm text-center border-0 p-4">
                         <i class="bi bi-check-circle-fill fs-1 d-block mb-2"></i>
                         <h6 class="fw-bold m-0">Este chamado foi resolvido e encerrado.</h6>
-                        <small>Não é possível adicionar novas interações.</small>
+                        <small>Para retomar o atendimento, registre uma reabertura com justificativa.</small>
                     </div>
                 {% endif %}
             </div>    
@@ -229,6 +230,8 @@
                                 <span class="text-muted small d-block text-uppercase fw-bold mb-1">Ticket ID</span>
                                 <span class="fs-5 fw-bold text-primary">#{{ chamado.id }}</span>
                                 <div class="mt-2 small"><strong>Equipe:</strong> {{ chamado.equipe.nome }}</div>
+                                <div class="mt-2 small"><strong>Ciclo atual:</strong> {{ chamado.ciclo_atual }} · início {{ chamado.inicio_ciclo|date:'d/m/Y H:i' }}</div>
+                                <div class="mt-1 small"><strong>Prazo do ciclo:</strong> {{ chamado.data_vencimento|date:'d/m/Y H:i'|default:'Não registrado' }}</div>
                             </li>
                             
                             <li class="list-group-item p-3">
@@ -301,6 +304,22 @@
                             </div>
                             {% endif %}
                         {% endif %}
+                        {% if pode_reabrir %}
+                        <section class="p-3 border-top" aria-labelledby="reabertura-titulo">
+                            <h2 class="h6" id="reabertura-titulo">Reabrir chamado</h2>
+                            <p class="small text-muted">Um novo ciclo de SLA começa na reabertura, com a prioridade e o calendário atuais. As soluções e os resultados anteriores são preservados.</p>
+                            <form action="{% url 'reabrir_chamado' chamado.pk %}" method="post">
+                                {% csrf_token %}
+                                {{ reabertura_form.versao_status }}{{ reabertura_form.versao_atribuicao }}
+                                {{ reabertura_form.non_field_errors }}
+                                {% if reabertura_form.errors %}<p class="small"><a href="{% url 'detalhes_chamado' chamado.pk %}">Carregar os dados atuais do chamado</a></p>{% endif %}
+                                <label class="form-label small" for="{{ reabertura_form.motivo_reabertura.id_for_label }}">{{ reabertura_form.motivo_reabertura.label }}</label>
+                                {{ reabertura_form.motivo_reabertura }}{{ reabertura_form.motivo_reabertura.errors }}
+                                <p class="form-text" id="{{ reabertura_form.motivo_reabertura.auto_id }}_helptext">{{ reabertura_form.motivo_reabertura.help_text }}</p>
+                                <button class="btn btn-outline-primary w-100" type="submit">Reabrir chamado</button>
+                            </form>
+                        </section>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -319,7 +338,8 @@
                 </div>
                 
                 <form action="{% url 'fechar_chamado' chamado.id %}" method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
+                        {% csrf_token %}
+                        {{ resolucao_form.versao_status }}{{ resolucao_form.versao_atribuicao }}
                     <div class="modal-body p-4">
                         {{ resolucao_form.non_field_errors }}
                         <div class="mb-3">

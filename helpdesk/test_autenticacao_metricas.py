@@ -1,3 +1,4 @@
+from .test_helpers import registrar_resultados_fixture
 from .test_helpers import integrar_triagem
 from datetime import timedelta
 from unittest.mock import patch
@@ -132,6 +133,7 @@ class MetricasTests(TestCase):
             self.chamado(status, prazo, prazo-timedelta(hours=1))
             self.chamado(status, prazo, prazo)
             self.chamado(status, prazo, prazo+timedelta(hours=1))
+        registrar_resultados_fixture()
         contexto = self.client.get(reverse('dashboard')).context
         self.assertEqual(contexto['dados_sla'], [4,2])
         self.assertEqual(contexto['resolvidos'], 6)
@@ -143,11 +145,13 @@ class MetricasTests(TestCase):
             self.assertFalse(chamado.sla_estourado)
         aberto = self.chamado('Aberto', self.agora-timedelta(days=1),None)
         self.assertTrue(aberto.sla_estourado)
+        registrar_resultados_fixture()
         self.assertEqual(self.client.get(reverse('dashboard')).context['vencidos'], 1)
 
     def test_sem_data_nao_inventa_classificacao_sla_e_tmr_tem_fallback(self):
         chamado = self.chamado('Resolvido', self.agora-timedelta(hours=1),None)
         Chamado.objects.filter(pk=chamado.pk).update(data_criacao=self.agora-timedelta(hours=4),data_atualizacao=self.agora)
+        registrar_resultados_fixture()
         contexto = self.client.get(reverse('dashboard')).context
         self.assertEqual(contexto['dados_sla'], [0,0])
         self.assertEqual(contexto['tmr_horas'],4)

@@ -1,0 +1,24 @@
+{% if ciclos_concluidos.paginator.count %}
+<details class="card card-body mb-4"{% if ciclos_expandidos %} open{% endif %}>
+    <summary class="fw-bold">Ciclos concluídos e resultados de SLA ({{ ciclos_concluidos.paginator.count }})</summary>
+    <p class="small text-muted mt-2">Cada ciclo preserva o prazo, a equipe e o autor da resolução. A reabertura mantém a conversa no mesmo chamado.</p>
+    <div class="table-responsive">
+        <table class="table table-sm small">
+            <thead><tr><th scope="col">Ciclo</th><th scope="col">Início</th><th scope="col">Prazo</th><th scope="col">Conclusão</th><th scope="col">Equipe e resolução</th><th scope="col">SLA</th></tr></thead>
+            <tbody>{% for ciclo in ciclos_concluidos %}<tr>
+                <th scope="row">{{ ciclo.numero }}</th>
+                <td>{{ ciclo.data_criacao|date:'d/m/Y H:i' }}</td>
+                <td>{{ ciclo.data_vencimento|date:'d/m/Y H:i'|default:'Não registrado' }}</td>
+                <td>{{ ciclo.data_fechamento|date:'d/m/Y H:i'|default:'Não registrada' }}</td>
+                <td>{{ ciclo.equipe.nome }}<br>{% if ciclo.fechado_por %}{{ ciclo.fechado_por.get_full_name|default:ciclo.fechado_por.username }}{% else %}Autor não registrado{% endif %}</td>
+                <td>{{ ciclo.resultado_sla }}</td>
+            </tr>{% endfor %}</tbody>
+        </table>
+    </div>
+    {% if ciclos_concluidos.has_other_pages %}<nav aria-label="Paginação dos ciclos">
+        {% if ciclos_concluidos.has_previous %}<a href="{% url 'detalhes_chamado' chamado.pk %}?ciclos_page={{ ciclos_concluidos.previous_page_number }}">Anterior</a>{% endif %}
+        <span>Página {{ ciclos_concluidos.number }} de {{ ciclos_concluidos.paginator.num_pages }}</span>
+        {% if ciclos_concluidos.has_next %}<a href="{% url 'detalhes_chamado' chamado.pk %}?ciclos_page={{ ciclos_concluidos.next_page_number }}">Próxima</a>{% endif %}
+    </nav>{% endif %}
+</details>
+{% endif %}

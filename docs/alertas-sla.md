@@ -57,3 +57,5 @@ Capturas com dados fictícios da v1.6.0.
 ![Minha fila com filtro de proximidade do SLA](imagens/fila-sla.png)
 
 ![Avisos de SLA e de chamado sem responsável no celular](imagens/avisos-sla-mobile.png)
+
+A partir da v1.13.0, cada reabertura inicia outro ciclo de SLA. Avisos de prazo e resolução têm identidade por ciclo; avisos e leituras anteriores permanecem. [Regras de reabertura](reabertura-chamados.md).

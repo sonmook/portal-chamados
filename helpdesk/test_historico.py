@@ -1,3 +1,4 @@
+from .test_helpers import dados_situacao
 from .test_helpers import integrar_triagem
 from unittest.mock import patch
 
@@ -91,7 +92,7 @@ class HistoricoTests(TestCase):
     def test_encerramento_auditado(self):
         self.ticket.tecnico=self.tecnico;self.ticket.save()
         self.client.force_login(self.tecnico)
-        self.client.post(reverse('fechar_chamado',args=[self.ticket.pk]), {'resolucao':'Solução privada'})
+        self.client.post(reverse('fechar_chamado',args=[self.ticket.pk]), {**dados_situacao(self.ticket), 'resolucao':'Solução privada'})
         evento=self.eventos().first()
         self.assertEqual(evento.alteracoes['status'], {'antes':'Aberto','depois':'Resolvido'})
         self.assertEqual(evento.alteracoes['fechado_por_id']['depois'],self.tecnico.pk)

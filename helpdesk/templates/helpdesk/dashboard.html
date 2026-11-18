@@ -100,7 +100,7 @@
                 <div class="card border-0 shadow-sm border-start border-4 border-info h-100">
                     <div class="card-body d-flex align-items-center justify-content-between">
                         <div>
-                            <h6 class="text-info text-uppercase small fw-bold mb-1">TMR (Média)</h6>
+                            <h6 class="text-info text-uppercase small fw-bold mb-1">TMR por ciclo</h6>
                             <h3 class="fw-bold m-0 text-info">{{ tmr_horas }}<span class="fs-6 ms-1 fw-normal text-muted">hrs</span></h3>
                         </div>
                         <i class="bi bi-stopwatch fs-1 text-info opacity-25"></i>
@@ -110,8 +110,9 @@
 
         </div>
 
+        <p class="small text-muted">SLA, tempo médio e produtividade usam {{ ciclos_resolvidos }} ciclo(s) concluído(s) dos chamados criados no período. Reaberturas preservam os resultados anteriores.</p>
         <p class="small text-muted">{{ em_espera }} chamado{{ em_espera|pluralize }} em espera no período. O SLA continua contando durante a espera.</p>
-        {% if request.user.is_staff and sla_sem_dados %}<p class="text-muted">{{ sla_sem_dados }} chamado(s) finalizado(s) sem datas suficientes para classificar o SLA.</p>{% endif %}
+        {% if request.user.is_staff and sla_sem_dados %}<p class="text-muted">{{ sla_sem_dados }} ciclo(s) concluído(s) sem datas suficientes para classificar o SLA.</p>{% endif %}
         <div class="row g-4 mb-5">
             
             <div class="col-lg-8">
@@ -164,7 +165,7 @@
                     </div>
                     
                     <div class="card-footer bg-light border-0 py-3 text-center">
-                        <span class="text-muted small fw-bold">Seu total de resoluções: <span class="text-success fs-6">{{ minha_produtividade }}</span></span>
+                        <span class="text-muted small fw-bold">Seus ciclos concluídos: <span class="text-success fs-6">{{ minha_produtividade }}</span></span>
                     </div>
                 </div>
                 {% endif %}

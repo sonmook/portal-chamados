@@ -18,6 +18,9 @@ def calcular_prazo_util(data_inicial, horas_prazo):
     return calcular_vencimento(data_inicial, horas_prazo)
 
 
+HORAS_SLA = {'Crítica': 4, 'Alta': 24, 'Normal': 48, 'Baixa': 120}
+
+
 class Chamado(models.Model):
     """
     Modelo principal que representa um ticket/chamado de suporte.
@@ -46,6 +49,8 @@ class Chamado(models.Model):
     categoria = models.CharField(max_length=30, choices=CATEGORIA_CHOICES, default='Outros')
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='Aberto')
     versao_status = models.PositiveIntegerField(default=0, editable=False)
+    ciclo_atual = models.PositiveIntegerField(default=1, editable=False)
+    ciclo_iniciado_em = models.DateTimeField(null=True, blank=True, editable=False)
     espera_desde = models.DateTimeField(null=True, blank=True, editable=False)
     motivo_espera = models.CharField(max_length=500, blank=True, editable=False)
     prioridade = models.CharField(max_length=20, choices=PRIORIDADE_CHOICES, default='Normal')
@@ -67,6 +72,7 @@ class Chamado(models.Model):
 
     class Meta:
         indexes = [models.Index(fields=['status', 'data_vencimento'], name='chamado_status_prazo_idx')]
+        constraints = [models.CheckConstraint(condition=models.Q(ciclo_atual__gte=1), name='chamado_ciclo_positivo')]
 
     def save(self, *args, **kwargs):
         """
@@ -74,13 +80,7 @@ class Chamado(models.Model):
         no momento da criação do chamado, baseado na prioridade selecionada.
         """
         if not self.data_vencimento:
-            regras_sla = {
-                'Crítica': 4,
-                'Alta': 24,
-                'Normal': 48,
-                'Baixa': 120
-            }
-            horas = regras_sla.get(self.prioridade, 48)
+            horas = HORAS_SLA.get(self.prioridade, 48)
             self.data_vencimento = calcular_prazo_util(timezone.now(), horas)
 
         if not self._state.adding and kwargs.get('update_fields') is None:
@@ -95,6 +95,10 @@ class Chamado(models.Model):
     @property
     def data_ultima_interacao(self):
         return self.ultima_interacao_em or self.data_criacao
+
+    @property
+    def inicio_ciclo(self):
+        return self.ciclo_iniciado_em or self.data_criacao
 
     @property
     def em_espera(self):
@@ -136,6 +140,36 @@ class HistoricoStatus(models.Model):
     class Meta:
         ordering = ['-criado_em', '-pk']
         constraints = [models.UniqueConstraint(fields=['chamado', 'versao'], name='status_chamado_versao_unica')]
+
+
+class CicloAtendimento(models.Model):
+    """Resultado imutável de um ciclo concluído; não muda quando o chamado reabre."""
+    chamado = models.ForeignKey(Chamado, on_delete=models.PROTECT, related_name='ciclos_concluidos')
+    numero = models.PositiveIntegerField()
+    equipe = models.ForeignKey('Equipe', on_delete=models.PROTECT, related_name='ciclos_concluidos')
+    fechado_por = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True,
+        related_name='ciclos_concluidos')
+    prioridade = models.CharField(max_length=20, choices=Chamado.PRIORIDADE_CHOICES)
+    status = models.CharField(max_length=30, choices=[(s, s) for s in FINALIZADOS])
+    data_criacao = models.DateTimeField(verbose_name='Início do ciclo')
+    data_atualizacao = models.DateTimeField()
+    data_vencimento = models.DateTimeField(null=True, blank=True)
+    data_fechamento = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-numero', '-pk']
+        constraints = [
+            models.UniqueConstraint(fields=['chamado', 'numero'], name='ciclo_chamado_numero_unico'),
+            models.CheckConstraint(condition=models.Q(numero__gte=1), name='ciclo_numero_positivo'),
+            models.CheckConstraint(condition=models.Q(status__in=FINALIZADOS), name='ciclo_status_final'),
+        ]
+        indexes = [models.Index(fields=['equipe', 'data_fechamento'], name='ciclo_equipe_fechamento_idx')]
+
+    @property
+    def resultado_sla(self):
+        if self.data_fechamento is None or self.data_vencimento is None:
+            return 'Sem dados de SLA'
+        return 'Dentro do SLA' if self.data_fechamento <= self.data_vencimento else 'Fora do SLA'
 
 
 class Comentario(models.Model):
@@ -353,7 +387,8 @@ class Notificacao(models.Model):
     TIPOS = [('atribuicao', 'Atribuição atualizada'), ('resposta', 'Nova resposta'),
              ('transferencia', 'Equipe alterada'), ('resolucao', 'Chamado resolvido'),
              ('sla_proximo', 'SLA próximo do vencimento'), ('sla_vencido', 'SLA vencido'),
-             ('sem_responsavel', 'Chamado sem responsável'), ('status', 'Situação atualizada')]
+             ('sem_responsavel', 'Chamado sem responsável'), ('status', 'Situação atualizada'),
+             ('reabertura', 'Chamado reaberto')]
     destinatario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notificacoes')
     chamado = models.ForeignKey(Chamado, on_delete=models.CASCADE, related_name='notificacoes')
     tipo = models.CharField(max_length=15, choices=TIPOS)
@@ -365,7 +400,7 @@ class Notificacao(models.Model):
         ordering = ['-criada_em', '-pk']
         constraints = [
             models.UniqueConstraint(fields=['destinatario', 'evento'], name='notificacao_dest_evento_unico'),
-            models.CheckConstraint(condition=models.Q(tipo__in=['atribuicao', 'resposta', 'transferencia', 'resolucao', 'sla_proximo', 'sla_vencido', 'sem_responsavel', 'status']), name='notificacao_tipo_valido'),
+            models.CheckConstraint(condition=models.Q(tipo__in=['atribuicao', 'resposta', 'transferencia', 'resolucao', 'sla_proximo', 'sla_vencido', 'sem_responsavel', 'status', 'reabertura']), name='notificacao_tipo_valido'),
         ]
         indexes = [models.Index(fields=['destinatario', 'lida_em', '-criada_em'], name='notificacao_dest_lida_data')]
 
@@ -374,7 +409,8 @@ class Notificacao(models.Model):
         return {'atribuicao': 'person-check', 'resposta': 'chat-left-text',
                 'transferencia': 'arrow-left-right', 'resolucao': 'check-circle',
                 'sla_proximo': 'hourglass-split', 'sla_vencido': 'alarm',
-                'sem_responsavel': 'person-exclamation', 'status': 'arrow-repeat'}.get(self.tipo, 'bell')
+                'sem_responsavel': 'person-exclamation', 'status': 'arrow-repeat',
+                'reabertura': 'arrow-counterclockwise'}.get(self.tipo, 'bell')
 
 
 class PreferenciaListaChamados(models.Model):
