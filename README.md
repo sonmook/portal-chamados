@@ -2,7 +2,7 @@
 
 ![Marca Nexaltri](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.15.0** · [Notas da versão](docs/releases/v1.15.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.15.0** · [Notas da versão](docs/releases/v1.15.0.md) · [Identidade visual](docs/identidade-visual.md) · [Evolução visual](docs/evolucao-visual.md) · [Releases oficiais](https://github.com/sonmook/portal-chamados/releases) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -11,7 +11,7 @@
 
 Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django**, com fila de atendimento, acompanhamento de SLA, indicadores, controle de acesso e trilha de auditoria.
 
-As capturas da galeria principal foram registradas na **v1.1.0**, com a marca e os ícones daquela versão e **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
+As imagens deste README mostram a **Nexaltri v1.15.0**, com **dados fictícios de demonstração**. As capturas atuais ficam em [`docs/imagens/v1.15.0`](docs/imagens/v1.15.0), com data, commit, dimensões e hashes registrados. A [galeria de evolução visual](docs/evolucao-visual.md) preserva as telas antigas e relaciona cada etapa às notas da versão; elas não são substituídas pelas imagens atuais.
 
 ---
 
@@ -52,19 +52,19 @@ Acesse **Administração → Indicadores** com uma conta de administrador ativo 
 
 Cada ciclo concluído conta uma resolução; reaberturas preservam os resultados anteriores. Criações são filtradas pela data de abertura; resoluções, pela data de fechamento. Os percentuais de SLA consideram apenas resoluções com fechamento e vencimento conhecidos. Ativos vencidos e chamados sem responsável mostram a situação atual, independentemente do período, e aparecem separados das resoluções fora do prazo. O dashboard mantém as contagens de chamados por situação atual; SLA, TMR e produtividade usam ciclos concluídos no recorte de chamados criados no período. [Critérios e funcionamento](docs/indicadores-administracao.md).
 
-![Relatório de performance administrativo com visual integrado ao portal e dados fictícios](docs/imagens/indicadores-administracao.png)
+![Relatório de performance administrativo com visual integrado ao portal e dados fictícios](docs/imagens/v1.15.0/indicadores-1440.png)
 
 ## Respostas prontas
 
 A **v1.10.0** adiciona modelos de texto para o técnico responsável por um chamado ativo. Escolha um modelo para acrescentá-lo ao rascunho, adapte o texto e clique em Enviar resposta. Administradores criam, editam e desativam os modelos em **Administração → Respostas prontas**. Três exemplos iniciais ajudam a começar; selecionar um modelo não envia mensagens nem altera o status do chamado. [Funcionamento](docs/respostas-prontas.md).
 
-![Catálogo administrativo de respostas prontas](docs/imagens/respostas-prontas.png)
+![Catálogo administrativo de respostas prontas](docs/imagens/v1.15.0/respostas-prontas-1440.png)
 
 ## Colunas na sua ordem
 
 A **v1.9.0** permite arrastar os títulos da tabela de chamados para mudar a sequência das colunas. A ordem é salva automaticamente na conta e mantida ao filtrar, paginar ou voltar ao portal. No celular, mantenha o dedo no título e arraste para os lados. Também há movimento por teclado e um comando discreto para restaurar a ordem padrão. [Funcionamento](docs/ordem-colunas.md).
 
-![Colunas reorganizadas com dados fictícios](docs/imagens/ordem-colunas.png)
+![Tabela com colunas personalizáveis e dados fictícios](docs/imagens/v1.15.0/chamados-1440.png)
 
 ## Iniciar no Windows
 
@@ -80,33 +80,33 @@ O inicializador localiza a pasta do projeto, verifica Python/dependências/migra
 
 A **v1.8.0** adiciona quatro indicadores clicáveis na Central de Chamados: **Minha fila**, **Sem responsável**, **Próximos do prazo** e **SLA vencido**. As quantidades seguem as permissões e a equipe selecionada. Ao clicar, os outros filtros são limpos e a lista abre no recorte escolhido. Também é possível combinar o novo filtro Sem responsável com prazo, busca e ordenação. Disponível para técnicos e administradores. [Critérios e uso](docs/resumo-operacional.md).
 
-![Resumo operacional com dados fictícios](docs/imagens/resumo-operacional.png)
+![Resumo operacional com dados fictícios](docs/imagens/v1.15.0/chamados-1440.png)
 
 ## Administração
 
 A **v1.7.0** reúne a gestão em um único acesso **Administração** no cabeçalho. Administradores encontram Usuários, Equipes, Encaminhamento, Conquistas e Auditoria em uma central discreta, com acesso protegido também pelo servidor. A Auditoria abre no próprio portal, com filtros e detalhes somente para consulta. As telas de gestão mostram o caminho de volta à central. [Funcionamento](docs/administracao.md).
 
-![Central de Administração com conta fictícia](docs/imagens/administracao.png)
+![Central de Administração com conta fictícia](docs/imagens/v1.15.0/administracao-1440.png)
 
 ## Alertas de SLA
 
 A **v1.6.0** avisa o responsável quando faltar até **1 hora** para o prazo ou quando o SLA vencer. Chamados sem responsável são sinalizados aos coordenadores da equipe, sem repetir o mesmo aviso. Use **Próximos do prazo (até 1h)** e **SLA vencido** junto de **Minha fila** para priorizar o atendimento. O Docker inicia a verificação automaticamente; no Windows, `iniciar-portal.cmd` inicia o portal e esse processo juntos. [Configuração e critérios](docs/alertas-sla.md).
 
-![Minha fila com filtro de proximidade do SLA; dados fictícios](docs/imagens/fila-sla.png)
+![Minha fila com filtro de proximidade do SLA; dados fictícios](docs/imagens/v1.15.0/fila-sla-1440.png)
 
 ## Notificações
 
 A **v1.5.0** adiciona um sino no cabeçalho, com contador de avisos não lidos, e uma central de notificações pessoais. Receba avisos de atribuição, nova resposta, transferência e resolução; abra o chamado pelo aviso ou marque uma/todas como lidas. Só aparecem notificações de chamados aos quais você ainda tem acesso. O contador é atualizado ao navegar ou recarregar a página. [Funcionamento e destinatários](docs/notificacoes.md).
 
-![Central de notificações com dados fictícios](docs/imagens/notificacoes.png)
+![Central de notificações com dados fictícios](docs/imagens/v1.15.0/notificacoes-1440.png)
 
 ## Conquistas
 
 O portal já vem com **12 conquistas predefinidas**, concedidas automaticamente: marcos individuais de resoluções, atendimento dentro do SLA e resultados coletivos. Entre elas: Missão cumprida, Centurião do suporte, Guardião do SLA e Força-tarefa. Acompanhe o progresso em **Conquistas** e veja suas medalhas em uma vitrine discreta na lateral do perfil. Na coleção, cada conquista mostra apenas ícone e nome. Passe o mouse sobre a conquista para consultar os detalhes flutuantes; no celular, toque. O mesmo comportamento está disponível nas medalhas do perfil. Não há opção de criar novas conquistas. O administrador consulta o catálogo e gerencia as configurações existentes sem apagar medalhas recebidas. [Critérios e operação](docs/conquistas.md).
 
-![Coleção discreta com ícone e nome de cada conquista; dados fictícios](docs/imagens/conquistas.png)
+![Coleção discreta com ícone e nome de cada conquista; dados fictícios](docs/imagens/v1.15.0/conquistas-1440.png)
 
-![Vitrine ilustrada no perfil de um técnico fictício](docs/imagens/perfil-conquistas.png)
+![Perfil e vitrine de conquista com conta fictícia de demonstração](docs/imagens/v1.15.0/perfil-1440.png)
 
 ## Meu Perfil
 
@@ -115,7 +115,7 @@ Acesse **Meu Perfil** pelo avatar ou nome no cabeçalho para visualizar foto, da
 ## ✨ Principais Funcionalidades
 
 ### 📊 Dashboard e Métricas (Para a Equipe de TI)
-![Dashboard com indicadores de chamados, SLA, categorias e produtividade da equipe](docs/imagens/dashboard.png)
+![Dashboard com indicadores de chamados, SLA, categorias e produtividade da equipe](docs/imagens/v1.15.0/dashboard-1440.png)
 
 * **Tempo Médio de Resolução (TMR):** Cálculo automático da média de horas levadas para fechar tickets.
 * **Controle de SLA Inteligente:** Prazos (SLA) calculados dinamicamente com base na prioridade do chamado (Crítica, Alta, Normal, Baixa), **pulando finais de semana automaticamente**.
@@ -123,7 +123,7 @@ Acesse **Meu Perfil** pelo avatar ou nome no cabeçalho para visualizar foto, da
 * **Ranking de Produtividade:** Gamificação amigável mostrando a quantidade de tickets resolvidos por cada membro da equipe.
 
 ### 🎫 Gestão de Tickets
-![Fila de chamados com busca, filtros, status, prioridade e prazo de SLA](docs/imagens/chamados.png)
+![Fila de chamados com busca, filtros, status, prioridade e prazo de SLA](docs/imagens/v1.15.0/chamados-1440.png)
 
 * **Minha fila:** técnicos e administradores filtram chamados ativos atribuídos à própria conta. O filtro combina com busca, status, equipe e ordenação e permanece na paginação. [Como usar](docs/minha-fila.md).
 * **Fila de Chamados:** Listagem responsiva com filtros combinados (Busca por texto + Status + Categoria).
@@ -133,16 +133,16 @@ Acesse **Meu Perfil** pelo avatar ou nome no cabeçalho para visualizar foto, da
 * **Encerramento Documentado:** Obrigatoriedade de informar a solução do problema ao fechar um ticket, gerando base de conhecimento.
 
 ### 💬 Interação e Resolução de Chamados
-![Detalhes de chamado em atendimento com histórico de mensagens e técnico responsável](docs/imagens/atendimento.png)
+![Detalhes de chamado em atendimento com histórico de mensagens e técnico responsável](docs/imagens/v1.15.0/detalhe-1440.png)
 
 * **Histórico Interativo:** Timeline de comentários estilo "chat" entre o usuário solicitante e o técnico responsável.
 * **Status e Responsável:** Identificação com cores do estado do chamado e do técnico atribuído.
 * **Encerramento Documentado:** Obrigatoriedade de informar a solução do problema ao fechar um ticket. Uma vez resolvido, o chamado é bloqueado para novas interações, garantindo a integridade da base de conhecimento (auditoria).
 
-![Chamado resolvido com solução registrada e histórico preservado](docs/imagens/resolucao.png)
+![Chamado resolvido com solução registrada e histórico preservado](docs/imagens/v1.15.0/resolucao-1440.png)
 
 ### 👥 Gerenciamento de Usuários (Admin)
-![Gerenciamento de usuários com pesquisa, níveis de acesso e ativação de contas](docs/imagens/usuarios.png)
+![Gerenciamento de usuários com pesquisa, níveis de acesso e ativação de contas](docs/imagens/v1.15.0/usuarios-1440.png)
 
 * **Controle de Acessos:** `Cliente` abre e acompanha seus chamados; `Técnico de TI` atende as filas das suas equipes e consulta indicadores dentro do seu acesso; `Administrador` também gerencia usuários e redistribui chamados.
 * **Busca Inteligente:** Barra de pesquisa com filtros avançados para encontrar rapidamente colaboradores por nome, e-mail ou username.
@@ -151,24 +151,24 @@ Acesse **Meu Perfil** pelo avatar ou nome no cabeçalho para visualizar foto, da
 
 ### 🔄 Redistribuição de Chamados
 
-![Redistribuição com equipe de destino, técnico opcional e motivo obrigatório](docs/imagens/redistribuicao.png)
+![Redistribuição com equipe de destino, técnico opcional e motivo obrigatório](docs/imagens/v1.15.0/redistribuicao-1440.png)
 
 * **Distribuição e Transferência:** Coordenadores distribuem chamados das equipes que coordenam; administradores têm visão geral. O destino pode ser outra equipe ativa, com responsável opcional entre seus integrantes ativos e motivo obrigatório.
 * **Auditoria:** Registro do autor, data, motivo e responsáveis anterior e novo, sem alterar o histórico dos chamados concluídos.
 * **Recuperação de Pendências:** Chamados de técnicos inativos podem ser redistribuídos pelo portal.
 
-![Edição de colaborador com chamados pendentes e links para redistribuição](docs/imagens/pendencias-tecnico.png)
+![Edição de colaborador com chamados pendentes e links para redistribuição](docs/imagens/v1.15.0/pendencias-tecnico-1440.png)
 
 ### 👥 Gestão de Equipes
 
-![Gestão de equipes com integrantes, coordenadores, pendências e situação](docs/imagens/equipes.png)
+![Gestão de equipes com integrantes, coordenadores, pendências e situação](docs/imagens/v1.15.0/equipes-1440.png)
 
 * **Administração no portal:** Cadastro e edição de equipes, integrantes e coordenadores em **Gerenciar Equipes**.
 * **Organização do atendimento:** Cada equipe tem sua fila e seus indicadores; um técnico pode participar de mais de uma equipe.
 
 ### 🧭 Encaminhamento automático por categoria
 
-![Regras de encaminhamento com categoria, equipe configurada e situação](docs/imagens/encaminhamento.png)
+![Regras de encaminhamento com categoria, equipe configurada e situação](docs/imagens/v1.15.0/encaminhamento-1440.png)
 
 Administradores configuram as regras em **Gerenciar Equipes → Encaminhamento por categoria**.
 A configuração inicial é:
@@ -194,7 +194,7 @@ se uma equipe padrão foi renomeada antes da atualização, a regra corresponden
 fica desativada na triagem para revisão, sem recriar equipes.
 
 ### 🔒 Autenticação e Segurança
-![Tela de login local do Portal de TI com campos de usuário e senha](docs/imagens/login.png)
+![Tela de login da Nexaltri com campos de usuário e senha](docs/imagens/v1.15.0/login-desktop.png)
 
 * **Login Local:** Funciona sem configurar Google. Portal e Django Admin compartilham limites de tentativas por conta/IP e por IP.
 * **Google SSO:** Integração opcional via Allauth, sujeita à configuração OAuth. Cadastro público está fechado; contas locais não são vinculadas automaticamente ao Google apenas por compartilharem e-mail.

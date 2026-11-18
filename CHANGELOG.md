@@ -2,6 +2,8 @@
 
 ## v1.15.0 — Identidade Nexaltri
 
+- Documentação visual organizada por versão, com capturas atuais, inventário histórico e recuperação de imagens substituídas. Publicador identifica Releases pendentes, valida os commits e preserva tags/publicações existentes.
+
 - Marca Nexaltri aplicada a login, navegação, títulos, perfis, relatório e Django Admin. Nome/descritor novos; rotas e comandos de instalação preservados.
 - Monograma N e wordmark em SVG com contornos, assinaturas clara/escura, favicon SVG/PNG e ícone de 180px. Arquivos independentes de fontes instaladas.
 - Fontes Manrope/Inter locais com licenças OFL; navegação clara, turquesa/azul-marinho e azul complementar. Ações principais usam texto azul-marinho sobre turquesa para contraste; cores de status e SLA continuam semânticas.

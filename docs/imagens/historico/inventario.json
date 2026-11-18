@@ -1,0 +1,429 @@
+{
+  "criterio": "Revisão que registrou o arquivo atual ou revisão de onde a cópia foi preservada. Datas do Git, não necessariamente da captura.",
+  "fuso": "America/Sao_Paulo",
+  "imagens": [
+    {
+      "file": "administracao-mobile.png",
+      "sha": "1e561e2945ada5a75fb332f061aa0ba0fe21829d",
+      "date": "2026-11-07T19:19:40Z",
+      "version": "1.7.0",
+      "message": "feat: centralize portal administration for v1.7.0",
+      "sha256": "1f9b1e51f6827bb7c13872b6f55c10a0d17e4ec34d63c01c87c883f498e0754d",
+      "date_local": "07/11/2026 16:19"
+    },
+    {
+      "file": "administracao.png",
+      "sha": "1e561e2945ada5a75fb332f061aa0ba0fe21829d",
+      "date": "2026-11-07T19:19:40Z",
+      "version": "1.7.0",
+      "message": "feat: centralize portal administration for v1.7.0",
+      "sha256": "a10a2c39f3cbb30e346a7636d13acc7907db5a5afcdca6895495379ff52bbb06",
+      "date_local": "07/11/2026 16:19"
+    },
+    {
+      "file": "atendimento.png",
+      "sha": "ff6972d0385d8dcce153c183b4841a8e8873beee",
+      "date": "2026-11-03T22:06:37Z",
+      "version": "1.1.0",
+      "message": "docs: refresh README screenshots for v1.1.0 identity",
+      "sha256": "ccedf1a22f5b86a1168ed07cdb4c5f6601cf3541ff6ee50b0a1e02d6b2ba7946",
+      "date_local": "03/11/2026 19:06"
+    },
+    {
+      "file": "auditoria-detalhe-mobile.png",
+      "sha": "a6a828c71014faa8e0ce99d8727559f22654d925",
+      "date": "2026-11-07T20:08:31Z",
+      "version": "1.7.0",
+      "message": "fix: clarify audit changes and align record details",
+      "sha256": "ccac88f5290155a3dd5d0a5e64d53e2fb674dba1342a19b2c302f6ab123e937e",
+      "date_local": "07/11/2026 17:08"
+    },
+    {
+      "file": "auditoria-foto.png",
+      "sha": "a6a828c71014faa8e0ce99d8727559f22654d925",
+      "date": "2026-11-07T20:08:31Z",
+      "version": "1.7.0",
+      "message": "fix: clarify audit changes and align record details",
+      "sha256": "a87c832c99d2ffec5c42af6426c8a2d77c86e6787df9d95d2cf1d78148e5c7c6",
+      "date_local": "07/11/2026 17:08"
+    },
+    {
+      "file": "auditoria-portal.png",
+      "sha": "ee7e8ae4282b8eae49abdf9687ac7b40b06550b5",
+      "date": "2026-11-07T20:01:56Z",
+      "version": "1.7.0",
+      "message": "feat: add native read-only audit history to portal",
+      "sha256": "56395fa2fb20f35604f3e15aa85e3e7f3753dd9d6937c354541e1cb3506ea5be",
+      "date_local": "07/11/2026 17:01"
+    },
+    {
+      "file": "avisos-sla-mobile.png",
+      "sha": "e85f85b4bc0f91cb2378e2d2610f9683f0674e76",
+      "date": "2026-11-07T18:38:12Z",
+      "version": "1.6.0",
+      "message": "feat: add SLA alerts and deadline queue filters",
+      "sha256": "c88405b248ae0cae57cb90a1667d140270e27916cfb54305430d5f9afa5a6242",
+      "date_local": "07/11/2026 15:38"
+    },
+    {
+      "file": "chamados.png",
+      "sha": "ff6972d0385d8dcce153c183b4841a8e8873beee",
+      "date": "2026-11-03T22:06:37Z",
+      "version": "1.1.0",
+      "message": "docs: refresh README screenshots for v1.1.0 identity",
+      "sha256": "2889c252c7c9c95532ecb22fcfe43549120efbdc351053b41cd555351d46c965",
+      "date_local": "03/11/2026 19:06"
+    },
+    {
+      "file": "conquista-detalhes.png",
+      "sha": "03c8eb12de1f1ac374098283622401d2f5534360",
+      "date": "2026-11-05T03:15:06Z",
+      "version": "1.4.0",
+      "message": "feat: show floating achievement details on hover and focus",
+      "sha256": "7c66e00b1702b1e98ec52d44a65c5802b5ae4fa504cd79d0f24f48068e857646",
+      "date_local": "05/11/2026 00:15"
+    },
+    {
+      "file": "conquistas-mobile.png",
+      "sha": "03c8eb12de1f1ac374098283622401d2f5534360",
+      "date": "2026-11-05T03:15:06Z",
+      "version": "1.4.0",
+      "message": "feat: show floating achievement details on hover and focus",
+      "sha256": "427e1e19956d702ed3dfe87472ea12311005bc872eec8a84c5b0aeaca69a68b8",
+      "date_local": "05/11/2026 00:15"
+    },
+    {
+      "file": "conquistas.png",
+      "sha": "03c8eb12de1f1ac374098283622401d2f5534360",
+      "date": "2026-11-05T03:15:06Z",
+      "version": "1.4.0",
+      "message": "feat: show floating achievement details on hover and focus",
+      "sha256": "7e93e51f2df037f2459c630cef7b3f7df516fb9dfa0e716a1e08b38f2446a9be",
+      "date_local": "05/11/2026 00:15"
+    },
+    {
+      "file": "construtor-conquista.png",
+      "sha": "e3a0908853ec5c0643a2061304eb2e84b22745b1",
+      "date": "2026-11-04T23:17:06Z",
+      "version": "1.4.0",
+      "message": "feat: add achievement builder with draft preview and levels",
+      "sha256": "7e5064015f052be14948c36c9f6cbcb19191fb86a00b204c2d5af917459141f9",
+      "date_local": "04/11/2026 20:17"
+    },
+    {
+      "file": "dashboard.png",
+      "sha": "ff6972d0385d8dcce153c183b4841a8e8873beee",
+      "date": "2026-11-03T22:06:37Z",
+      "version": "1.1.0",
+      "message": "docs: refresh README screenshots for v1.1.0 identity",
+      "sha256": "ba7fa6289aa4708fd4f79e98fb8806b4253332ba3c4eb266f16a0ff6aab240cc",
+      "date_local": "03/11/2026 19:06"
+    },
+    {
+      "file": "editor-conquista.png",
+      "sha": "fb8ac82839ed752f3bec05e5e58b2ed0f7df2fc9",
+      "date": "2026-11-04T21:44:17Z",
+      "version": "1.3.0",
+      "message": "feat: personalize achievement medals and icon selection",
+      "sha256": "8a58727d8cfb9100f50b95196888e8e9dee264fed8314f772e40c72b60b757d3",
+      "date_local": "04/11/2026 18:44"
+    },
+    {
+      "file": "encaminhamento.png",
+      "sha": "ff6972d0385d8dcce153c183b4841a8e8873beee",
+      "date": "2026-11-03T22:06:37Z",
+      "version": "1.1.0",
+      "message": "docs: refresh README screenshots for v1.1.0 identity",
+      "sha256": "f1d5d22b91913b543e0a41bc2d4e20b83dd2f419d39e9d751f61743f6b6b16f1",
+      "date_local": "03/11/2026 19:06"
+    },
+    {
+      "file": "equipes.png",
+      "sha": "ff6972d0385d8dcce153c183b4841a8e8873beee",
+      "date": "2026-11-03T22:06:37Z",
+      "version": "1.1.0",
+      "message": "docs: refresh README screenshots for v1.1.0 identity",
+      "sha256": "7d9120d9c83b5eb6332cd4551586edbfbe08acad8267a034da592f5670ad6e1b",
+      "date_local": "03/11/2026 19:06"
+    },
+    {
+      "file": "fila-sla.png",
+      "sha": "e85f85b4bc0f91cb2378e2d2610f9683f0674e76",
+      "date": "2026-11-07T18:38:12Z",
+      "version": "1.6.0",
+      "message": "feat: add SLA alerts and deadline queue filters",
+      "sha256": "853c97f552f7a009ac12c44d0f052ca793d2eb906534c93a9d8b692407e93a8b",
+      "date_local": "07/11/2026 15:38"
+    },
+    {
+      "file": "gestao-conquistas.png",
+      "sha": "092d7d939a67316c8f5b1dd11b0c11766cc611a1",
+      "date": "2026-11-05T01:16:39Z",
+      "version": "1.4.0",
+      "message": "feat: expand predefined achievement catalog to twelve",
+      "sha256": "28586c691aecef2a5cb5fe38d626d51c3c812692936cd36a723083852814a31c",
+      "date_local": "04/11/2026 22:16"
+    },
+    {
+      "file": "identidade-equipes.png",
+      "sha": "35a1149f7f47ed95cdcb2b469efe89b5a5209be7",
+      "date": "2026-11-03T21:28:29Z",
+      "version": "1.1.0",
+      "message": "fix: improve support mark legibility at favicon sizes",
+      "sha256": "d4a2b113a7f51717a9f3707227b545c64151d8e5c1331f2ba57405bd0b7a8e4c",
+      "date_local": "03/11/2026 18:28"
+    },
+    {
+      "file": "identidade-login.png",
+      "sha": "35a1149f7f47ed95cdcb2b469efe89b5a5209be7",
+      "date": "2026-11-03T21:28:29Z",
+      "version": "1.1.0",
+      "message": "fix: improve support mark legibility at favicon sizes",
+      "sha256": "736d97b297f7887ac0800f5a283cc0958bab6057c80ed227a0df3117806164cc",
+      "date_local": "03/11/2026 18:28"
+    },
+    {
+      "file": "indicadores-administracao.png",
+      "sha": "b137628990092abb30cec0fdd1e5b8e339643817",
+      "date": "2026-11-14T23:39:35Z",
+      "version": "1.10.0",
+      "message": "docs: adicionar captura do relatório de performance",
+      "sha256": "526df2c13281f04e02a1ad69e5271e28f6f9ca6b3a9fef2e93d9647f9234a9d5",
+      "date_local": "14/11/2026 20:39"
+    },
+    {
+      "file": "login.png",
+      "sha": "ff6972d0385d8dcce153c183b4841a8e8873beee",
+      "date": "2026-11-03T22:06:37Z",
+      "version": "1.1.0",
+      "message": "docs: refresh README screenshots for v1.1.0 identity",
+      "sha256": "c0659bd8f6bb31840f03de9135c4be504fc27b5c20a7c0a572586263ce2d00f7",
+      "date_local": "03/11/2026 19:06"
+    },
+    {
+      "file": "meu-perfil.png",
+      "sha": "8f909be34e01914603b48d6da47b9d611ed025cc",
+      "date": "2026-11-05T01:57:19Z",
+      "version": "1.4.0",
+      "message": "feat: separate profile overview from editing with subtle achievements",
+      "sha256": "0dbdf1f3240807bcac21af0134a69a88d6fcc26cbc51e932a4e3981ef4d5a8e3",
+      "date_local": "04/11/2026 22:57"
+    },
+    {
+      "file": "minha-fila.png",
+      "sha": "d1b8412d07e9049f8d676894693134edd32c5e70",
+      "date": "2026-11-07T16:26:40Z",
+      "version": "1.4.0",
+      "message": "feat: filter active tickets assigned to the current technician",
+      "sha256": "4b31e96a2906df0f8b0ae5f79651563813d6828899ead3173876b9db318a3acd",
+      "date_local": "07/11/2026 13:26"
+    },
+    {
+      "file": "notificacoes-mobile.png",
+      "sha": "b5ebcd53c1443a02eca98e4204d973dff65f2db9",
+      "date": "2026-11-07T17:45:48Z",
+      "version": "1.5.0",
+      "message": "feat: add permission-aware ticket notifications for v1.5.0",
+      "sha256": "6650d81d91a69a6e90cbeed74edf15cdef2bd3c9bad72458777ca24a8caaaf9b",
+      "date_local": "07/11/2026 14:45"
+    },
+    {
+      "file": "notificacoes.png",
+      "sha": "b5ebcd53c1443a02eca98e4204d973dff65f2db9",
+      "date": "2026-11-07T17:45:48Z",
+      "version": "1.5.0",
+      "message": "feat: add permission-aware ticket notifications for v1.5.0",
+      "sha256": "30a6d8bb7273b6e468f12ea89760586a6b9364fc04fe299abe92cc4273114e8d",
+      "date_local": "07/11/2026 14:45"
+    },
+    {
+      "file": "ordem-colunas-mobile.png",
+      "sha": "7a918a5b01f493cb752e1ba3601bb63d7cb6f734",
+      "date": "2026-11-08T23:01:10Z",
+      "version": "1.9.0",
+      "message": "feat: save per-user ticket column order by direct dragging",
+      "sha256": "5c72701fcc11f20e32ae60107b1ada5b1dbefa16437716f6800e759818de5073",
+      "date_local": "08/11/2026 20:01"
+    },
+    {
+      "file": "ordem-colunas.png",
+      "sha": "7a918a5b01f493cb752e1ba3601bb63d7cb6f734",
+      "date": "2026-11-08T23:01:10Z",
+      "version": "1.9.0",
+      "message": "feat: save per-user ticket column order by direct dragging",
+      "sha256": "8d437df2cfa575adc863afba79ad2f4ec397bf1f5de5df57e20f6ccd77e8a1ed",
+      "date_local": "08/11/2026 20:01"
+    },
+    {
+      "file": "pendencias-tecnico.png",
+      "sha": "ff6972d0385d8dcce153c183b4841a8e8873beee",
+      "date": "2026-11-03T22:06:37Z",
+      "version": "1.1.0",
+      "message": "docs: refresh README screenshots for v1.1.0 identity",
+      "sha256": "cf47224375a5412fcc378e1f6e6c69a89fa810f3b04643154508811f3fdaff04",
+      "date_local": "03/11/2026 19:06"
+    },
+    {
+      "file": "perfil-conquista-detalhes.png",
+      "sha": "03c8eb12de1f1ac374098283622401d2f5534360",
+      "date": "2026-11-05T03:15:06Z",
+      "version": "1.4.0",
+      "message": "feat: show floating achievement details on hover and focus",
+      "sha256": "ad4067f8bb9645eb56932c71e7944bace08ebf9ced7994d153f3b2b9ea24e10c",
+      "date_local": "05/11/2026 00:15"
+    },
+    {
+      "file": "perfil-conquistas.png",
+      "sha": "8f909be34e01914603b48d6da47b9d611ed025cc",
+      "date": "2026-11-05T01:57:19Z",
+      "version": "1.4.0",
+      "message": "feat: separate profile overview from editing with subtle achievements",
+      "sha256": "0dbdf1f3240807bcac21af0134a69a88d6fcc26cbc51e932a4e3981ef4d5a8e3",
+      "date_local": "04/11/2026 22:57"
+    },
+    {
+      "file": "perfil-editar.png",
+      "sha": "8f909be34e01914603b48d6da47b9d611ed025cc",
+      "date": "2026-11-05T01:57:19Z",
+      "version": "1.4.0",
+      "message": "feat: separate profile overview from editing with subtle achievements",
+      "sha256": "0eeff642ac0de7c9b6bb354bd8236c57386b78b1a41be4df542a9f5603f528b0",
+      "date_local": "04/11/2026 22:57"
+    },
+    {
+      "file": "perfil-mobile.png",
+      "sha": "8f909be34e01914603b48d6da47b9d611ed025cc",
+      "date": "2026-11-05T01:57:19Z",
+      "version": "1.4.0",
+      "message": "feat: separate profile overview from editing with subtle achievements",
+      "sha256": "35af6f06e2b2d52e51546ee58482fb66de94ff349cb9e3116d5ec1c8b1af3e14",
+      "date_local": "04/11/2026 22:57"
+    },
+    {
+      "file": "previa-conquista.png",
+      "sha": "e3a0908853ec5c0643a2061304eb2e84b22745b1",
+      "date": "2026-11-04T23:17:06Z",
+      "version": "1.4.0",
+      "message": "feat: add achievement builder with draft preview and levels",
+      "sha256": "542777c55c34e55367c8f6f20a34753d460caf06134abb4e2b68271da5b28d25",
+      "date_local": "04/11/2026 20:17"
+    },
+    {
+      "file": "redistribuicao.png",
+      "sha": "ff6972d0385d8dcce153c183b4841a8e8873beee",
+      "date": "2026-11-03T22:06:37Z",
+      "version": "1.1.0",
+      "message": "docs: refresh README screenshots for v1.1.0 identity",
+      "sha256": "0d8c062a792ce11bd4765055adbcb6327f4aa0449bc3e6af490dfd5d9952abb8",
+      "date_local": "03/11/2026 19:06"
+    },
+    {
+      "file": "resolucao.png",
+      "sha": "ff6972d0385d8dcce153c183b4841a8e8873beee",
+      "date": "2026-11-03T22:06:37Z",
+      "version": "1.1.0",
+      "message": "docs: refresh README screenshots for v1.1.0 identity",
+      "sha256": "e7cf96522e495fac7726439e7197eee33cdf5721f825d207f5f9e870ac5fef5b",
+      "date_local": "03/11/2026 19:06"
+    },
+    {
+      "file": "resposta-pronta-chamado.png",
+      "sha": "abec247edb85f80af22d7215b7e0c4012cdbd83d",
+      "date": "2026-11-09T03:46:22Z",
+      "version": "1.10.0",
+      "message": "feat: respostas prontas para atendimento (v1.10.0)",
+      "sha256": "9cb42422ea44e89c5ef973111b20230dad16aea35203c80546fec9a438bfb5c8",
+      "date_local": "09/11/2026 00:46"
+    },
+    {
+      "file": "respostas-prontas.png",
+      "sha": "abec247edb85f80af22d7215b7e0c4012cdbd83d",
+      "date": "2026-11-09T03:46:22Z",
+      "version": "1.10.0",
+      "message": "feat: respostas prontas para atendimento (v1.10.0)",
+      "sha256": "c2ef8b58cbb4a49006958acdb96e4678b13443757ecf1c79291c87cd9994a72f",
+      "date_local": "09/11/2026 00:46"
+    },
+    {
+      "file": "resumo-operacional-mobile.png",
+      "sha": "ef79bf4fc0f00e007ccd09b01d35c402d23749c1",
+      "date": "2026-11-08T20:34:30Z",
+      "version": "1.8.0",
+      "message": "feat: add operational queue summary for v1.8.0",
+      "sha256": "5ea23f326aa2969ba9e5c464ea5d40f8ad7d3e884fde6d526cbfa943f15ce867",
+      "date_local": "08/11/2026 17:34"
+    },
+    {
+      "file": "resumo-operacional.png",
+      "sha": "ef79bf4fc0f00e007ccd09b01d35c402d23749c1",
+      "date": "2026-11-08T20:34:30Z",
+      "version": "1.8.0",
+      "message": "feat: add operational queue summary for v1.8.0",
+      "sha256": "901b78338b11cbbb79b67360952d11e0f716246a9d70703590b6ea603e22a647",
+      "date_local": "08/11/2026 17:34"
+    },
+    {
+      "file": "usuarios.png",
+      "sha": "ff6972d0385d8dcce153c183b4841a8e8873beee",
+      "date": "2026-11-03T22:06:37Z",
+      "version": "1.1.0",
+      "message": "docs: refresh README screenshots for v1.1.0 identity",
+      "sha256": "a04e9a2f0162eaf7c409503be717d140e6497c01518e7d43ce5776ade551ddf0",
+      "date_local": "03/11/2026 19:06"
+    },
+    {
+      "file": "visual-fila-desktop.png",
+      "sha": "8ed810d61c7c290470d6466bcfd7574207a96ced",
+      "date": "2026-11-03T20:04:21Z",
+      "version": null,
+      "message": "style: refine portal layout and responsive navigation",
+      "sha256": "1f2a9c320b48351aeea760a740b52e1399b72216f3740e966aff2eba62fd3e80",
+      "date_local": "03/11/2026 17:04"
+    },
+    {
+      "file": "visual-fila-mobile.png",
+      "sha": "8ed810d61c7c290470d6466bcfd7574207a96ced",
+      "date": "2026-11-03T20:04:21Z",
+      "version": null,
+      "message": "style: refine portal layout and responsive navigation",
+      "sha256": "0dfc7c1faea8d407630344b1c5381c098d21080217b569913f170f6b7f94f712",
+      "date_local": "03/11/2026 17:04"
+    },
+    {
+      "file": "historico/pre-versionamento/chamados.png",
+      "sha": "94898b548805636bcd4d915cf7e2a7fbe74b14fd",
+      "date": "2026-11-03T14:47:25Z",
+      "version": null,
+      "message": "Cópia preservada do arquivo existente nesta revisão.",
+      "sha256": "0689252657626ae100c34bae6d60d8597e773d95a410881c32861e99b8143946",
+      "date_local": "03/11/2026 11:47"
+    },
+    {
+      "file": "historico/v1.2.0/meu-perfil.png",
+      "sha": "214315bc16bfb3aa65e5df5067740293f89feb3b",
+      "date": "2026-11-03T22:38:28-03:00",
+      "version": "1.2.0",
+      "message": "Cópia preservada do arquivo existente nesta revisão.",
+      "sha256": "06ac3c3bf56dd7cdbf82e5ef74129c3f9395f42b58855fc8bfb4d7fe771c4ed9",
+      "date_local": "03/11/2026 22:38"
+    },
+    {
+      "file": "historico/v1.3.0/conquistas.png",
+      "sha": "e97932d1fb45b55b1006293cff105c3f13f78bf2",
+      "date": "2026-11-04T19:31:23-03:00",
+      "version": "1.3.0",
+      "message": "Cópia preservada do arquivo existente nesta revisão.",
+      "sha256": "212d2ba9879d30804bf8cfaf32347a55143c0a4dd252fd9348d9d832af72cb4a",
+      "date_local": "04/11/2026 19:31"
+    },
+    {
+      "file": "historico/v1.3.0/gestao-conquistas.png",
+      "sha": "e97932d1fb45b55b1006293cff105c3f13f78bf2",
+      "date": "2026-11-04T19:31:23-03:00",
+      "version": "1.3.0",
+      "message": "Cópia preservada do arquivo existente nesta revisão.",
+      "sha256": "c11357dd58c80f055a805e1cdba20784283cd1b06a6212c1a6484b3fdfad9e24",
+      "date_local": "04/11/2026 19:31"
+    }
+  ]
+}
