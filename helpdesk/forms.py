@@ -110,6 +110,21 @@ class ComentarioForm(forms.ModelForm):
         }
 
 
+class NotaInternaForm(ComentarioForm):
+    versao_status = forms.IntegerField(min_value=0, widget=forms.HiddenInput)
+    versao_atribuicao = forms.IntegerField(min_value=0, widget=forms.HiddenInput)
+
+    class Meta(ComentarioForm.Meta):
+        labels = {'texto': 'Nota interna', 'anexo': 'Anexo privado (opcional)'}
+        help_texts = {'texto': 'Visível aos técnicos da equipe atual e administradores.',
+            'anexo': 'PNG, JPEG ou PDF de até 10 MB. A mesma restrição de acesso se aplica ao arquivo.'}
+        widgets = {
+            'texto': forms.Textarea(attrs={'class': 'form-control', 'rows': 4,
+                'placeholder': 'Registre informações para a equipe de TI...'}),
+            'anexo': forms.FileInput(attrs={'class': 'form-control', 'accept': '.png,.jpg,.jpeg,.pdf'}),
+        }
+
+
 class NovoUsuarioForm(forms.ModelForm):
     """
     Formulário para criação manual de usuários pelo painel do Administrador.

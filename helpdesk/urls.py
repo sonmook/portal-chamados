@@ -56,6 +56,7 @@ urlpatterns = [
     path('novo/', views.novo_chamado, name='novo_chamado'),
     path('chamado/<int:id>/', views.detalhes_chamado, name='detalhes_chamado'),
     path('chamado/<int:id>/status/', views.atualizar_status, name='atualizar_status'), 
+    path('chamado/<int:id>/notas-internas/', views.adicionar_nota_interna, name='adicionar_nota_interna'),
     path('chamado/<int:id>/reabrir/', views.reabrir_chamado, name='reabrir_chamado'),
     path('chamado/<int:id>/fechar/', views.fechar_chamado, name='fechar_chamado'),
     path('chamado/<int:chamado_id>/assumir/', views.assumir_chamado, name='assumir_chamado'),

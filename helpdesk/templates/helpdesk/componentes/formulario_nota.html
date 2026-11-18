@@ -1,0 +1,17 @@
+<details class="card card-body border-warning mt-4"{% if abrir_nota %} open{% endif %}>
+    <summary class="fw-bold"><i class="bi bi-lock" aria-hidden="true"></i> Adicionar nota interna · TI</summary>
+    <p class="small text-muted mt-3">Este conteúdo e seu anexo ficam visíveis aos técnicos da equipe atual e administradores. Não é uma resposta pública e não altera o prazo ou a situação do chamado.</p>
+    <form action="{% url 'adicionar_nota_interna' chamado.pk %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ nota_form.versao_status }}{{ nota_form.versao_atribuicao }}
+        {{ nota_form.non_field_errors }}{{ nota_form.versao_status.errors }}{{ nota_form.versao_atribuicao.errors }}
+        {% if nota_form.errors %}<p class="small">A nota não foi gravada. Seu texto foi mantido; selecione o anexo novamente, se necessário. <a href="{% url 'detalhes_chamado' chamado.pk %}">Carregar os dados atuais do chamado</a></p>{% endif %}
+        <label class="form-label" for="{{ nota_form.texto.id_for_label }}">{{ nota_form.texto.label }}</label>
+        {{ nota_form.texto }}{{ nota_form.texto.errors }}
+        <p class="form-text" id="{{ nota_form.texto.auto_id }}_helptext">{{ nota_form.texto.help_text }}</p>
+        <label class="form-label" for="{{ nota_form.anexo.id_for_label }}">{{ nota_form.anexo.label }}</label>
+        {{ nota_form.anexo }}{{ nota_form.anexo.errors }}
+        <p class="form-text" id="{{ nota_form.anexo.auto_id }}_helptext">{{ nota_form.anexo.help_text }}</p>
+        <button class="btn btn-outline-dark mt-2" type="submit">Salvar nota interna</button>
+    </form>
+</details>

@@ -179,6 +179,7 @@ class Comentario(models.Model):
     chamado = models.ForeignKey(Chamado, on_delete=models.PROTECT, related_name='comentarios')
     autor = models.ForeignKey(User, on_delete=models.PROTECT)
     texto = models.TextField(verbose_name="Mensagem")
+    interna = models.BooleanField(default=False, editable=False)
     data_criacao = models.DateTimeField(auto_now_add=True)
     anexo = models.FileField(validators=[validar_anexo], upload_to='anexos_comentarios/', blank=True, null=True, verbose_name="Anexo")
 
@@ -186,7 +187,7 @@ class Comentario(models.Model):
         novo = self._state.adding
         with transaction.atomic():
             super().save(*args, **kwargs)
-            if novo:
+            if novo and not self.interna:
                 # Inclui a solução registrada como comentário e não recua em gravações concorrentes.
                 Chamado.objects.filter(pk=self.chamado_id).update(ultima_interacao_em=Greatest(
                     Coalesce('ultima_interacao_em', 'data_criacao'), models.Value(self.data_criacao)
@@ -388,7 +389,7 @@ class Notificacao(models.Model):
              ('transferencia', 'Equipe alterada'), ('resolucao', 'Chamado resolvido'),
              ('sla_proximo', 'SLA próximo do vencimento'), ('sla_vencido', 'SLA vencido'),
              ('sem_responsavel', 'Chamado sem responsável'), ('status', 'Situação atualizada'),
-             ('reabertura', 'Chamado reaberto')]
+             ('reabertura', 'Chamado reaberto'), ('nota_interna', 'Nova nota interna')]
     destinatario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notificacoes')
     chamado = models.ForeignKey(Chamado, on_delete=models.CASCADE, related_name='notificacoes')
     tipo = models.CharField(max_length=15, choices=TIPOS)
@@ -400,7 +401,7 @@ class Notificacao(models.Model):
         ordering = ['-criada_em', '-pk']
         constraints = [
             models.UniqueConstraint(fields=['destinatario', 'evento'], name='notificacao_dest_evento_unico'),
-            models.CheckConstraint(condition=models.Q(tipo__in=['atribuicao', 'resposta', 'transferencia', 'resolucao', 'sla_proximo', 'sla_vencido', 'sem_responsavel', 'status', 'reabertura']), name='notificacao_tipo_valido'),
+            models.CheckConstraint(condition=models.Q(tipo__in=['atribuicao', 'resposta', 'transferencia', 'resolucao', 'sla_proximo', 'sla_vencido', 'sem_responsavel', 'status', 'reabertura', 'nota_interna']), name='notificacao_tipo_valido'),
         ]
         indexes = [models.Index(fields=['destinatario', 'lida_em', '-criada_em'], name='notificacao_dest_lida_data')]
 
@@ -410,7 +411,7 @@ class Notificacao(models.Model):
                 'transferencia': 'arrow-left-right', 'resolucao': 'check-circle',
                 'sla_proximo': 'hourglass-split', 'sla_vencido': 'alarm',
                 'sem_responsavel': 'person-exclamation', 'status': 'arrow-repeat',
-                'reabertura': 'arrow-counterclockwise'}.get(self.tipo, 'bell')
+                'reabertura': 'arrow-counterclockwise', 'nota_interna': 'journal-lock'}.get(self.tipo, 'bell')
 
 
 class PreferenciaListaChamados(models.Model):

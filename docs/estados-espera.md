@@ -6,7 +6,7 @@ A v1.12.0 permite indicar de quem depende a próxima ação. Os estados de esper
 
 O técnico responsável, ativo e integrante da equipe, encontra **Alterar situação** nos detalhes do chamado. Pode selecionar Aberto, Em Andamento, Aguardando solicitante ou Aguardando fornecedor. Para aguardar, é obrigatório registrar um motivo de até 500 caracteres.
 
-O motivo aparece para quem já tem acesso ao chamado. Ele não é uma nota interna; não inclua senhas ou informações que não devam ser compartilhadas com esses participantes. O administrador ou coordenador que não é responsável deve usar o fluxo de distribuição existente antes de atuar como responsável.
+O motivo aparece para quem já tem acesso ao chamado. Ele não é uma [nota interna](notas-internas.md); não inclua senhas ou informações que não devam ser compartilhadas com esses participantes. O administrador ou coordenador que não é responsável deve usar o fluxo de distribuição existente antes de atuar como responsável.
 
 Ao salvar, o portal registra situação anterior/nova, motivo, autor e instante. A faixa de espera mostra desde quando o chamado aguarda e a próxima ação. O solicitante recebe aviso de situação atualizada; o próprio autor não recebe seu aviso. A notificação não armazena uma cópia do motivo.
 
@@ -52,3 +52,5 @@ No Windows, use o Python da venv nos comandos e depois `iniciar-portal.cmd`. Nã
 A migração adiciona campos e tabela, amplia o tamanho da situação e permite o novo tipo de aviso. Preserva situações, prazos, responsáveis, comentários, avisos e leituras existentes; os novos metadados começam vazios e a versão em zero. O backup inclui o banco completo e preserva os novos registros; a homologação verifica a restauração em diretório separado.
 
 Sem nova dependência. Para voltar a uma versão anterior após usar os novos estados, prefira o procedimento de recuperação com um backup compatível; o código antigo não conhece as novas situações.
+
+Desde a v1.14.0, notas internas da TI usam um formulário separado. Elas não retomam uma espera nem alteram a última interação pública ou o prazo; somente uma resposta pública válida do solicitante mantém a retomada automática descrita acima.

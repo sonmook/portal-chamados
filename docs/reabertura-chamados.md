@@ -38,3 +38,5 @@ Cada conclusão guarda início do ciclo, vencimento, fechamento, equipe, autor, 
 A migração registra o ciclo 1 dos chamados já finalizados com os valores existentes, inclusive ausências históricas. Mantém chamados ativos, datas, avisos e leituras; não cria reaberturas, comentários, conquistas ou notificações retroativas. Resultados, ciclos atuais e histórico entram no backup completo; a homologação confirma restauração em destino separado.
 
 Sem dependência nova. Após usar ciclos adicionais, uma recuperação para código anterior requer backup compatível com aquela versão; reverter a migração removeria os resultados históricos dos ciclos.
+
+Desde a v1.14.0, [notas internas](notas-internas.md) acompanham o chamado e são consultadas conforme o acesso técnico atual. Não alteram o ciclo nem seus resultados. Em chamados finalizados, o histórico pode ser consultado, mas novas notas exigem reabertura.

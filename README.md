@@ -2,7 +2,7 @@
 
 ![Marca do Portal de TI](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.13.0** · [Notas da versão](docs/releases/v1.13.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.14.0** · [Notas da versão](docs/releases/v1.14.0.md) · [Identidade visual](docs/identidade-visual.md) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -14,6 +14,10 @@ Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django*
 As capturas da galeria principal foram registradas na **v1.1.0**, com a marca atual, os novos ícones e **dados fictícios de demonstração**. As imagens ficam versionadas em [`docs/imagens`](docs/imagens), sem depender de anexos externos do GitHub.
 
 ---
+
+## Notas internas da TI
+
+A **v1.14.0** adiciona notas e anexos internos para colaboração dos técnicos da equipe atual e administradores. O formulário é separado da resposta pública; solicitantes sem acesso técnico não recebem texto, anexo ou aviso. A nota não altera espera, prazo ou última interação pública. [Permissões, uso e atualização](docs/notas-internas.md).
 
 ## Reabertura e ciclos de atendimento
 

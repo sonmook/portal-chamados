@@ -3,6 +3,7 @@ from django.db import transaction
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import FileResponse, Http404, HttpResponseBadRequest
 from django.views.decorators.http import require_POST, require_http_methods
+from django.views.decorators.cache import never_cache
 from django.db.models import Q, F, Count, Avg, DurationField, ExpressionWrapper
 from django.db.models.functions import Coalesce
 from .user_security import bloquear_administradores, validar_pendencias
@@ -15,7 +16,7 @@ from .colunas import COLUNAS, ordem_usuario
 from .periodos import datas_periodo, limites_datas
 from .estados import FINALIZADOS, EM_ESPERA, AGUARDANDO_SOLICITANTE, EM_ANDAMENTO, RESOLVIDO
 from .atendimento import alterar_situacao, ConflitoStatus, pode_reabrir, reabrir_atendimento
-from .acesso import chamados_acessiveis, equipes_acessiveis, integrante_ativo, pode_distribuir, filtrar_equipe
+from .acesso import chamados_acessiveis, equipes_acessiveis, integrante_ativo, pode_distribuir, filtrar_equipe, comentarios_acessiveis, pode_ver_notas
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User 
@@ -23,7 +24,7 @@ from django.utils import timezone
 from django.contrib import messages
 
 from .models import Chamado, Comentario, Equipe, IntegranteEquipe, RespostaPronta, CicloAtendimento
-from .forms import ChamadoForm, ComentarioForm, NovoUsuarioForm, EditarUsuarioForm, ResolucaoForm, RedistribuirChamadoForm, SituacaoForm, ReaberturaForm
+from .forms import ChamadoForm, ComentarioForm, NovoUsuarioForm, EditarUsuarioForm, ResolucaoForm, RedistribuirChamadoForm, SituacaoForm, ReaberturaForm, NotaInternaForm
 
 
 @login_required
@@ -230,13 +231,18 @@ def _exigir_responsavel(user, chamado):
 
 
 def _contexto_detalhes(usuario, chamado, *, form=None, resolucao_form=None, situacao_form=None,
-        pagina_historico=None, reabertura_form=None, pagina_ciclos=None):
+        pagina_historico=None, reabertura_form=None, pagina_ciclos=None, nota_form=None):
     ativo = chamado.status not in FINALIZADOS and chamado.equipe.ativa
     tecnico_responsavel = ativo and chamado.tecnico_id == usuario.pk and integrante_ativo(usuario, chamado.equipe_id)
     return {
         'chamado': chamado,
-        'comentarios': chamado.comentarios.select_related('autor', 'autor__perfil').all().order_by('data_criacao'),
+        'comentarios': comentarios_acessiveis(usuario).filter(chamado=chamado).select_related(
+            'autor', 'autor__perfil').order_by('data_criacao', 'pk'),
         'form': form if form is not None else ComentarioForm(),
+        'pode_adicionar_nota': ativo and pode_ver_notas(usuario, chamado),
+        'nota_form': nota_form if nota_form is not None else NotaInternaForm(prefix='nota', initial={
+            'versao_status': chamado.versao_status, 'versao_atribuicao': chamado.versao_atribuicao}),
+        'abrir_nota': nota_form is not None and bool(nota_form.errors),
         'resolucao_form': resolucao_form if resolucao_form is not None else ResolucaoForm(initial={
             'versao_status': chamado.versao_status, 'versao_atribuicao': chamado.versao_atribuicao}),
         'reabertura_form': reabertura_form if reabertura_form is not None else ReaberturaForm(initial={
@@ -261,6 +267,7 @@ def _contexto_detalhes(usuario, chamado, *, form=None, resolucao_form=None, situ
 
 
 @login_required
+@never_cache
 @transaction.atomic
 def detalhes_chamado(request, id):
     chamado = _chamado_visivel(request.user, id, bloquear=request.method == 'POST')
@@ -291,6 +298,39 @@ def detalhes_chamado(request, id):
 
 @login_required
 @require_POST
+@never_cache
+@transaction.atomic
+def adicionar_nota_interna(request, id):
+    chamado = _chamado_visivel(request.user, id, bloquear=True)
+    ator = get_object_or_404(User.objects.select_for_update(), pk=request.user.pk, is_active=True)
+    if chamado.status in FINALIZADOS or not chamado.equipe.ativa or not pode_ver_notas(ator, chamado):
+        raise PermissionDenied
+    form = NotaInternaForm(request.POST, request.FILES, prefix='nota')
+    codigo = 400
+    if form.is_valid():
+        # Escrita condicional sem mudar a versão ou os dados públicos do atendimento.
+        atual = Chamado.objects.filter(pk=chamado.pk, equipe_id=chamado.equipe_id, status=chamado.status,
+            versao_status=form.cleaned_data['versao_status'],
+            versao_atribuicao=form.cleaned_data['versao_atribuicao']).update(versao_status=F('versao_status'))
+        if not atual:
+            form.add_error(None, 'O chamado foi alterado. Carregue os dados atuais antes de salvar a nota.')
+            codigo = 409
+        else:
+            nota = form.save(commit=False)
+            nota.chamado = chamado
+            nota.autor = ator
+            nota.interna = True
+            nota.save()
+            notificar_resposta(nota)
+            messages.success(request, 'Nota interna registrada para a equipe de TI.')
+            return redirect('detalhes_chamado', id=chamado.pk)
+    contexto = _contexto_detalhes(request.user, chamado, nota_form=form)
+    return render(request, 'helpdesk/detalhes_chamado.html', contexto, status=codigo)
+
+
+@login_required
+@require_POST
+@never_cache
 @transaction.atomic
 def atualizar_status(request, id):
     chamado = _chamado_visivel(request.user, id, bloquear=True)
@@ -316,6 +356,7 @@ def atualizar_status(request, id):
 
 @login_required
 @require_POST
+@never_cache
 @transaction.atomic
 def fechar_chamado(request, id):
     chamado = _chamado_visivel(request.user, id, bloquear=True)
@@ -352,6 +393,7 @@ def fechar_chamado(request, id):
 
 @login_required
 @require_POST
+@never_cache
 @transaction.atomic
 def reabrir_chamado(request, id):
     chamado = _chamado_visivel(request.user, id)
@@ -578,7 +620,7 @@ def baixar_anexo(request, id, comentario_id=None):
     if comentario_id is None:
         arquivo = chamado.anexo
     else:
-        arquivo = get_object_or_404(chamado.comentarios, pk=comentario_id).anexo
+        arquivo = get_object_or_404(comentarios_acessiveis(request.user), chamado=chamado, pk=comentario_id).anexo
     if not arquivo:
         raise Http404
     try:

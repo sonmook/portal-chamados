@@ -7,7 +7,7 @@ from django.core.exceptions import PermissionDenied
 from .models import Chamado, Comentario, RegistroAuditoria, Equipe, IntegranteEquipe, RegraEncaminhamento, RegraConquista, Conquista, ResolucaoConquista, PlanoConquista, Notificacao, HistoricoStatus, CicloAtendimento
 from .encaminhamento import criar_chamado_encaminhado
 from .user_security import bloquear_administradores, validar_administrador, validar_pendencias
-from .acesso import chamados_acessiveis
+from .acesso import chamados_acessiveis, comentarios_acessiveis
 
 
 class UsuarioProtegidoForm(UserChangeForm):
@@ -82,8 +82,12 @@ class ChamadoAdmin(admin.ModelAdmin):
 
 @admin.register(Comentario)
 class ComentarioAdmin(admin.ModelAdmin):
+    list_display = ('chamado', 'autor', 'interna', 'data_criacao')
+    list_select_related = ('chamado', 'autor')
+    readonly_fields = ('interna',)
+
     def get_queryset(self, request):
-        return super().get_queryset(request).filter(chamado_id__in=chamados_acessiveis(request.user).values('pk'))
+        return super().get_queryset(request).filter(pk__in=comentarios_acessiveis(request.user).values('pk'))
 
     def has_add_permission(self, request):
         return False
