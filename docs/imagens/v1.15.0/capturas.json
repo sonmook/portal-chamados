@@ -1,0 +1,207 @@
+{
+  "versao": "1.15.0",
+  "commit": "fa99b6369e6c1ff5d727ce3c4898ecab566e9181",
+  "capturado_em": "2026-11-18T20:57:14.176515-03:00",
+  "fuso_interface": "America/Sao_Paulo",
+  "dados": "Fictícios; banco temporário exclusivo. A medalha foi semeada para demonstrar a vitrine.",
+  "capturas": [
+    {
+      "arquivo": "login-desktop.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": false,
+      "sha256": "1c6c918afcb3d770c5ac5b8f5e623a35cf6580d091361ff04cb6aa4629b675e4"
+    },
+    {
+      "arquivo": "login-mobile.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "pagina_inteira": false,
+      "sha256": "da0b004bcf5c55786c72220d936f7ad6eac91c60532179d41973341bc4b34133"
+    },
+    {
+      "arquivo": "chamados-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": false,
+      "sha256": "3643afedb53e0323b8c88433a1666609da81f76c160ba7dc251ba3643ff982f5"
+    },
+    {
+      "arquivo": "dashboard-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": true,
+      "sha256": "413b17e1b73b1a9ad89d702c1120abab005ba7c8f79f86981dbe385bf3f4bd0c"
+    },
+    {
+      "arquivo": "detalhe-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": true,
+      "sha256": "d56703d3e809cfd41c01311c321cd89890b95fcf7710768bebc7cfb76aebf79c"
+    },
+    {
+      "arquivo": "administracao-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": true,
+      "sha256": "689be2a6df5850fd01d92831b18f7515e342e731989aade8f395b807b752f759"
+    },
+    {
+      "arquivo": "perfil-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": true,
+      "sha256": "534a984cb5dd52828466e860697d27700894596167bcc6ab574ee4a8a4e62f62"
+    },
+    {
+      "arquivo": "indicadores-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": true,
+      "sha256": "e8c68a416c89b53844b90e0531de5ed2d63c95986854c75f915b142639218a1e"
+    },
+    {
+      "arquivo": "novo-chamado-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": true,
+      "sha256": "d0f8f03505f7fc735fd8a0f6ee02343161f7041b05187288577e1770d7a1353c"
+    },
+    {
+      "arquivo": "equipes-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": true,
+      "sha256": "94746a5eba01b4ad960e51e10da7d428c6867b3b1bdf22d7ded6178a20fac2dc"
+    },
+    {
+      "arquivo": "notificacoes-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": true,
+      "sha256": "746c0c9b6cba08680a4e813315de7a4d7702f0d4d4eebd475f95b704ebb3c901"
+    },
+    {
+      "arquivo": "chamados-390.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "pagina_inteira": false,
+      "sha256": "30d2b513c5250ace9f075d734a6d2ebb2a020a7ebcc3df4a699326ccb98a4fb3"
+    },
+    {
+      "arquivo": "respostas-prontas-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": true,
+      "sha256": "31c891c2f94525d3cbccc64dcfad86f57080c7e00a36be66ad4c1c08973f523a"
+    },
+    {
+      "arquivo": "conquistas-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": true,
+      "sha256": "e67e497fd9f5970d43469c1a9a3d9a2d49da222bb4fa7bb67035ee31dfb9532d"
+    },
+    {
+      "arquivo": "usuarios-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": true,
+      "sha256": "7b841e2fa8b864359d5d6be9965bdea1c3646c441a5a7db4d902e70c7b07d8c4"
+    },
+    {
+      "arquivo": "redistribuicao-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": true,
+      "sha256": "be199917e915f886c13740574907bde22952efe1917258ba0bcfe169d6b33bbd"
+    },
+    {
+      "arquivo": "pendencias-tecnico-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": true,
+      "sha256": "3cc755dbb50afb01746c637d069ef9f0131fb0c9c31ce9e7bdc908f79bfdeb52"
+    },
+    {
+      "arquivo": "encaminhamento-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": true,
+      "sha256": "ccc1cc31d68d7ad293f9d19b2d52f7a46eb8e9569100bbffba9189efcc1778de"
+    },
+    {
+      "arquivo": "resolucao-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": true,
+      "sha256": "2a7f74111cf57060e94ab23f1847cb02c026c6040839920fce458bafaacd6cea"
+    },
+    {
+      "arquivo": "fila-sla-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": true,
+      "sha256": "44cacc9fd771761d56a21864d492a2bc9ab71ab97677fc6fb3a6fdc93d9f4199"
+    },
+    {
+      "arquivo": "admin-desktop.png",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "pagina_inteira": false,
+      "sha256": "4161f60f71ea5b114d930bca48577abd82b76dbc547ac01d180e180820a30711"
+    },
+    {
+      "arquivo": "admin-mobile.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "pagina_inteira": false,
+      "sha256": "21835a3f6773d1dcaebe91880d0472075b9806825533e5d6b959f06f83a3a049"
+    }
+  ]
+}

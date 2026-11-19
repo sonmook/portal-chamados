@@ -1,11 +1,14 @@
 """Valida a interface com Chromium e dados fictícios em um banco temporário próprio."""
 import base64
+from datetime import datetime
+import hashlib
 import io
 import json
 import os
 from pathlib import Path
 import re
 import secrets
+import subprocess
 import sys
 import tempfile
 from threading import Thread
@@ -41,13 +44,29 @@ def main():
         from django.core.wsgi import get_wsgi_application
         from django.db import connections
         from django.urls import reverse
-        from helpdesk.models import Chamado
+        from helpdesk.models import Chamado, Comentario, Conquista, IntegranteEquipe, Notificacao, Perfil, RegraConquista
         call_command('migrate', interactive=False, verbosity=0)
         call_command('criar_dados_demo', stdout=io.StringIO())
         senha = secrets.token_urlsafe(18)
         usuario = User.objects.create_superuser('preview.nexaltri', 'preview@example.invalid', senha,
             first_name='Ana', last_name='Suporte')
-        ticket = Chamado.objects.filter(status='Em Andamento').first()
+        ticket = Chamado.objects.filter(status='Em Andamento', categoria='Rede').first()
+        # Cenários exclusivos do banco temporário para documentar a interface em uso.
+        ticket.tecnico = usuario
+        ticket.save(update_fields=['tecnico'])
+        IntegranteEquipe.objects.create(equipe=ticket.equipe, usuario=usuario)
+        Perfil.objects.create(usuario=usuario, cargo='Analista de suporte', departamento='Tecnologia', ramal='204')
+        Comentario.objects.create(chamado=ticket, autor=usuario,
+            texto='Verificação inicial concluída. Vamos acompanhar a estabilidade da conexão.')
+        Comentario.objects.create(chamado=ticket, autor=usuario, interna=True,
+            texto='Nota interna de demonstração: validar o acesso com a equipe de redes.')
+        for tipo in ('atribuicao', 'resposta', 'sla_proximo'):
+            Notificacao.objects.create(destinatario=usuario, chamado=ticket, tipo=tipo, evento='preview-'+tipo)
+        regra = RegraConquista.objects.filter(alvo='pessoa').first()
+        Conquista.objects.create(usuario=usuario, regra=regra, icone=regra.icone,
+            nome=regra.nome, descricao=regra.descricao, meta=regra.meta, versao_regra=regra.versao)
+        resolvido = Chamado.objects.filter(status='Resolvido').first()
+        tecnico = User.objects.get(username='demo.lucas')
         paginas = {
             'chamados': reverse('lista_chamados'), 'dashboard': reverse('dashboard'),
             'detalhe': reverse('detalhes_chamado', args=[ticket.pk]),
@@ -55,6 +74,16 @@ def main():
             'indicadores': reverse('indicadores_administracao'),
             'novo-chamado': reverse('novo_chamado'), 'equipes': reverse('gerenciar_equipes'),
             'notificacoes': reverse('listar_notificacoes'),
+        }
+        documentacao = {
+            'respostas-prontas': reverse('gerenciar_respostas_prontas'),
+            'conquistas': reverse('minhas_conquistas'),
+            'usuarios': reverse('gerenciar_usuarios'),
+            'redistribuicao': reverse('redistribuir_chamado', args=[ticket.pk]),
+            'pendencias-tecnico': reverse('editar_usuario', args=[tecnico.pk]),
+            'encaminhamento': reverse('listar_regras_encaminhamento'),
+            'resolucao': reverse('detalhes_chamado', args=[resolvido.pk]),
+            'fila-sla': reverse('lista_chamados')+'?fila=minha&sla=proximos',
         }
         connections.close_all()
         server = make_server('127.0.0.1', 0, StaticFilesHandler(get_wsgi_application()), handler_class=Silencioso)
@@ -65,6 +94,7 @@ def main():
         saida.mkdir(parents=True, exist_ok=True)
         cdn = {}
         resultados = []
+        capturas = []
         erros = []
 
         # O fetch usa a CA/proxy do ambiente, mantendo a verificação TLS dos recursos existentes.
@@ -107,8 +137,10 @@ def main():
                 assert (alto+.05)/(baixo+.05) >= 4.5, (nome, 'Contraste do botão', cores)
             resultados.append({'pagina': nome, 'viewport': medidas['viewport'], 'overflow': False, 'fontes': 'locais carregadas'})
 
-        def capturar(page, nome):
-            dados = page.screenshot(path=str(saida/f'{nome}.png'), full_page=False, animations='disabled')
+        def capturar(page, nome, *, completa=False):
+            dados = page.screenshot(path=str(saida/f'{nome}.png'), full_page=completa, animations='disabled')
+            capturas.append({'arquivo': nome+'.png', 'viewport': page.viewport_size,
+                'pagina_inteira': completa, 'sha256': hashlib.sha256(dados).hexdigest()})
             if os.environ.get('NEXALTRI_LOG_PREVIEWS') == '1':
                 codificado = base64.b64encode(dados).decode()
                 print('NEXALTRI_IMAGE_BEGIN '+nome, flush=True)
@@ -156,7 +188,13 @@ def main():
                                 atual.locator('#navbarNav').wait_for(state='hidden')
                             if largura in (390,1440):
                                 capturar(atual, f'chamados-{largura}')
+                        if largura == 1440 and nome != 'chamados':
+                            capturar(atual, f'{nome}-{largura}', completa=True)
                     contexto.close()
+                for nome, caminho in documentacao.items():
+                    page.goto(base+caminho)
+                    verificar(page, nome+'-1440')
+                    capturar(page, nome+'-1440', completa=True)
                 page.goto(base+reverse('admin:index'))
                 verificar(page, 'admin-desktop')
                 assert page.locator('#site-name img[alt="Nexaltri"]').is_visible()
@@ -172,6 +210,14 @@ def main():
             thread.join(timeout=5)
             connections.close_all()
         (saida/'resultados.json').write_text(json.dumps(resultados, ensure_ascii=False, indent=2))
+        (saida/'capturas.json').write_text(json.dumps({
+            'versao': (ROOT/'VERSION').read_text().strip(),
+            'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
+            'capturado_em': datetime.now().astimezone().isoformat(),
+            'fuso_interface': settings.TIME_ZONE,
+            'dados': 'Fictícios; banco temporário exclusivo. A medalha foi semeada para demonstrar a vitrine.',
+            'capturas': capturas,
+        }, ensure_ascii=False, indent=2))
         print(f'PASS: {len(resultados)} verificações visuais; login, navegação, fontes, marca e largura em desktop/tablet/celular.')
 
 

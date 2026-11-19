@@ -46,4 +46,4 @@ O job `visual` instala Playwright/Chromium somente no ambiente de teste. `script
 
 Capturas e resultados ficam em `artifacts/nexaltri-visual/`, publicados no artefato homônimo da CI por 14 dias. As prévias incluem apenas dados fictícios. O script pode rodar em desenvolvimento com Playwright 1.62.0 e Chromium preparados; não é preciso instalá-los para usar o portal ou executar a validação comum da atualização.
 
-Capturas antigas da documentação identificam versões anteriores. Notas anteriores mantêm o nome histórico; novas notas usam Nexaltri. Repositório e comandos de inicialização conservam seus caminhos para compatibilidade com instalações existentes.
+As capturas aprovadas do README são preservadas em `docs/imagens/v1.15.0/`, com data, commit e hashes, independentemente da expiração do artefato da CI. A [evolução visual](evolucao-visual.md) reúne as imagens antigas e suas origens. Notas anteriores mantêm o nome histórico; novas notas usam Nexaltri. Repositório e comandos de inicialização conservam seus caminhos para compatibilidade com instalações existentes.

@@ -1,17 +1,20 @@
 name: Publicar versão
 on:
+  push:
+    branches: [main]
+    paths:
+      - VERSION
+      - docs/releases/**
+      - .github/workflows/release.yml
+      - scripts/plan_releases.py
+      - scripts/resolve_release.py
   workflow_dispatch:
     inputs:
       version:
-        description: Versão a publicar (atual usa VERSION da main)
-        type: choice
+        description: atual, pendentes ou uma versão histórica (exemplo v1.10.0)
+        type: string
         required: true
-        default: atual
-        options:
-          - atual
-          - v1.3.0
-          - v1.5.0
-          - v1.8.0
+        default: pendentes
 permissions:
   contents: read
 concurrency:
@@ -22,10 +25,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
-      sha: ${{ steps.target.outputs.sha }}
-      version: ${{ steps.target.outputs.version }}
-      tag: ${{ steps.target.outputs.tag }}
-      latest: ${{ steps.target.outputs.latest }}
+      matrix: ${{ steps.target.outputs.matrix }}
+      has_releases: ${{ steps.target.outputs.has_releases }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,22 +34,33 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version-file: .python-version
-      - name: Resolver commit da versão
+      - name: Planejar versões ainda sem Release
         id: target
         env:
           PORTAL_RELEASE: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
           python scripts/check_release.py
-          python scripts/resolve_release.py "$PORTAL_RELEASE" >> "$GITHUB_OUTPUT"
+          gh api "repos/$GITHUB_REPOSITORY/releases" --paginate --slurp --jq 'add' > "$RUNNER_TEMP/releases.json"
+          python scripts/plan_releases.py "$RUNNER_TEMP/releases.json" "${PORTAL_RELEASE:-pendentes}" >> "$GITHUB_OUTPUT"
   validation:
     needs: prepare
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && needs.prepare.outputs.has_releases == 'true'
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     uses: ./.github/workflows/ci.yml
     with:
-      ref: ${{ needs.prepare.outputs.sha }}
+      ref: ${{ matrix.sha }}
   release:
     needs: [prepare, validation]
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && needs.prepare.outputs.has_releases == 'true'
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -56,16 +68,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ needs.prepare.outputs.sha }}
+          ref: ${{ matrix.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version-file: .python-version
       - name: Validar versão e vínculo com main
         env:
-          PORTAL_VERSION: ${{ needs.prepare.outputs.version }}
-          PORTAL_SHA: ${{ needs.prepare.outputs.sha }}
-          PORTAL_LATEST: ${{ needs.prepare.outputs.latest }}
+          PORTAL_VERSION: ${{ matrix.version }}
+          PORTAL_SHA: ${{ matrix.sha }}
+          PORTAL_LATEST: ${{ matrix.latest }}
         run: |
+          set -euo pipefail
           version=$(python scripts/check_release.py)
           test "$version" = "$PORTAL_VERSION"
           test "$(git rev-parse HEAD)" = "$PORTAL_SHA"
@@ -77,11 +90,12 @@ jobs:
       - name: Criar tag oficial e release
         env:
           GH_TOKEN: ${{ github.token }}
-          PORTAL_TAG: ${{ needs.prepare.outputs.tag }}
-          PORTAL_LATEST: ${{ needs.prepare.outputs.latest }}
+          PORTAL_TAG: ${{ matrix.tag }}
+          PORTAL_LATEST: ${{ matrix.latest }}
           GIT_COMMITTER_NAME: Emerson Franco
           GIT_COMMITTER_EMAIL: 132287925+sonmook@users.noreply.github.com
         run: |
+          set -euo pipefail
           tag="$PORTAL_TAG"
           if rg -q '^# Nexaltri' README.md; then
             sistema=Nexaltri
@@ -91,7 +105,7 @@ jobs:
           if git show-ref --verify --quiet "refs/tags/$tag"; then
             test "$(git rev-list -n 1 "$tag")" = "$(git rev-parse HEAD)" || { echo 'A tag já aponta para outro commit; não será sobrescrita.'; exit 1; }
           else
-            git tag -a "$tag" -m "Portal de TI $tag"
+            git tag -a "$tag" -m "$sistema $tag"
             git push origin "$tag"
           fi
           # Repetir a ação não move tags nem reescreve Releases existentes.

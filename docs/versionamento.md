@@ -1,61 +1,54 @@
-# Versionamento do Portal de TI
+# Versionamento e Releases da Nexaltri
 
-`VERSION` é a fonte da versão do código. O portal e o login usam esse arquivo, também validado pelo CI. A versão do código em uma branch pode preceder sua publicação oficial.
-
-Usamos `MAJOR.MINOR.PATCH`: mudanças incompatíveis incrementam MAJOR; funcionalidades compatíveis, MINOR; correções, PATCH. Tags usam o prefixo `v`, por exemplo `v1.4.0`.
+`VERSION` é a fonte da versão do produto, exibida no portal e no login. Usamos `MAJOR.MINOR.PATCH` e tags com prefixo `v`. Uma branch pode conter código ainda não publicado; o [GitHub Releases](https://github.com/sonmook/portal-chamados/releases) é o registro das publicações oficiais.
 
 ## Preparar uma versão
 
-1. Trabalhe em branch, sem alterar a main diretamente.
-2. Atualize `VERSION`, a entrada do `CHANGELOG.md`, as notas em `docs/releases/vX.Y.Z.md` e a indicação no README.
-3. Execute `python scripts/check_release.py` e a validação do projeto. Abra um PR e confirme todos os checks antes do merge.
+1. Trabalhe em branch e abra um PR. Atualize `VERSION`, `CHANGELOG.md`, `docs/releases/vX.Y.Z.md` e a indicação no README.
+2. Execute `python scripts/validar_atualizacao.py` com o Python da venv e confirme os checks do PR antes do merge.
+3. Quando houver mudança visível, gere e revise capturas de demonstração. Guarde-as em uma nova pasta `docs/imagens/vX.Y.Z/` e acrescente a etapa à [evolução visual](evolucao-visual.md). Preserve as imagens anteriores.
 
-## Publicar a versão atual
+Uma atualização apenas desta documentação não incrementa a versão do produto. A documentação publicada em uma Release corresponde ao commit da tag; melhorias posteriores do README continuam acessíveis na main e no histórico.
 
-Após o merge, abra **Actions → Publicar versão → Run workflow**, escolha a branch **main** e a opção **atual**. O fluxo lê `VERSION` e publica a versão do código validado; nesta preparação, **v1.15.0**.
+## Publicação automática após o merge
 
-As versões **v1.3.0 e v1.4.0 já foram registradas**. As opções `v1.3.0`, `v1.5.0` e `v1.8.0` permitem recuperar versões históricas anteriores à atual. São resolvidas pelo histórico principal, não recebem Latest e não alteram tags ou Releases existentes. A v1.3.0 corresponde ao commit e97932d e a v1.5.0 ao commit 421fed7 e a v1.8.0 ao commit 3714370 (resumo operacional e inicializador Windows).
+O workflow **Publicar versão** roda na main quando mudam `VERSION`, notas de Release ou os arquivos do próprio publicador. A atualização deste publicador também inicia a recuperação das versões ainda sem Release. Não publica a partir de PRs ou branches de trabalho.
 
-Na homologação, o certificado público é copiado temporariamente para dentro do contexto permitido pelo Docker Bake e montado como secret. A pasta é excluída da imagem e removida ao final, inclusive em falhas.
+O planejamento consulta as Releases existentes e as notas versionadas. Para cada versão ausente, encontra o último commit correspondente no histórico de primeiro pai da main. Publicações existentes são ignoradas. Se houver uma tag sem Release, usa o commit daquela tag, desde que a versão e a origem sejam compatíveis; nunca a move.
 
-Cada publicação repete os jobs do CI (testes, dependências, homologação e inicialização no Windows) com checkout do SHA escolhido, e publica o mesmo commit. A etapa nativa Windows se aplica às revisões que já contêm o inicializador; versões históricas anteriores preservam suas validações existentes. A ação não instala a atualização em servidores ou no Windows automaticamente.
+Cada commit planejado passa pelos jobs de testes, dependências, homologação, Windows e visual. Os jobs que ainda não existiam no produto histórico são ignorados quando não se aplicam. Só depois da validação completa o fluxo cria as tags anotadas e publica as notas do próprio commit. Versões antigas recebem `Latest=false`; a versão atual só recebe Latest quando o SHA validado é o HEAD exato da main.
 
-## Registro histórico das versões v1.5.0 e v1.6.0
+Em 18/11/2026, a consulta anterior a esta atualização encontrou Releases de **v1.1.0 a v1.9.0**. O primeiro planejamento recupera **v1.10.0, v1.10.1, v1.11.0, v1.12.0, v1.13.0 e v1.14.0**, além de publicar a **v1.15.0** atual. Esta lista é um registro da consulta; confira o estado vigente na página de Releases e nas execuções do workflow.
 
-As tags v1.5.0 e v1.6.0 já foram registradas. O procedimento abaixo documenta a publicação realizada quando a main estava em 1.6.0; a opção **atual** sempre lê VERSION e nesta preparação publica 1.15.0. Não a use para recriar uma versão anterior.
+## Executar ou recuperar manualmente
 
-Procedimento histórico:
+Abra **Actions → Publicar versão → Run workflow**, selecione **main** e informe:
 
-1. Abra **Actions → Publicar versão → Run workflow** na branch **main** e selecione **v1.5.0**. A ação valida o commit histórico `421fed7` (notificações), cria a tag oficial e publica as notas da v1.5.0 sem marcar Latest.
-2. Aguarde a conclusão dessa execução. Confira a Release em **Releases → Portal de TI v1.5.0**.
-3. Execute o mesmo workflow novamente na **main**, agora com **atual**. O fluxo valida o commit atual e publica **v1.6.0** como Latest.
-4. Confira as duas Releases e seus commits. A v1.4.0 e as tags anteriores permanecem intactas.
+| Entrada | Resultado |
+| --- | --- |
+| `pendentes` | Publica todas as versões com notas e histórico válidos ainda sem Release. É o padrão. |
+| `atual` | Publica somente a versão indicada por VERSION, se estiver ausente. |
+| `v1.10.0` ou outra versão semântica | Recupera a versão histórica solicitada, se estiver ausente e for anterior à atual. |
 
-Cada execução valida testes, dependências e homologação no próprio commit da versão. Se alguma etapa falhar, corrija a causa antes de tentar novamente. A versão atual pode ser conferida antes de publicar com `python scripts/resolve_release.py atual`.
+Se tudo já estiver publicado, o planejamento fica vazio e nada é alterado. Se uma validação falhar, corrija a causa antes de repetir. Se a main avançar durante a validação da versão atual, o fluxo encerra essa publicação; execute novamente para validar o novo commit. Rascunhos preexistentes exigem revisão, evitando sobrescrita acidental.
 
-## Registro histórico de v1.8.0 e v1.9.0
+Para inspecionar sem publicar:
 
-As tags v1.8.0 e v1.9.0 já foram registradas. O procedimento abaixo foi usado quando VERSION era 1.9.0. A opção atual lê a versão do código e nesta preparação publica 1.15.0.
+```bash
+python scripts/resolve_release.py atual
+python scripts/resolve_release.py v1.10.0
+# releases.json deve conter a lista obtida da API de Releases do repositório.
+python scripts/plan_releases.py releases.json pendentes
+```
 
-Procedimento histórico:
+O planejamento não cria tags, commits ou Releases. O arquivo da API é somente entrada temporária; não precisa ser versionado.
 
-1. Abra **Actions → Publicar versão → Run workflow** na branch **main** e selecione **v1.8.0**. A ação valida o commit histórico `3714370`, incluindo resumo operacional e inicializador Windows, e publica a tag e as notas da v1.8.0 sem Latest.
-2. Aguarde finalizar com sucesso e confira a Release v1.8.0.
-3. Execute novamente na **main**, agora com **atual**. A ação valida o commit atual e publica a **v1.9.0** como Latest, incluindo a organização pessoal das colunas.
-4. Confira as duas Releases. Tags e versões anteriores permanecem intactas.
+## Proteções e implantação
 
-Cada execução valida o próprio SHA com os jobs do CI, incluindo Windows quando o inicializador está presente. A opção atual sempre lê VERSION; não serve para recriar uma versão intermediária.
+- Notas, VERSION e SHA precisam corresponder. A versão histórica precisa existir no histórico principal, não apenas em uma branch lateral.
+- Publicações são serializadas; tags existentes não são movidas e Releases existentes não são reescritas. Notas antigas mantêm o nome Portal de TI; a Nexaltri usa o nome novo.
+- A tag anotada usa `Emerson Franco <132287925+sonmook@users.noreply.github.com>` e o token nativo do GitHub, sem novo segredo.
+- O certificado público de build da homologação é montado como secret, excluído da imagem e removido ao final.
+- Publicar uma Release não instala a atualização no Windows ou em servidores. Siga as notas da versão para backup, migrações, estáticos e reinício.
 
-## Proteções da publicação
-
-- Apenas execuções na main publicam. A versão histórica deve pertencer ao histórico principal e ser anterior à atual.
-- A tag anotada usa a identidade oficial `Emerson Franco <132287925+sonmook@users.noreply.github.com>`; o fluxo usa o token do próprio GitHub, sem novo segredo.
-- Tags existentes não são movidas e Releases existentes não são reescritas. A tag v1.2.0 permanece intacta.
-- Para a versão atual, se a main avançar durante a validação, a ação termina sem publicar: execute-a novamente para validar o novo commit.
-- Se a tag foi enviada, mas a criação da Release falhou, é possível repetir para o mesmo commit. Não reutilize uma versão para outro commit.
-
-A resolução pode ser inspecionada sem alterações locais ou remotas com `python scripts/resolve_release.py atual`, `python scripts/resolve_release.py v1.3.0` ou `python scripts/resolve_release.py v1.5.0`. Para a v1.8.0, use `python scripts/resolve_release.py v1.8.0`. Esses comandos exibem SHA, versão, tag e indicação de Latest; não criam tags.
-
-A versão exibida no portal e no login é carregada ao iniciar o processo. Depois de atualizar o código, reinicie a aplicação; no desenvolvimento, pare o `runserver` com Ctrl+C e inicie-o novamente.
-
-Publicar uma tag não implanta o sistema nem altera dados. A atualização de cada instalação segue as notas da versão, incluindo backup e migrações quando aplicáveis.
+Após atualizar uma instalação, reinicie os processos: a versão exibida é carregada na inicialização. A [galeria histórica](evolucao-visual.md), as notas e o CHANGELOG complementam o registro oficial das Releases.
