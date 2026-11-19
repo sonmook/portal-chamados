@@ -11,7 +11,7 @@
 
 Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django**, com fila de atendimento, acompanhamento de SLA, indicadores, controle de acesso e trilha de auditoria.
 
-As imagens deste README mostram a **Nexaltri v1.15.0**, com **dados fictícios de demonstração**. As capturas atuais ficam em [`docs/imagens/v1.15.0`](docs/imagens/v1.15.0), com data, commit, dimensões e hashes registrados. A [galeria de evolução visual](docs/evolucao-visual.md) preserva as telas antigas e relaciona cada etapa às notas da versão; elas não são substituídas pelas imagens atuais.
+As imagens deste README mostram a **Nexaltri v1.15.0**, com **dados fictícios de demonstração**. As capturas atuais ficam em [`docs/imagens/v1.15.0`](docs/imagens/v1.15.0), com data, commit, viewport e hashes registrados. A [galeria de evolução visual](docs/evolucao-visual.md) preserva as telas antigas e relaciona cada etapa às notas da versão; elas não são substituídas pelas imagens atuais.
 
 ---
 

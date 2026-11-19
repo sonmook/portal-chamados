@@ -1,0 +1,236 @@
+[
+  {
+    "pagina": "login-desktop",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "login-mobile",
+    "viewport": 390,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "chamados-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "dashboard-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "detalhe-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "administracao-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "perfil-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "indicadores-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "novo-chamado-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "equipes-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "notificacoes-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "chamados-820",
+    "viewport": 820,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "dashboard-820",
+    "viewport": 820,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "detalhe-820",
+    "viewport": 820,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "administracao-820",
+    "viewport": 820,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "perfil-820",
+    "viewport": 820,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "indicadores-820",
+    "viewport": 820,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "novo-chamado-820",
+    "viewport": 820,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "equipes-820",
+    "viewport": 820,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "notificacoes-820",
+    "viewport": 820,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "chamados-390",
+    "viewport": 390,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "dashboard-390",
+    "viewport": 390,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "detalhe-390",
+    "viewport": 390,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "administracao-390",
+    "viewport": 390,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "perfil-390",
+    "viewport": 390,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "indicadores-390",
+    "viewport": 390,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "novo-chamado-390",
+    "viewport": 390,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "equipes-390",
+    "viewport": 390,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "notificacoes-390",
+    "viewport": 390,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "respostas-prontas-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "conquistas-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "usuarios-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "redistribuicao-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "pendencias-tecnico-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "encaminhamento-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "resolucao-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "fila-sla-1440",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "admin-desktop",
+    "viewport": 1440,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  },
+  {
+    "pagina": "admin-mobile",
+    "viewport": 390,
+    "overflow": false,
+    "fontes": "locais carregadas"
+  }
+]
