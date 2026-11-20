@@ -1,5 +1,7 @@
 # Administração → Indicadores
 
+Na **v1.17.0**, **Exportar Excel formatado** baixa o relatório completo com identidade Nexaltri, indicadores em destaque, gráficos e tabelas em três abas. Aplique os filtros antes de exportar. [Conteúdo, critérios e prévias](relatorio-excel.md). O CSV continua disponível para os dados dos ciclos.
+
 Área exclusiva para administradores ativos (`is_superuser`), inclusive no acesso direto por URL. Técnicos, coordenadores e clientes não recebem acesso. O dashboard existente mantém seu escopo atual.
 
 O período padrão é Este mês, do primeiro dia até hoje. Hoje, Últimos 7 dias (incluindo hoje), Todo o histórico e Intervalo personalizado também estão disponíveis. As datas são inclusivas e seguem o fuso configurado no Django. Filtros inválidos exibem erros sem resultados. O filtro de equipe inclui equipes inativas para preservar a consulta histórica.

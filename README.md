@@ -2,7 +2,7 @@
 
 ![Marca Nexaltri](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.16.0** · [Notas da versão](docs/releases/v1.16.0.md) · [Identidade visual](docs/identidade-visual.md) · [Evolução visual](docs/evolucao-visual.md) · [Releases oficiais](https://github.com/sonmook/portal-chamados/releases) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.17.0** · [Notas da versão](docs/releases/v1.17.0.md) · [Identidade visual](docs/identidade-visual.md) · [Evolução visual](docs/evolucao-visual.md) · [Releases oficiais](https://github.com/sonmook/portal-chamados/releases) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -11,11 +11,25 @@
 
 Aplicação de Helpdesk e Gestão de Chamados desenvolvida em **Python e Django**, com fila de atendimento, acompanhamento de SLA, indicadores, controle de acesso e trilha de auditoria.
 
-As imagens deste README mostram a **Nexaltri v1.15.0**, com **dados fictícios de demonstração**. As capturas atuais ficam em [`docs/imagens/v1.15.0`](docs/imagens/v1.15.0), com data, commit, viewport e hashes registrados. A [galeria de evolução visual](docs/evolucao-visual.md) preserva as telas antigas e relaciona cada etapa às notas da versão; elas não são substituídas pelas imagens atuais.
+As capturas das telas do portal mostram a **Nexaltri v1.15.0**; a prévia do relatório Excel pertence à **v1.17.0**. Todas usam **dados fictícios de demonstração**. As imagens ficam em [`docs/imagens/v1.15.0`](docs/imagens/v1.15.0) e [`docs/imagens/v1.17.0`](docs/imagens/v1.17.0). A [galeria de evolução visual](docs/evolucao-visual.md) preserva as versões anteriores.
 
 ---
 
 ## Atualizações do projeto
+
+### v1.17.0 — Relatório Excel com identidade Nexaltri
+
+Em **Administração → Indicadores**, aplique equipe e período e clique em **Exportar Excel formatado**. O arquivo `.xlsx` reúne o relatório completo, com marca Nexaltri, azul-marinho e turquesa, indicadores em destaque e gráficos editáveis.
+
+- **Resumo:** nove indicadores, gráficos de SLA e categorias, período, equipe, data de geração e critérios de contagem.
+- **Desempenho:** tabelas de equipes, analistas e top 20 solicitantes, com cabeçalhos formatados e filtros.
+- **Resoluções:** todos os ciclos dos filtros aplicados, com datas e números próprios do Excel, duração em horas, cabeçalho fixado e destaque de SLA.
+- **Mesmas regras da tela:** preservação do histórico de reabertura e transferência, distinção entre resultados no período e fila atual, ausência de SLA identificada como sem dados e download exclusivo de administradores ativos.
+- **CSV preservado:** continua disponível para os dados dos ciclos. O Excel é a opção para apresentação visual.
+
+**Validação local:** 565 testes aprovados, abas renderizadas e arquivo aberto no LibreOffice Calc, com conferência de indicadores, gráficos e datas nativas. Sem nova migração ou dependência de execução. [Uso, conteúdo e validação](docs/relatorio-excel.md) · [Notas da v1.17.0](docs/releases/v1.17.0.md).
+
+![Resumo do relatório Excel Nexaltri com dados fictícios](docs/imagens/v1.17.0/relatorio-excel-resumo.png)
 
 ### v1.16.0 — Exportação dos indicadores para CSV
 
@@ -35,6 +49,7 @@ Agora o administrador pode baixar as resoluções do relatório para analisar no
 
 | Versão | Principais atualizações |
 | --- | --- |
+| [v1.17.0](docs/releases/v1.17.0.md) | Relatório Excel com identidade Nexaltri, resumo visual, gráficos, desempenho e ciclos detalhados. |
 | [v1.16.0](docs/releases/v1.16.0.md) | Exportação CSV dos indicadores, com filtros, todos os ciclos concluídos e acesso administrativo. |
 | [v1.15.0](docs/releases/v1.15.0.md) | Identidade Nexaltri, fontes locais, login e navegação renovados, validação visual e galeria histórica. |
 | [v1.14.0](docs/releases/v1.14.0.md) | Notas e anexos internos da TI, com permissões, notificações e histórico técnico. |

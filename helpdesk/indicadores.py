@@ -137,6 +137,74 @@ def exportar_csv(request):
     return resposta
 
 
+def dados_relatorio(dados, agora=None):
+    """Métricas compartilhadas pela tela e pelo relatório Excel."""
+    agora = agora or timezone.now()
+    inicio, fim, resolvidos = recorte_resolucoes(dados)
+    base = Chamado.objects.all()
+    if dados['equipe']:
+        base = base.filter(equipe=dados['equipe'])
+    # Aberturas usam criação; resoluções usam fechamento, mesmo se abertas antes.
+    abertos = base
+    if inicio:
+        limite_inicial, limite_final = limites_datas(inicio, fim)
+        abertos = abertos.filter(data_criacao__gte=limite_inicial, data_criacao__lt=limite_final)
+    resumo = apresentar(metricas(resolvidos))
+    resumo['criados'] = abertos.count()
+    ativos = base.exclude(status__in=FINALIZADOS)
+    resumo['ativos'] = ativos.count()
+    resumo['sem_responsavel'] = ativos.filter(tecnico__isnull=True).count()
+    resumo['ativos_vencidos'] = ativos.filter(data_vencimento__lt=agora).count()
+    categorias = list(abertos.values('categoria').annotate(total=Count('pk')).order_by('-total', 'categoria'))
+    nomes_categorias = dict(Chamado.CATEGORIA_CHOICES)
+    for categoria in categorias:
+        categoria['nome'] = nomes_categorias.get(categoria['categoria'], categoria['categoria'] or 'Não registrada')
+        categoria['percentual'] = round(100 * categoria['total'] / resumo['criados'], 1) if resumo['criados'] else 0
+    analistas = ranking(resolvidos, 'fechado_por')
+    solicitantes = ranking(abertos, 'solicitante', limite=20)
+    # Equipe e técnico do ciclo concluído permanecem após reabertura/transferência.
+    grupos = resolvidos.values('equipe_id').annotate(total=Count('pk'),
+        dentro_sla=Count('pk', filter=Q(data_fechamento__lte=F('data_vencimento'))),
+        fora_sla=Count('pk', filter=Q(data_fechamento__gt=F('data_vencimento'))),
+        tmr=Avg(ExpressionWrapper(F('data_fechamento') - F('data_criacao'), output_field=DurationField()),
+                filter=Q(data_fechamento__gte=F('data_criacao'))))
+    por_equipe = {g['equipe_id']: apresentar(g) for g in grupos}
+    equipes = Equipe.objects.all()
+    if dados['equipe']:
+        equipes = equipes.filter(pk=dados['equipe'].pk)
+    linhas = [{'equipe': equipe, **por_equipe.get(equipe.pk, {'total': 0, 'sla_percentual': None, 'tmr_horas': None})} for equipe in equipes]
+    return dict(inicio=inicio, fim=fim, resolvidos=resolvidos, resumo=resumo,
+        equipes=linhas, categorias=categorias, analistas=analistas, solicitantes=solicitantes,
+        equipe_selecionada=dados['equipe'],
+        periodo_nome=dict(FiltrosIndicadores.base_fields['periodo'].choices)[dados['periodo']])
+
+
+@login_required
+@require_GET
+@never_cache
+def exportar_excel(request):
+    if not request.user.is_active or not request.user.is_superuser:
+        raise PermissionDenied
+    parametros = request.GET.copy()
+    parametros.setdefault('periodo', 'mes')
+    form = FiltrosIndicadores(parametros)
+    agora = timezone.now()
+    if form.is_valid():
+        from .relatorio_excel import gerar_excel
+        try:
+            conteudo = gerar_excel(dados_relatorio(form.cleaned_data, agora), agora)
+        except ValueError as erro:
+            form.add_error(None, str(erro))
+        else:
+            return HttpResponse(conteudo,
+                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', headers={
+                    'Content-Disposition': f'attachment; filename="nexaltri-indicadores-{timezone.localdate():%Y-%m-%d}.xlsx"',
+                    'X-Content-Type-Options': 'nosniff',
+                })
+    form.add_error(None, 'Corrija os filtros para exportar o relatório Excel.')
+    return render(request, 'helpdesk/indicadores.html', {'form': form, 'gerado_em': agora}, status=400)
+
+
 @login_required
 @require_GET
 def painel(request):
@@ -149,52 +217,17 @@ def painel(request):
     contexto = {'form': form, 'gerado_em': agora}
     if form.is_valid():
         dados = form.cleaned_data
-        periodo = dados['periodo']
-        inicio, fim, resolvidos = recorte_resolucoes(dados)
-        base = Chamado.objects.all()
-        if dados['equipe']:
-            base = base.filter(equipe=dados['equipe'])
-        # Aberturas usam criação; resoluções usam fechamento, mesmo se abertas antes.
-        abertos = base
-        if inicio:
-            limite_inicial, limite_final = limites_datas(inicio, fim)
-            abertos = abertos.filter(data_criacao__gte=limite_inicial, data_criacao__lt=limite_final)
-        resumo = apresentar(metricas(resolvidos))
-        resumo['criados'] = abertos.count()
-        ativos = base.exclude(status__in=FINALIZADOS)
-        resumo['ativos'] = ativos.count()
-        resumo['sem_responsavel'] = ativos.filter(tecnico__isnull=True).count()
-        resumo['ativos_vencidos'] = ativos.filter(data_vencimento__lt=agora).count()
-        categorias = list(abertos.values('categoria').annotate(total=Count('pk')).order_by('-total', 'categoria'))
-        nomes_categorias = dict(Chamado.CATEGORIA_CHOICES)
-        for categoria in categorias:
-            categoria['nome'] = nomes_categorias.get(categoria['categoria'], categoria['categoria'] or 'Não registrada')
-            categoria['percentual'] = round(100 * categoria['total'] / resumo['criados'], 1) if resumo['criados'] else 0
-        analistas = ranking(resolvidos, 'fechado_por')
-        solicitantes = ranking(abertos, 'solicitante', limite=20)
-        violados = resolvidos.filter(data_fechamento__gt=F('data_vencimento'))
-        pagina_violados = Paginator(violados.select_related('chamado').order_by('-data_fechamento', '-pk'), 25).get_page(request.GET.get('page_sla'))
-
-        # Equipe e técnico do ciclo concluído permanecem após reabertura/transferência.
-        grupos = resolvidos.values('equipe_id').annotate(total=Count('pk'),
-            dentro_sla=Count('pk', filter=Q(data_fechamento__lte=F('data_vencimento'))),
-            fora_sla=Count('pk', filter=Q(data_fechamento__gt=F('data_vencimento'))),
-            tmr=Avg(ExpressionWrapper(F('data_fechamento') - F('data_criacao'), output_field=DurationField()),
-                    filter=Q(data_fechamento__gte=F('data_criacao'))))
-        por_equipe = {g['equipe_id']: apresentar(g) for g in grupos}
-        equipes = Equipe.objects.all()
-        if dados['equipe']:
-            equipes = equipes.filter(pk=dados['equipe'].pk)
-        linhas = [{'equipe': equipe, **por_equipe.get(equipe.pk, {'total': 0, 'sla_percentual': None, 'tmr_horas': None})} for equipe in equipes]
+        relatorio = dados_relatorio(dados, agora)
+        resolvidos = relatorio.pop('resolvidos')
+        contexto.update(relatorio)
+        pagina_violados = Paginator(resolvidos.filter(data_fechamento__gt=F('data_vencimento')).select_related('chamado').order_by('-data_fechamento', '-pk'), 25).get_page(request.GET.get('page_sla'))
         pagina = Paginator(resolvidos.select_related('chamado', 'equipe', 'fechado_por').order_by('-data_fechamento', '-pk'), 25).get_page(request.GET.get('page'))
         filtros_resolucoes = parametros.copy()
         filtros_resolucoes.pop('page', None)
         filtros_sla = parametros.copy()
         filtros_sla.pop('page_sla', None)
-        contexto.update(resumo=resumo, equipes=linhas, pagina=pagina,
+        contexto.update(pagina=pagina,
             filtros_exportacao_url=urlencode({chave: valor for chave, valor in parametros.items() if chave in form.fields}),
             filtros_url=filtros_resolucoes.urlencode(), filtros_sla_url=filtros_sla.urlencode(),
-            categorias=categorias, analistas=analistas, solicitantes=solicitantes,
-            pagina_violados=pagina_violados, equipe_selecionada=dados['equipe'],
-            periodo_nome=dict(form.fields['periodo'].choices)[periodo], inicio=inicio, fim=fim)
+            pagina_violados=pagina_violados)
     return render(request, 'helpdesk/indicadores.html', contexto)

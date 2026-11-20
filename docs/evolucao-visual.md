@@ -24,6 +24,23 @@ As datas abaixo são registros de integração no Git, no fuso **America/Sao_Pau
 | [v1.13.0](releases/v1.13.0.md) | [18/11/2026](https://github.com/sonmook/portal-chamados/commit/552fc0708da37c65efcb8b07325bbd571944cdf8) | Reabertura e ciclos de atendimento | Sem captura própria preservada |
 | [v1.14.0](releases/v1.14.0.md) | [18/11/2026](https://github.com/sonmook/portal-chamados/commit/55659b97afe1540c870a3d965278a47ee5ff90e4) | Notas internas da equipe | Sem captura própria preservada |
 | [v1.15.0](releases/v1.15.0.md) | [18/11/2026](https://github.com/sonmook/portal-chamados/commit/1f35b2988fcc76d0409b11f2c5f9821f123042d0) | Identidade Nexaltri | [Ver capturas](#v1150) |
+| [v1.16.0](releases/v1.16.0.md) | [20/11/2026](https://github.com/sonmook/portal-chamados/commit/44f5529d58f8de35e9cc8b30fe474934860d9b2b) | Exportação CSV dos ciclos | Sem captura própria preservada |
+| [v1.17.0](releases/v1.17.0.md) | [Consultar histórico da main](https://github.com/sonmook/portal-chamados/commits/main/) | Relatório Excel com identidade Nexaltri | [Ver prévias](#v1170) |
+
+## v1.17.0
+
+Relatório Excel com Resumo, Desempenho e Resoluções. As [prévias](imagens/v1.17.0/README.md) usam banco temporário e dados fictícios, com hashes registrados no manifesto. São imagens do arquivo de planilha; as capturas anteriores do portal permanecem preservadas.
+
+![Resumo visual do Excel com dados fictícios](imagens/v1.17.0/relatorio-excel-resumo.png)
+
+<details>
+<summary>Equipes, pessoas e ciclos concluídos</summary>
+
+![Desempenho no Excel](imagens/v1.17.0/relatorio-excel-desempenho.png)
+
+![Ciclos concluídos no Excel](imagens/v1.17.0/relatorio-excel-resolucoes.png)
+
+</details>
 
 ## v1.15.0
 
