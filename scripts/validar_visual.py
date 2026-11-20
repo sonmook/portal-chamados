@@ -67,6 +67,8 @@ def main():
         Conquista.objects.create(usuario=usuario, regra=regra, icone=regra.icone,
             nome=regra.nome, descricao=regra.descricao, meta=regra.meta, versao_regra=regra.versao)
         resolvido = Chamado.objects.filter(status='Resolvido').first()
+        # Evita uma consulta ORM dentro do contexto assíncrono do Playwright.
+        equipe_exportacao_nome = resolvido.equipe.nome
         tecnico = User.objects.get(username='demo.lucas')
         paginas = {
             'chamados': reverse('lista_chamados'), 'dashboard': reverse('dashboard'),
@@ -163,7 +165,7 @@ def main():
             dados = Path(download.path()).read_bytes()
             assert dados.startswith(b'\xef\xbb\xbf'), 'Acentos precisam de UTF-8 com BOM'
             linhas = list(csv.DictReader(io.StringIO(dados.decode('utf-8-sig')), delimiter=';'))
-            assert linhas and all(l['Equipe'] == resolvido.equipe.nome for l in linhas)
+            assert linhas and all(l['Equipe'] == equipe_exportacao_nome for l in linhas)
             assert any(l['Chamado'] == str(resolvido.pk) for l in linhas)
 
         try:
