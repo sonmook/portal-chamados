@@ -15,6 +15,8 @@ import tempfile
 from threading import Thread
 from urllib.request import urlopen
 from wsgiref.simple_server import WSGIRequestHandler, make_server
+from xml.etree import ElementTree as ET
+from zipfile import ZipFile
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -167,6 +169,20 @@ def main():
             linhas = list(csv.DictReader(io.StringIO(dados.decode('utf-8-sig')), delimiter=';'))
             assert linhas and all(l['Equipe'] == equipe_exportacao_nome for l in linhas)
             assert any(l['Chamado'] == str(resolvido.pk) for l in linhas)
+            with page.expect_download() as evento_excel:
+                page.get_by_role('link', name='Exportar Excel formatado', exact=True).click()
+            download_excel = evento_excel.value
+            assert download_excel.failure() is None, download_excel.failure()
+            assert download_excel.suggested_filename.startswith('nexaltri-indicadores-')
+            with ZipFile(download_excel.path()) as arquivo:
+                assert arquivo.testzip() is None
+                ns = '{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'
+                livro = ET.fromstring(arquivo.read('xl/workbook.xml'))
+                assert [s.get('name') for s in livro.find(ns+'sheets')] == ['Resumo', 'Desempenho', 'Resoluções']
+                dados = ET.fromstring(arquivo.read('xl/worksheets/sheet1.xml'))
+                assert equipe_exportacao_nome in ''.join(dados.itertext())
+                assert len([p for p in arquivo.namelist() if '/charts/chart' in p and p.endswith('.xml')]) == 2
+            resultados.append({'pagina': f'download-excel-{largura}', 'viewport': largura, 'download': 'xlsx validado'})
 
         try:
             with sync_playwright() as p:

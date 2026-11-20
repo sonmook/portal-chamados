@@ -126,6 +126,11 @@ assert Conquista.objects.filter(usuario=user,regra__codigo='primeira-solucao').e
 assert Notificacao.objects.filter(destinatario=cliente,tipo='resolucao',lida_em__isnull=True).exists()
 admin=User.objects.create_superuser('validation-admin','admin@example.invalid','validation-only-not-production')
 client.force_login(admin)
+excel=client.get('/administracao/indicadores/exportar.xlsx', {'periodo':'sempre'}, secure=True, HTTP_HOST='localhost')
+assert excel.status_code==200 and excel['Content-Type']=='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+from zipfile import ZipFile
+with ZipFile(BytesIO(excel.content)) as livro:
+    assert livro.testzip() is None and 'xl/workbook.xml' in livro.namelist()
 response=client.post('/administracao/respostas-prontas/nova/',{'nome':'Retorno de validação','texto':'Modelo da homologação','ativa':'on','versao_atual':0},secure=True,HTTP_HOST='localhost')
 assert response.status_code==302
 pronta=RespostaPronta.objects.get(nome='Retorno de validação')

@@ -1,0 +1,27 @@
+{
+  "versao": "1.17.0",
+  "dados": "Fictícios; banco temporário, autores e um atraso definidos somente para esta prévia.",
+  "origem": "scripts/prever_relatorio_excel.py",
+  "modelo_sha256": "8a19b72b5ba0dcfb5ff13dcfcb43dd371b6a686e15bba849b5c5cda86de41262",
+  "imagens": [
+    {
+      "arquivo": "relatorio-excel-desempenho.png",
+      "sha256": "425a388bef7795df1c5f2189418f05cd930747bf141ea3293ddd6ee11122dec4"
+    },
+    {
+      "arquivo": "relatorio-excel-resolucoes.png",
+      "sha256": "ab08319caf06e7f17a380023b94d36e0e141549b218abeae6c9d97d1ab262261"
+    },
+    {
+      "arquivo": "relatorio-excel-resumo.png",
+      "sha256": "1e1f5306d8c042f6549a6f6311e4fcf6102401a0656890d7a56fcdbd88198c94"
+    }
+  ],
+  "verificacao": "Abas renderizadas e revisadas; arquivo aberto no LibreOffice Calc e convertido para PDF.",
+  "gerado_em": "2026-11-20T13:22:48.445827-03:00",
+  "fontes_sha256": {
+    "helpdesk/relatorio_excel.py": "730c117b24665a6553b74061dee98b78c55e86f6c5ce5a88a080262d81b80278",
+    "scripts/gerar_modelo_indicadores.mjs": "e6bfca82a1386a7ccedce034968ab5505ed2122f8266e042990980cd2fa68fed",
+    "scripts/prever_relatorio_excel.py": "14cd4f704e08e691160ff2ad60042cf9e7af9cbd1f83e5367a023db7e4f28918"
+  }
+}

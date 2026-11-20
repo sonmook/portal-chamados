@@ -17,6 +17,7 @@ from . import regras_encaminhamento
 urlpatterns = [
     path('administracao/indicadores/', indicadores.painel, name='indicadores_administracao'),
     path('administracao/indicadores/exportar.csv', indicadores.exportar_csv, name='exportar_indicadores_csv'),
+    path('administracao/indicadores/exportar.xlsx', indicadores.exportar_excel, name='exportar_indicadores_excel'),
     path('administracao/respostas-prontas/', respostas_prontas.gerenciar, name='gerenciar_respostas_prontas'),
     path('administracao/respostas-prontas/nova/', respostas_prontas.editar, name='criar_resposta_pronta'),
     path('administracao/respostas-prontas/<int:resposta_id>/editar/', respostas_prontas.editar, name='editar_resposta_pronta'),

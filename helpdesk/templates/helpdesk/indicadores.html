@@ -16,6 +16,10 @@
 {{ form.non_field_errors }}<div class="mt-3"><button class="btn btn-primary" type="submit">Aplicar filtros</button> <a class="btn btn-outline-secondary" href="{% url 'indicadores_administracao' %}">Limpar</a></div>
 </form>
 {% if resumo %}
+<div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+<a class="btn btn-primary" href="{% url 'exportar_indicadores_excel' %}?{{ filtros_exportacao_url }}" aria-describedby="excel-descricao">Exportar Excel formatado</a>
+<span id="excel-descricao" class="rel-note">Resumo, gráficos, desempenho e resoluções com os filtros aplicados.</span>
+</div>
 <section aria-labelledby="resumo-titulo">
 <h2 id="resumo-titulo">Resumo geral</h2>
 <div class="row g-2">

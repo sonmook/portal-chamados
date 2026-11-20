@@ -1,5 +1,15 @@
 # Histórico de atualizações
 
+## v1.17.0 — Relatório Excel com identidade Nexaltri
+
+- Exportação `.xlsx` em Administração → Indicadores, com marca, paleta Nexaltri, nove indicadores, dois gráficos nativos e três abas: Resumo, Desempenho e Resoluções.
+- Cálculos compartilhados com o relatório da tela; preserva os filtros, as bases de criação/fechamento, os ciclos históricos, as equipes inativas e os dados de SLA ausentes. Inclui todos os resultados, independentemente da paginação.
+- Tabelas com filtros, cabeçalhos fixados no detalhamento, números/datas nativos e formatação condicional de SLA. Gráficos têm fontes de dados e caches atualizados, com escala inteira a partir de zero.
+- Rota exclusiva de administradores ativos, somente GET e sem cache. Textos são células literais; dados de conversa, solução e notas internas não são exportados.
+- Modelo visual versionado, preenchido localmente pela aplicação. Sem nova migração ou dependência de execução; CSV existente preservado.
+- README e histórico atualizados, com prévias de demonstração e documentação em `docs/relatorio-excel.md`.
+- Validação local: 565 testes aprovados, incluindo 12 cenários do Excel; renderização das três abas e abertura no LibreOffice Calc com valores e datas nativas conferidos. CI visual ampliada para baixar e conferir Excel em desktop, tablet e celular.
+
 ## v1.16.0 — Exportação dos indicadores para CSV
 
 - README destaca as novidades da entrega no início e reúne todas as versões de v1.1.0 a v1.16.0 em uma tabela com resumos e notas. O guia de versionamento inclui o padrão de documentação a manter em cada atualização.
