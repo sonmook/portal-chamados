@@ -16,6 +16,7 @@ from . import regras_encaminhamento
 # Cada path vincula um endereço web a uma função específica no arquivo views.py.
 urlpatterns = [
     path('administracao/indicadores/', indicadores.painel, name='indicadores_administracao'),
+    path('administracao/indicadores/exportar.csv', indicadores.exportar_csv, name='exportar_indicadores_csv'),
     path('administracao/respostas-prontas/', respostas_prontas.gerenciar, name='gerenciar_respostas_prontas'),
     path('administracao/respostas-prontas/nova/', respostas_prontas.editar, name='criar_resposta_pronta'),
     path('administracao/respostas-prontas/<int:resposta_id>/editar/', respostas_prontas.editar, name='editar_resposta_pronta'),

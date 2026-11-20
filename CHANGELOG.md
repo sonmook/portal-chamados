@@ -1,5 +1,13 @@
 # Histórico de atualizações
 
+## v1.16.0 — Exportação dos indicadores para CSV
+
+- Administração → Indicadores oferece download das resoluções dos filtros aplicados, incluindo todas as páginas, com uma linha por ciclo concluído. Tela e arquivo compartilham o recorte de equipe e data de fechamento.
+- CSV em UTF-8 com BOM, separador ponto e vírgula, campos entre aspas e datas ISO 8601 no fuso ativo. Preserva número, ciclo, título, equipe, autor, status do ciclo, início, prazo, fechamento e resultado de SLA; não inclui conversas, notas internas ou anexos.
+- Rota exclusiva de administradores ativos, somente GET, com cache privado desabilitado. Filtros inválidos voltam ao formulário com HTTP 400; textos que poderiam virar fórmulas recebem proteção para leitura no Excel.
+- Testes de exportação cobrem permissões, períodos, limites no fuso local, equipes inativas, paginação, reabertura, atribuição histórica, dados ausentes e caracteres especiais. A validação em Chromium também verifica o download por equipe nos três tamanhos de tela.
+- Sem migração ou nova dependência de execução.
+
 ## v1.15.0 — Identidade Nexaltri
 
 - Documentação visual organizada por versão, com capturas atuais, inventário histórico e recuperação de imagens substituídas. Publicador identifica Releases pendentes, valida os commits e preserva tags/publicações existentes.

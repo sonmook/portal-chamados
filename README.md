@@ -2,7 +2,7 @@
 
 ![Marca Nexaltri](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.15.0** · [Notas da versão](docs/releases/v1.15.0.md) · [Identidade visual](docs/identidade-visual.md) · [Evolução visual](docs/evolucao-visual.md) · [Releases oficiais](https://github.com/sonmook/portal-chamados/releases) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.16.0** · [Notas da versão](docs/releases/v1.16.0.md) · [Identidade visual](docs/identidade-visual.md) · [Evolução visual](docs/evolucao-visual.md) · [Releases oficiais](https://github.com/sonmook/portal-chamados/releases) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -42,6 +42,8 @@ A **v1.10.1** permite buscar por número (`123` ou `#123`), selecionar categoria
 Execute `python scripts/validar_atualizacao.py` com o Python da venv para validar versão, dependências, configuração, migrações e testes em um comando. A CI executa a mesma validação em cada PR e publica um resumo por etapa; os jobs de dependências, homologação e Windows continuam separados. [Funcionamento e limites](docs/validacao-atualizacoes.md).
 
 ## Indicadores administrativos — relatório de performance
+
+Na **v1.16.0**, use **Exportar CSV** na seção **Ciclos concluídos** para baixar todas as resoluções dos filtros aplicados, incluindo as outras páginas. O arquivo abre no Excel com acentos, uma linha por ciclo, equipe e autor históricos, datas no fuso do portal e resultado de SLA. O acesso continua exclusivo de administradores ativos. [Formato, filtros e cuidados com os dados](docs/indicadores-administracao.md#exportar-resoluções-para-csv-v1160).
 
 Acesse **Administração → Indicadores** com uma conta de administrador ativo para consultar o relatório de performance. O visual acompanha a identidade Nexaltri, com cabeçalho claro, destaque turquesa, cards compactos e layout responsivo.
 
