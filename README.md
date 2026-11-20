@@ -15,6 +15,46 @@ As imagens deste README mostram a **Nexaltri v1.15.0**, com **dados fictícios d
 
 ---
 
+## Atualizações do projeto
+
+### v1.16.0 — Exportação dos indicadores para CSV
+
+Agora o administrador pode baixar as resoluções do relatório para analisar no Excel ou apresentar os resultados do atendimento.
+
+- **Onde usar:** Administração → Indicadores → aplique equipe e período → Ciclos concluídos → **Exportar CSV**.
+- **Todos os resultados:** o arquivo inclui todas as páginas dos filtros aplicados, com uma linha por ciclo concluído.
+- **Histórico preservado:** número do chamado e do ciclo, título, equipe e autor registrados na resolução, status do ciclo, início, vencimento, fechamento e resultado de SLA. Reabrir ou transferir o chamado mantém os resultados anteriores.
+- **Leitura no Excel:** UTF-8 com acentos, separador ponto e vírgula, datas no fuso do portal e proteção de textos que poderiam ser interpretados como fórmulas.
+- **Controle de acesso:** download exclusivo de administradores ativos. Filtros inválidos exibem os erros no formulário.
+
+**Validação da entrega:** 553 testes, 42 verificações visuais e os cinco jobs da CI aprovados, incluindo o download em desktop, tablet e celular. [Execução validada](https://github.com/sonmook/portal-chamados/actions/runs/44757295256).
+
+**Atualização da instalação:** sem nova migração ou dependência de execução. As [notas da v1.16.0](docs/releases/v1.16.0.md) descrevem a atualização; o [guia de exportação](docs/indicadores-administracao.md#exportar-resoluções-para-csv-v1160) detalha colunas, filtros e formato.
+
+### Histórico das versões
+
+| Versão | Principais atualizações |
+| --- | --- |
+| [v1.16.0](docs/releases/v1.16.0.md) | Exportação CSV dos indicadores, com filtros, todos os ciclos concluídos e acesso administrativo. |
+| [v1.15.0](docs/releases/v1.15.0.md) | Identidade Nexaltri, fontes locais, login e navegação renovados, validação visual e galeria histórica. |
+| [v1.14.0](docs/releases/v1.14.0.md) | Notas e anexos internos da TI, com permissões, notificações e histórico técnico. |
+| [v1.13.0](docs/releases/v1.13.0.md) | Reabertura com justificativa, ciclos de atendimento e preservação dos resultados anteriores. |
+| [v1.12.0](docs/releases/v1.12.0.md) | Aguardando solicitante e Aguardando fornecedor, com motivo e histórico das transições. |
+| [v1.11.0](docs/releases/v1.11.0.md) | Calendário de SLA com fuso, expediente e feriados; cobertura administrativa da triagem. |
+| [v1.10.1](docs/releases/v1.10.1.md) | Busca por número, categoria visível, períodos consistentes e validação das atualizações em um comando. |
+| [v1.10.0](docs/releases/v1.10.0.md) | Respostas prontas e relatório de performance administrativo. |
+| [v1.9.0](docs/releases/v1.9.0.md) | Ordem pessoal das colunas, persistida na conta e ajustável por arraste ou teclado. |
+| [v1.8.0](docs/releases/v1.8.0.md) | Resumo operacional clicável da fila e inicialização conjunta do portal e alertas no Windows. |
+| [v1.7.0](docs/releases/v1.7.0.md) | Central de Administração e consulta de auditoria no portal. |
+| [v1.6.0](docs/releases/v1.6.0.md) | Alertas de SLA próximo ou vencido e filtros por prazo. |
+| [v1.5.0](docs/releases/v1.5.0.md) | Sino, contador e central de notificações pessoais. |
+| [v1.4.0](docs/releases/v1.4.0.md) | Catálogo de conquistas, perfis completos e melhorias na apresentação das medalhas. |
+| [v1.3.0](docs/releases/v1.3.0.md) | Conquistas individuais e por equipe, com progresso e regras de concessão. |
+| [v1.2.0](docs/releases/v1.2.0.md) | Meu Perfil, edição de dados profissionais e enquadramento da foto. |
+| [v1.1.0](docs/releases/v1.1.0.md) | Atendimento por equipes, encaminhamento por categoria e primeira identidade visual do Portal de TI. |
+
+O [CHANGELOG completo](CHANGELOG.md) registra os detalhes, os ajustes pontuais e as atualizações anteriores ao versionamento. As [notas por versão](docs/releases) explicam funcionamento e atualização; a [evolução visual](docs/evolucao-visual.md) preserva as capturas anteriores. O [guia de versionamento](docs/versionamento.md#registro-das-atualizações-no-readme) define como manter esse histórico em cada entrega.
+
 ## Identidade Nexaltri
 
 A **v1.15.0** aplica a identidade Nexaltri ao portal: monograma N em SVG, assinaturas clara/escura, navegação clara, turquesa e azul-marinho, fontes Manrope/Inter locais, login e ícones próprios. Cores semânticas de SLA e status permanecem identificadas por texto. CSS e ícones usam a versão na URL para atualizar o cache do navegador. A CI inclui Chromium em desktop, tablet e celular, com capturas e dados fictícios em banco temporário. [Identidade e critérios visuais](docs/identidade-visual.md).

@@ -4,11 +4,22 @@
 
 ## Preparar uma versão
 
-1. Trabalhe em branch e abra um PR. Atualize `VERSION`, `CHANGELOG.md`, `docs/releases/vX.Y.Z.md` e a indicação no README.
+1. Trabalhe em branch e abra um PR. Atualize `VERSION`, `CHANGELOG.md`, `docs/releases/vX.Y.Z.md` e o README: versão no topo, novidades em **Atualizações do projeto** e entrada em **Histórico das versões**.
 2. Execute `python scripts/validar_atualizacao.py` com o Python da venv e confirme os checks do PR antes do merge.
 3. Quando houver mudança visível, gere e revise capturas de demonstração. Guarde-as em uma nova pasta `docs/imagens/vX.Y.Z/` e acrescente a etapa à [evolução visual](evolucao-visual.md). Preserve as imagens anteriores.
 
 Uma atualização apenas desta documentação não incrementa a versão do produto. A documentação publicada em uma Release corresponde ao commit da tag; melhorias posteriores do README continuam acessíveis na main e no histórico.
+
+## Registro das atualizações no README
+
+Toda entrega deve ter uma descrição visível no README, além do registro detalhado no CHANGELOG e das notas da versão. Mantenha este padrão:
+
+- **Atualizações do projeto:** destaque a versão mais recente no início do README, com o que mudou, onde usar, permissões relevantes, validação realizada e orientações para atualizar a instalação.
+- **Histórico das versões:** acrescente uma linha por versão, em ordem da mais recente para a mais antiga, com resumo e link para as notas. Preserve as versões anteriores.
+- **CHANGELOG:** registre correções, melhorias e ajustes de documentação na versão correspondente. Atualizações anteriores ao versionamento continuam nesse histórico.
+- **Notas da versão:** mantenha comportamento, formato dos dados, dependências, migrações e instruções de atualização. Só cite testes ou verificações realmente executados, com a evidência correspondente.
+
+Antes de concluir o PR, confira se a versão do topo, o destaque, a linha da tabela, o CHANGELOG e as notas correspondem à entrega. Revise os links locais e mantenha identificada a versão das capturas: uma mudança apenas no texto não transforma uma imagem antiga em captura da versão atual.
 
 ## Publicação automática após o merge
 
