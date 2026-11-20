@@ -1,5 +1,6 @@
 """Valida a interface com Chromium e dados fictícios em um banco temporário próprio."""
 import base64
+import csv
 from datetime import datetime
 import hashlib
 import io
@@ -148,6 +149,23 @@ def main():
                     print('NEXALTRI_IMAGE_DATA '+codificado[inicio:inicio+8192], flush=True)
                 print('NEXALTRI_IMAGE_END', flush=True)
 
+        def verificar_exportacao(page, largura):
+            # Download real após aplicar filtros; cada viewport usa a sessão administrativa.
+            page.locator('#id_periodo').select_option('sempre')
+            page.locator('#id_equipe').select_option(str(resolvido.equipe_id))
+            page.get_by_role('button', name='Aplicar filtros').click()
+            verificar(page, f'indicadores-exportacao-{largura}')
+            with page.expect_download() as evento:
+                page.get_by_role('link', name='Exportar CSV', exact=True).click()
+            download = evento.value
+            assert download.failure() is None, download.failure()
+            assert download.suggested_filename.startswith('nexaltri-resolucoes-')
+            dados = Path(download.path()).read_bytes()
+            assert dados.startswith(b'\xef\xbb\xbf'), 'Acentos precisam de UTF-8 com BOM'
+            linhas = list(csv.DictReader(io.StringIO(dados.decode('utf-8-sig')), delimiter=';'))
+            assert linhas and all(l['Equipe'] == resolvido.equipe.nome for l in linhas)
+            assert any(l['Chamado'] == str(resolvido.pk) for l in linhas)
+
         try:
             with sync_playwright() as p:
                 browser = p.chromium.launch(headless=True)
@@ -190,6 +208,8 @@ def main():
                                 capturar(atual, f'chamados-{largura}')
                         if largura == 1440 and nome != 'chamados':
                             capturar(atual, f'{nome}-{largura}', completa=True)
+                        if nome == 'indicadores':
+                            verificar_exportacao(atual, largura)
                     contexto.close()
                 for nome, caminho in documentacao.items():
                     page.goto(base+caminho)
