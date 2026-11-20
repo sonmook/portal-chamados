@@ -200,6 +200,24 @@ class RelatorioExcelTests(TestCase):
         for cor in ('101D37', '14B8A6', 'F4F7FB'):
             self.assertIn(cor, estilos)
 
+    def test_impressao_tem_configuracao_unica_e_ordenada_em_cada_aba(self):
+        # Excel rejeita pageMargins duplicado, mesmo com XML bem formado e ZIP válido.
+        livro = self.livro()
+        for numero, tamanho, orientacao in ((1, '9', 'portrait'), (2, '8', 'portrait'), (3, '8', 'landscape')):
+            with self.subTest(aba=numero):
+                folha = livro.xml(f'xl/worksheets/sheet{numero}.xml')
+                self.assertEqual(len(folha.findall(S+'pageMargins')), 1)
+                self.assertEqual(len(folha.findall(S+'pageSetup')), 1)
+                self.assertEqual(len(folha.findall(S+'sheetPr/'+S+'pageSetUpPr')), 1)
+                margens = folha.find(S+'pageMargins')
+                pagina = folha.find(S+'pageSetup')
+                self.assertEqual(margens.get('left'), '0.25')
+                self.assertEqual(pagina.get('paperSize'), tamanho)
+                self.assertEqual(pagina.get('orientation'), orientacao)
+                self.assertEqual(pagina.get('fitToWidth'), '1')
+                self.assertLess(list(folha).index(margens), list(folha).index(pagina))
+                self.assertLess(list(folha).index(pagina), list(folha).index(folha.find(S+'drawing')))
+
     def test_vazio_mantem_resumo_legivel_e_sem_dados_inventados(self):
         livro = self.livro()
         self.assertEqual(livro.celulas(1)['B9'], 0)

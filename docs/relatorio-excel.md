@@ -53,3 +53,18 @@ Sem migração ou dependência adicional de execução. Pare portal e alertas, f
 O desenho do arquivo está em `helpdesk/report_templates/indicadores.xlsx`. A aplicação preenche dados, tabelas e caches dos gráficos preservando esse modelo; não usa Node ou serviço externo em execução. `scripts/gerar_modelo_indicadores.mjs` é a fonte de autoria visual, usada apenas no ambiente de desenvolvimento com a biblioteca de planilhas disponível.
 
 `python scripts/prever_relatorio_excel.py` cria uma prévia em `artifacts/relatorio-excel.xlsx` com banco temporário próprio. Ela acrescenta autores e um atraso somente aos dados fictícios da prévia. Não consulta nem modifica o banco local da instalação.
+
+## Validação do formato
+
+A **v1.17.1** corrige a duplicação de `pageMargins` nas três abas do relatório. A v1.17.0 gerava XML legível e abria no LibreOffice, mas podia provocar o aviso de recuperação de conteúdo no Microsoft Excel. Depois de atualizar e reiniciar o portal, **baixe um relatório novo**; arquivos já exportados não mudam.
+
+O teste Python confere a ocorrência única e a ordem das propriedades de impressão. O job `excel` usa o **Open XML SDK da Microsoft 3.5.1**, validando o modelo e um relatório com dados fictícios em banco temporário. Um controle negativo duplica as margens em memória e exige que o SDK rejeite essa estrutura. O banco da instalação não é consultado.
+
+Para executar essa verificação opcional no desenvolvimento, com .NET SDK 10 instalado:
+
+```sh
+python scripts/prever_relatorio_excel.py
+dotnet run --project scripts/validar-openxml -- helpdesk/report_templates/indicadores.xlsx artifacts/relatorio-excel.xlsx
+```
+
+O portal continua exigindo apenas suas dependências Python; .NET não é necessário para usar ou exportar o relatório. A checagem estrutural pelo SDK complementa os testes de dados, download no navegador e apresentação, e não representa automação do aplicativo Microsoft Excel.

@@ -32,3 +32,7 @@ backups/
 
 # Capturas e resultados dos testes visuais com dados fictícios.
 artifacts/
+
+# Compilação da ferramenta de validação Open XML (somente desenvolvimento/CI).
+scripts/validar-openxml/bin/
+scripts/validar-openxml/obj/

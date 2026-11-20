@@ -114,10 +114,19 @@ def _grafico(xml, categorias, valores, coluna_categoria, coluna_valor):
 def _paginas(folha, *, detalhe=False, vertical=False):
     # Metadados de impressão; não alteram o tamanho dos valores ou o zoom da tela.
     pr = folha.find(_tag('sheetPr'))
-    ET.SubElement(pr, _tag('pageSetUpPr'), fitToPage='1')
-    antes = next((i for i, e in enumerate(folha) if e.tag in (_tag('drawing'), _tag('tableParts'))), len(folha))
-    folha.insert(antes, ET.Element(_tag('pageMargins'), left='0.25', right='0.25', top='0.35', bottom='0.35', header='0.15', footer='0.15'))
-    folha.insert(antes+1, ET.Element(_tag('pageSetup'), paperSize='8' if detalhe else '9', orientation='portrait' if vertical or not detalhe else 'landscape', fitToWidth='1', fitToHeight='0'))
+    ajuste = pr.find(_tag('pageSetUpPr'))
+    if ajuste is None:
+        ajuste = ET.SubElement(pr, _tag('pageSetUpPr'))
+    ajuste.set('fitToPage', '1')
+    # O modelo já possui pageMargins. O formato permite somente um por aba;
+    # reaproveitá-lo evita o aviso de recuperação do Microsoft Excel.
+    margens = folha.find(_tag('pageMargins'))
+    margens.attrib.update(left='0.25', right='0.25', top='0.35', bottom='0.35', header='0.15', footer='0.15')
+    pagina = folha.find(_tag('pageSetup'))
+    if pagina is None:
+        pagina = ET.Element(_tag('pageSetup'))
+        folha.insert(list(folha).index(margens)+1, pagina)
+    pagina.attrib.update(paperSize='8' if detalhe else '9', orientation='portrait' if vertical or not detalhe else 'landscape', fitToWidth='1', fitToHeight='0')
 
 
 def gerar_excel(relatorio, gerado_em):

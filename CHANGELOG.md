@@ -1,5 +1,12 @@
 # Histórico de atualizações
 
+## v1.17.1 — Compatibilidade do arquivo Excel
+
+- Corrige `pageMargins` duplicado nas três abas do relatório. A exportação atualiza as margens existentes no modelo e reaproveita propriedades de impressão, mantendo um único elemento de cada tipo e a ordem do formato Open XML.
+- Regressão reproduzida nas três abas antes da correção e coberta por teste de cardinalidade, ordem, orientação e tamanho do papel.
+- Novo job `excel` valida o modelo e um relatório de demonstração com o Open XML SDK da Microsoft; controle negativo exige a detecção de margens duplicadas. .NET e SDK são usados somente na ferramenta de desenvolvimento/CI, sem mudança nas dependências Python de execução.
+- README, histórico, guia do relatório e notas da versão atualizados. Para aplicar, atualizar, validar, reiniciar e exportar um novo arquivo. Sem migração; arquivos já baixados não são reescritos.
+
 ## v1.17.0 — Relatório Excel com identidade Nexaltri
 
 - Exportação `.xlsx` em Administração → Indicadores, com marca, paleta Nexaltri, nove indicadores, dois gráficos nativos e três abas: Resumo, Desempenho e Resoluções.

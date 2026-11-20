@@ -124,6 +124,37 @@ jobs:
           path: artifacts/nexaltri-visual/
           retention-days: 14
 
+  excel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+      - name: Verificar suporte à validação Open XML nesta revisão
+        id: suporte
+        run: |
+          if [ -f scripts/validar-openxml/ValidarOpenXml.csproj ]; then
+            echo 'habilitado=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'habilitado=false' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@v5
+        if: steps.suporte.outputs.habilitado == 'true'
+        with:
+          python-version-file: .python-version
+      - uses: actions/setup-dotnet@v4
+        if: steps.suporte.outputs.habilitado == 'true'
+        with:
+          dotnet-version: '10.0.x'
+      - if: steps.suporte.outputs.habilitado == 'true'
+        run: python -m pip install --require-hashes -r requirements.txt
+      - name: Gerar relatório em banco temporário e validar modelo e exportação
+        if: steps.suporte.outputs.habilitado == 'true'
+        run: |
+          python scripts/prever_relatorio_excel.py
+          dotnet run --project scripts/validar-openxml -- helpdesk/report_templates/indicadores.xlsx artifacts/relatorio-excel.xlsx
+
   windows:
     runs-on: windows-latest
     timeout-minutes: 12
