@@ -2,6 +2,7 @@
 
 ## v1.16.0 — Exportação dos indicadores para CSV
 
+- README destaca as novidades da entrega no início e reúne todas as versões de v1.1.0 a v1.16.0 em uma tabela com resumos e notas. O guia de versionamento inclui o padrão de documentação a manter em cada atualização.
 - Administração → Indicadores oferece download das resoluções dos filtros aplicados, incluindo todas as páginas, com uma linha por ciclo concluído. Tela e arquivo compartilham o recorte de equipe e data de fechamento.
 - CSV em UTF-8 com BOM, separador ponto e vírgula, campos entre aspas e datas ISO 8601 no fuso ativo. Preserva número, ciclo, título, equipe, autor, status do ciclo, início, prazo, fechamento e resultado de SLA; não inclui conversas, notas internas ou anexos.
 - Rota exclusiva de administradores ativos, somente GET, com cache privado desabilitado. Filtros inválidos voltam ao formulário com HTTP 400; textos que poderiam virar fórmulas recebem proteção para leitura no Excel.
