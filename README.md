@@ -2,7 +2,7 @@
 
 ![Marca Nexaltri](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.17.0** · [Notas da versão](docs/releases/v1.17.0.md) · [Identidade visual](docs/identidade-visual.md) · [Evolução visual](docs/evolucao-visual.md) · [Releases oficiais](https://github.com/sonmook/portal-chamados/releases) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.17.1** · [Notas da versão](docs/releases/v1.17.1.md) · [Identidade visual](docs/identidade-visual.md) · [Evolução visual](docs/evolucao-visual.md) · [Releases oficiais](https://github.com/sonmook/portal-chamados/releases) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -16,6 +16,14 @@ As capturas das telas do portal mostram a **Nexaltri v1.15.0**; a prévia do rel
 ---
 
 ## Atualizações do projeto
+
+### v1.17.1 — Correção de compatibilidade do relatório com o Excel
+
+Corrige a configuração de impressão duplicada nas abas do arquivo `.xlsx`, que podia provocar o aviso **“Encontramos um problema em um conteúdo”** no Microsoft Excel. As margens do modelo são atualizadas sem criar um segundo elemento; dados, filtros, marca, gráficos e tabelas permanecem com os mesmos critérios.
+
+A validação passa a conferir a estrutura de impressão de cada aba e a usar o **Open XML SDK da Microsoft** na CI para verificar o modelo e um relatório gerado em banco temporário, incluindo um controle que precisa rejeitar a duplicação anterior. Abertura no LibreOffice ou leitura de ZIP/XML, isoladamente, não comprovam compatibilidade com o Excel.
+
+**Como aplicar:** atualize o projeto, valide, reinicie e **exporte o arquivo novamente**. O código novo não altera arquivos já baixados. Sem migração ou nova dependência da aplicação. [Notas da v1.17.1](docs/releases/v1.17.1.md) · [Validação do formato](docs/relatorio-excel.md#validação-do-formato).
 
 ### v1.17.0 — Relatório Excel com identidade Nexaltri
 
@@ -49,6 +57,7 @@ Agora o administrador pode baixar as resoluções do relatório para analisar no
 
 | Versão | Principais atualizações |
 | --- | --- |
+| [v1.17.1](docs/releases/v1.17.1.md) | Corrige margens duplicadas no Excel e adiciona validação do formato com Open XML SDK. |
 | [v1.17.0](docs/releases/v1.17.0.md) | Relatório Excel com identidade Nexaltri, resumo visual, gráficos, desempenho e ciclos detalhados. |
 | [v1.16.0](docs/releases/v1.16.0.md) | Exportação CSV dos indicadores, com filtros, todos os ciclos concluídos e acesso administrativo. |
 | [v1.15.0](docs/releases/v1.15.0.md) | Identidade Nexaltri, fontes locais, login e navegação renovados, validação visual e galeria histórica. |
