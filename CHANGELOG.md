@@ -1,5 +1,13 @@
 # Histórico de atualizações
 
+## v1.17.2 — Backup e validação no Windows
+
+- Fecha explicitamente o cursor de referências de anexos, inclusive quando a validação lança erro, para liberar o SQLite antes de remover uma cópia incompleta no Windows. Mantém a rejeição e a mensagem de anexo ausente ou referência inválida.
+- Fixtures e leituras dos testes de backup agora fazem commit/rollback e fecham a conexão SQLite; não dependem da coleta de lixo para remover os diretórios temporários.
+- Teste real de link simbólico pula somente o caso WinError 1314. Teste com atributo de link simulado mantém a cobertura de rejeição sem privilégio especial.
+- Regressão mantém referência forte ao cursor para comprovar sua liberação após erro e a remoção da cópia parcial, com origem preservada.
+- Job Windows executa a validação completa para v1.17.2 em diante, em caminho com espaços; revisões históricas mantêm a validação anterior. README, histórico e guias atualizados. Sem migração ou nova dependência.
+
 ## v1.17.1 — Compatibilidade do arquivo Excel
 
 - Corrige `pageMargins` duplicado nas três abas do relatório. A exportação atualiza as margens existentes no modelo e reaproveita propriedades de impressão, mantendo um único elemento de cada tipo e a ordem do formato Open XML.

@@ -186,8 +186,18 @@ jobs:
         run: .\.venv\Scripts\python.exe -m pip install --require-hashes -r requirements.txt
       - if: steps.suporte.outputs.habilitado == 'true'
         run: .\.venv\Scripts\python.exe manage.py migrate --noinput
-      - if: steps.suporte.outputs.habilitado == 'true'
-        run: .\.venv\Scripts\python.exe -m unittest helpdesk.test_iniciar_local -v
+      - name: Validar atualização completa no Windows
+        if: steps.suporte.outputs.habilitado == 'true'
+        shell: pwsh
+        run: |
+          # Revisões históricas preservam o escopo anterior deste job.
+          $versao = [version](Get-Content 'VERSION' -Raw).Trim()
+          if ((Test-Path 'scripts/validar_atualizacao.py') -and $versao -ge [version]'1.17.2') {
+            & .\.venv\Scripts\python.exe scripts/validar_atualizacao.py
+          } else {
+            & .\.venv\Scripts\python.exe -m unittest helpdesk.test_iniciar_local -v
+          }
+          if ($LASTEXITCODE -ne 0) { throw 'A validação Windows falhou.' }
       - name: Verificar inicializador chamado de outra pasta
         if: steps.suporte.outputs.habilitado == 'true'
         shell: pwsh

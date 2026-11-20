@@ -2,7 +2,7 @@
 
 ![Marca Nexaltri](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.17.1** · [Notas da versão](docs/releases/v1.17.1.md) · [Identidade visual](docs/identidade-visual.md) · [Evolução visual](docs/evolucao-visual.md) · [Releases oficiais](https://github.com/sonmook/portal-chamados/releases) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.17.2** · [Notas da versão](docs/releases/v1.17.2.md) · [Identidade visual](docs/identidade-visual.md) · [Evolução visual](docs/evolucao-visual.md) · [Releases oficiais](https://github.com/sonmook/portal-chamados/releases) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -16,6 +16,14 @@ As capturas das telas do portal mostram a **Nexaltri v1.15.0**; a prévia do rel
 ---
 
 ## Atualizações do projeto
+
+### v1.17.2 — Validação de backups no Windows
+
+Corrige os erros **WinError 32** nos testes de backup ao liberar explicitamente conexões SQLite e o cursor de verificação de anexos antes da remoção de arquivos temporários. A rejeição de backup incompleto mantém a mensagem original e permite remover a cópia parcial.
+
+O teste com link simbólico real identifica especificamente o **WinError 1314** e fica marcado como não executado quando o Windows não oferece esse privilégio. Um teste simulado mantém a verificação de rejeição de links em qualquer máquina. A suíte não exige execução como administrador.
+
+A CI do Windows passa a executar **a validação completa**, além de conferir a inicialização por outra pasta. Revisões históricas mantêm as verificações anteriores. Sem migração ou nova dependência. [Notas da v1.17.2](docs/releases/v1.17.2.md) · [Validação das atualizações](docs/validacao-atualizacoes.md).
 
 ### v1.17.1 — Correção de compatibilidade do relatório com o Excel
 
@@ -57,6 +65,7 @@ Agora o administrador pode baixar as resoluções do relatório para analisar no
 
 | Versão | Principais atualizações |
 | --- | --- |
+| [v1.17.2](docs/releases/v1.17.2.md) | Libera recursos SQLite nos backups, trata privilégio de symlink nos testes e executa a suíte completa no Windows. |
 | [v1.17.1](docs/releases/v1.17.1.md) | Corrige margens duplicadas no Excel e adiciona validação do formato com Open XML SDK. |
 | [v1.17.0](docs/releases/v1.17.0.md) | Relatório Excel com identidade Nexaltri, resumo visual, gráficos, desempenho e ciclos detalhados. |
 | [v1.16.0](docs/releases/v1.16.0.md) | Exportação CSV dos indicadores, com filtros, todos os ciclos concluídos e acesso administrativo. |

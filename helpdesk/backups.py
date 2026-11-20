@@ -43,16 +43,16 @@ def verificar_anexos(banco, midia):
             )
             if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='helpdesk_perfil'").fetchone():
                 consulta += " UNION SELECT foto FROM helpdesk_perfil WHERE foto IS NOT NULL AND foto != ''"
-            referencias = db.execute(
-                consulta
-            )
-            for (nome,) in referencias:
-                if (not isinstance(nome, str) or '\\' in nome
-                        or PurePosixPath(nome).is_absolute()
-                        or any(parte in ('', '.', '..') for parte in nome.split('/'))):
-                    raise ValueError('Referência de anexo inválida no banco do backup.')
-                if nome not in presentes:
-                    raise ValueError('Backup incompleto: anexo referenciado no banco ausente dos uploads.')
+            # Uma exceção durante a iteração conserva o cursor no traceback.
+            # Fechá-lo antes da conexão libera o arquivo para limpeza no Windows.
+            with closing(db.execute(consulta)) as referencias:
+                for (nome,) in referencias:
+                    if (not isinstance(nome, str) or '\\' in nome
+                            or PurePosixPath(nome).is_absolute()
+                            or any(parte in ('', '.', '..') for parte in nome.split('/'))):
+                        raise ValueError('Referência de anexo inválida no banco do backup.')
+                    if nome not in presentes:
+                        raise ValueError('Backup incompleto: anexo referenciado no banco ausente dos uploads.')
     except sqlite3.DatabaseError as erro:
         raise ValueError('Não foi possível verificar as referências de anexos no banco do backup.') from erro
 

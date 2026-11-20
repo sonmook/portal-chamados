@@ -1,7 +1,9 @@
+from contextlib import closing
 import json
 from pathlib import Path
 import sqlite3
 import tempfile
+from unittest.mock import patch
 
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -15,7 +17,8 @@ class BackupTests(SimpleTestCase):
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
         self.db = self.root/'origem.sqlite3'
-        with sqlite3.connect(self.db) as db:
+        # O contexto da conexão faz commit/rollback; closing libera o arquivo.
+        with closing(sqlite3.connect(self.db)) as db, db:
             db.execute('CREATE TABLE registros (id INTEGER PRIMARY KEY, texto TEXT)')
             db.execute("INSERT INTO registros(texto) VALUES ('histórico preservado')")
             db.execute('CREATE TABLE helpdesk_chamado (id INTEGER PRIMARY KEY, anexo TEXT)')
@@ -33,7 +36,7 @@ class BackupTests(SimpleTestCase):
         self.criar()
         destino=self.root/'restaurado'
         restaurar_backup(self.backup,destino)
-        with sqlite3.connect(destino/'db.sqlite3') as db:
+        with closing(sqlite3.connect(destino/'db.sqlite3')) as db, db:
             self.assertEqual(db.execute('SELECT texto FROM registros').fetchone()[0], 'histórico preservado')
         self.assertEqual((destino/'media/evidencia.pdf').read_bytes(), (self.media/'evidencia.pdf').read_bytes())
         self.assertTrue(self.db.exists())
@@ -51,8 +54,22 @@ class BackupTests(SimpleTestCase):
         self.assertFalse((self.root/'restaurado').exists())
 
     def test_symlink_rejeitado(self):
-        (self.media/'link').symlink_to(self.db)
+        try:
+            (self.media/'link').symlink_to(self.db)
+        except OSError as erro:
+            if getattr(erro, 'winerror', None) == 1314:
+                self.skipTest('Windows sem privilégio para criar link simbólico; a rejeição também tem teste simulado.')
+            raise
         with self.assertRaises(ValueError):self.criar()
+
+    def test_rejeita_link_identificado_pelo_sistema_sem_exigir_criacao_real(self):
+        link = self.media/'link'
+        link.write_bytes(b'fixture para simular o atributo de link')
+        with patch.object(Path, 'is_symlink', autospec=True, side_effect=lambda p: p == link):
+            with self.assertRaisesMessage(ValueError, 'Links simbólicos não são permitidos'):
+                self.criar()
+        self.assertFalse(self.backup.exists())
+        self.assertTrue(self.db.exists())
 
     def test_backup_dentro_dos_uploads_rejeitado(self):
         with self.assertRaises(ValueError):criar_backup(self.db,self.media,self.media/'backup')
@@ -76,14 +93,44 @@ class BackupTests(SimpleTestCase):
     def test_anexo_ausente_impede_criacao_e_remove_copia_parcial(self):
         for tabela in ('helpdesk_chamado', 'helpdesk_comentario'):
             with self.subTest(tabela=tabela):
-                with sqlite3.connect(self.db) as db:
+                with closing(sqlite3.connect(self.db)) as db, db:
                     db.execute(f"INSERT INTO {tabela}(anexo) VALUES ('ausente.pdf')")
                 with self.assertRaisesMessage(ValueError, 'anexo referenciado no banco ausente'):
                     self.criar()
                 self.assertFalse(self.backup.exists())
                 self.assertTrue((self.media/'evidencia.pdf').exists())
-                with sqlite3.connect(self.db) as db:
+                with closing(sqlite3.connect(self.db)) as db, db:
                     db.execute(f"DELETE FROM {tabela} WHERE anexo = 'ausente.pdf'")
+
+    def test_cursor_liberado_antes_da_limpeza_do_backup_incompleto(self):
+        # Mantém uma referência ao cursor para não depender do coletor de lixo.
+        # No Windows, um cursor ativo impede remover o SQLite mesmo após db.close().
+        cursores = []
+        conectar = sqlite3.connect
+
+        class CursorMonitorado(sqlite3.Cursor):
+            fechado = False
+
+            def close(self):
+                super().close()
+                self.fechado = True
+
+        class ConexaoMonitorada(sqlite3.Connection):
+            def execute(self, consulta, *args, **kwargs):
+                if consulta.startswith('SELECT anexo'):
+                    cursor = self.cursor(factory=CursorMonitorado)
+                    cursores.append(cursor)
+                    return cursor.execute(consulta, *args, **kwargs)
+                return super().execute(consulta, *args, **kwargs)
+
+        (self.media/'evidencia.pdf').unlink()
+        with patch('helpdesk.backups.sqlite3.connect', side_effect=lambda *a, **kw: conectar(*a, factory=ConexaoMonitorada, **kw)):
+            with self.assertRaisesMessage(ValueError, 'anexo referenciado no banco ausente'):
+                self.criar()
+        self.assertTrue(cursores)
+        self.assertTrue(all(cursor.fechado for cursor in cursores))
+        self.assertFalse(self.backup.exists())
+        self.assertTrue(self.db.exists())
 
     def test_raiz_midia_ausente_com_referencias_impede_backup(self):
         with self.assertRaisesMessage(ValueError, 'anexo referenciado no banco ausente'):
@@ -91,7 +138,7 @@ class BackupTests(SimpleTestCase):
         self.assertFalse(self.backup.exists())
 
     def test_sem_anexos_aceita_raiz_ausente_e_restaura(self):
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             db.execute('DELETE FROM helpdesk_chamado')
             db.executemany('INSERT INTO helpdesk_chamado(anexo) VALUES (?)', [(None,), ('',)])
             db.executemany('INSERT INTO helpdesk_comentario(anexo) VALUES (?)', [(None,), ('',)])
@@ -101,7 +148,7 @@ class BackupTests(SimpleTestCase):
 
     def test_anexo_de_comentario_preservado(self):
         (self.media/'comentario.pdf').write_bytes(b'%PDF-1.7 comentario')
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             db.execute("INSERT INTO helpdesk_comentario(anexo) VALUES ('comentario.pdf')")
         self.criar()
         restaurar_backup(self.backup, self.root/'restaurado')
@@ -121,7 +168,7 @@ class BackupTests(SimpleTestCase):
         self.assertFalse((self.root/'restaurado').exists())
 
     def test_esquema_sem_tabela_de_anexos_nao_passa_silenciosamente(self):
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             db.execute('DROP TABLE helpdesk_comentario')
         with self.assertRaisesMessage(ValueError, 'Não foi possível verificar as referências'):
             self.criar()
@@ -130,7 +177,7 @@ class BackupTests(SimpleTestCase):
     def test_referencia_fora_da_midia_rejeitada(self):
         for nome in ('../evidencia.pdf', '/evidencia.pdf', 'media\\evidencia.pdf'):
             with self.subTest(nome=nome):
-                with sqlite3.connect(self.db) as db:
+                with closing(sqlite3.connect(self.db)) as db, db:
                     db.execute('UPDATE helpdesk_chamado SET anexo = ?', (nome,))
                 with self.assertRaisesMessage(ValueError, 'Referência de anexo inválida'):
                     self.criar()
@@ -142,7 +189,7 @@ class BackupTests(SimpleTestCase):
         self.assertFalse(self.backup.exists())
 
     def test_foto_de_perfil_tambem_precisa_estar_no_backup(self):
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             db.execute('CREATE TABLE helpdesk_perfil (id INTEGER PRIMARY KEY, foto TEXT)')
             db.execute("INSERT INTO helpdesk_perfil(foto) VALUES ('perfis/avatar.png')")
         with self.assertRaises(ValueError):
