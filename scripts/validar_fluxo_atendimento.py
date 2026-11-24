@@ -177,11 +177,11 @@ def main():
 
             def enviar(page, texto):
                 page.locator('#formulario-comentario textarea').fill(texto)
-                page.get_by_role('button', name='Enviar Resposta', exact=True).click()
+                page.get_by_role('button', name=re.compile(r'Enviar Resposta\s*$')).click()
                 expect(page.get_by_text(texto, exact=True)).to_be_visible()
 
             def resolver(page, texto):
-                page.get_by_role('button', name='Marcar como Resolvido', exact=True).click()
+                page.get_by_role('button', name=re.compile(r'Marcar como Resolvido\s*$')).click()
                 page.locator('#modalResolucao textarea').fill(texto)
                 page.get_by_role('button', name='Encerrar Chamado', exact=True).click()
                 expect(page.get_by_text('Este chamado foi resolvido e encerrado.', exact=True)).to_be_visible()
@@ -216,7 +216,7 @@ def main():
                         cliente.locator('#id_prioridade').select_option('Normal')
                         cliente.locator('#id_descricao').fill('Cenário fictício: acesso negado ao sistema de pedidos.')
                         cliente.locator('#id_anexo').set_input_files(arquivo_evidencia)
-                        cliente.get_by_role('button', name='Enviar Solicitação', exact=True).click()
+                        cliente.get_by_role('button', name=re.compile(r'Enviar Solicitação\s*$')).click()
                         cliente.wait_for_load_state('networkidle')
                         chamado = ler(banco, 'SELECT * FROM helpdesk_chamado WHERE titulo=?', (TITULO,))[0]
                         chamado_id, prazo = chamado['id'], chamado['data_vencimento']
@@ -235,7 +235,7 @@ def main():
                     origem_ctx, tecnico = entrar(browser, base, 'origem')
                     tecnico.goto(base+url)
                     with etapa('HF-03', 'Técnico assume o chamado sem alterar o vencimento'):
-                        tecnico.get_by_role('button', name='Assumir Chamado', exact=True).click()
+                        tecnico.get_by_role('button', name=re.compile(r'Assumir Chamado\s*$')).click()
                         expect(tecnico.get_by_text('Você é o responsável', exact=True)).to_be_visible()
                         atual = ler(banco, 'SELECT * FROM helpdesk_chamado WHERE id=?', (chamado_id,))[0]
                         assert atual['tecnico_id'] == usuarios['origem']['id'] and atual['data_vencimento'] == prazo
