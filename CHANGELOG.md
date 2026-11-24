@@ -2,6 +2,8 @@
 
 ## Homologação funcional da v1.17.2
 
+- Execução aprovada em 24/11/2026: 15 cenários Chromium, 568 testes Linux/Windows, 45 verificações visuais e Excel antes/depois da restauração sem erros Open XML. Relatório, JSON e seis capturas originais versionados; observação não bloqueante sobre o banner do solicitante registrada.
+
 - Novo `scripts/validar_fluxo_atendimento.py` executa 15 cenários pelo Chromium, com formulários reais, CSRF e sessões independentes. Usa banco, uploads e backup temporários próprios.
 - Confere permissões de chamado/anexos, nota interna, espera e retomada, transferência com acesso revogado, SLA preservado, duas resoluções no mesmo chamado, notificações, indicadores, CSV e Excel.
 - Compara todas as tabelas e arquivos privados após restaurar o backup e valida login, histórico, restrições de acesso e novo Excel na aplicação restaurada.

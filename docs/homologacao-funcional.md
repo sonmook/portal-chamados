@@ -1,5 +1,7 @@
 # Homologação funcional da v1.17.2
 
+[Resultado aprovado em 24/11/2026, com capturas e uma observação de interface](relatorios/homologacao-v1.17.2-2026-11-24.md).
+
 O comando `scripts/validar_fluxo_atendimento.py` complementa os testes Django, a validação visual e a homologação Docker/HTTPS. Executa os formulários reais no Chromium com CSRF e sessões independentes: um solicitante, outro solicitante sem acesso, um técnico coordenador da equipe inicial, um técnico da equipe de destino e uma administradora.
 
 Todas as contas, chamados e arquivos são fictícios. Banco, uploads e backup são criados em diretório temporário exclusivo. O roteiro não lê nem modifica o banco da instalação.

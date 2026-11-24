@@ -1,0 +1,114 @@
+{
+  "versao": "1.17.2",
+  "commit": "2896b2adf676fb98edec83278b451b1f59546432",
+  "executado_em": "2026-11-24T12:09:41.169487-03:00",
+  "dados": "Fictícios, com banco, uploads e backup temporários próprios.",
+  "resultados": [
+    {
+      "codigo": "HF-01",
+      "cenario": "Solicitante abre chamado com anexo; encaminhamento e prazo registrados",
+      "resultado": "aprovado"
+    },
+    {
+      "codigo": "HF-02",
+      "cenario": "Outro solicitante não acessa chamado, anexo ou relatório administrativo",
+      "resultado": "aprovado"
+    },
+    {
+      "codigo": "HF-03",
+      "cenario": "Técnico assume o chamado sem alterar o vencimento",
+      "resultado": "aprovado"
+    },
+    {
+      "codigo": "HF-04",
+      "cenario": "Resposta pública aparece ao solicitante e gera notificação",
+      "resultado": "aprovado"
+    },
+    {
+      "codigo": "HF-05",
+      "cenario": "Nota e anexo internos ficam restritos à TI sem notificar o solicitante",
+      "resultado": "aprovado"
+    },
+    {
+      "codigo": "HF-06",
+      "cenario": "Espera por solicitante e resposta retomam atendimento preservando o prazo",
+      "resultado": "aprovado"
+    },
+    {
+      "codigo": "HF-07",
+      "cenario": "Transferência preserva SLA e revoga o acesso técnico da equipe anterior",
+      "resultado": "aprovado"
+    },
+    {
+      "codigo": "HF-08",
+      "cenario": "Resolução registra solução, autor, equipe e primeiro ciclo",
+      "resultado": "aprovado"
+    },
+    {
+      "codigo": "HF-09",
+      "cenario": "Solicitante lê aviso e reabre com justificativa; histórico anterior permanece",
+      "resultado": "aprovado"
+    },
+    {
+      "codigo": "HF-10",
+      "cenario": "Segunda resolução preserva os dois ciclos e a conversa",
+      "resultado": "aprovado"
+    },
+    {
+      "codigo": "HF-11",
+      "cenario": "Administrador concilia indicadores: um chamado, duas resoluções e nenhum ativo",
+      "resultado": "aprovado"
+    },
+    {
+      "codigo": "HF-12",
+      "cenario": "Download real de Excel e CSV mantém filtros, autores, números e dois ciclos",
+      "resultado": "aprovado"
+    },
+    {
+      "codigo": "HF-13",
+      "cenario": "Auditoria administrativa e ausência de erros JavaScript",
+      "resultado": "aprovado"
+    },
+    {
+      "codigo": "HF-14",
+      "cenario": "Backup e restauração isolada preservam todas as tabelas e arquivos privados",
+      "resultado": "aprovado"
+    },
+    {
+      "codigo": "HF-15",
+      "cenario": "Aplicação restaurada permite login, histórico, anexos autorizados e os mesmos indicadores",
+      "resultado": "aprovado"
+    }
+  ],
+  "capturas": [
+    {
+      "arquivo": "01-abertura-solicitante.png",
+      "sha256": "0868859acce16a4671e56ea9f0f4bf33189aae4a12298b79cbfff7befff27a82"
+    },
+    {
+      "arquivo": "02-atendimento-transferido.png",
+      "sha256": "f3f932bb19d76cfac96727c28306f2cee2882105992673b75e4ef0251294d6b1"
+    },
+    {
+      "arquivo": "03-primeira-resolucao.png",
+      "sha256": "e02199e9828fb7aae295918118f4ef742a66e3d77db18214fc6455953594cb8c"
+    },
+    {
+      "arquivo": "04-reabertura-solicitante.png",
+      "sha256": "2b57fd34d9e17065a0f6bc005f7489d2dc39fc7e12261b87efc4701eea612135"
+    },
+    {
+      "arquivo": "05-indicadores-administrador.png",
+      "sha256": "3556b9780d93c26d8ddb7af720e41e7b8af27dce685166b507921161e537f851"
+    },
+    {
+      "arquivo": "06-indicadores-apos-restauracao.png",
+      "sha256": "02b88f6042c7e3aaebf9aa90789015b37e39fe9c9a4e28261dd73c50d1b76307"
+    }
+  ],
+  "limites": [
+    "Sem envio SMTP externo ou OAuth Google real.",
+    "Sem teste de carga ou publicação em domínio público.",
+    "Excel conferido por valores/estrutura; o aplicativo Microsoft Excel não é automatizado."
+  ]
+}

@@ -21,7 +21,7 @@ As capturas das telas do portal mostram a **Nexaltri v1.15.0**; a prévia do rel
 
 Novo roteiro automatizado em **Chromium**, com sessões independentes de solicitante, técnicos e administrador. Executa os formulários reais de abertura com anexo, atribuição, resposta, nota interna, espera, transferência, resolução e reabertura; confere os indicadores e os downloads CSV/Excel. Depois, cria um backup, restaura em diretório isolado e repete a navegação na aplicação restaurada.
 
-O job visual executa os 15 cenários e publica capturas, relatório JSON e arquivos exportados como evidências com dados fictícios. Os dois Excel baixados também passam pelo Open XML SDK. [Roteiro, execução e limites](docs/homologacao-funcional.md).
+**Execução de 24/11/2026 aprovada:** 15 cenários funcionais no Chromium, 568 testes em Linux e Windows, 45 verificações visuais e zero erros Open XML nos dois Excel baixados. Backup restaurado com tabelas e arquivos conferidos, seguido de nova navegação na cópia. A revisão visual registrou uma observação de texto no banner do solicitante, sem impedir a resposta. [Relatório com resultados e seis capturas](docs/relatorios/homologacao-v1.17.2-2026-11-24.md) · [Roteiro e limites](docs/homologacao-funcional.md).
 
 ### v1.17.2 — Validação de backups no Windows
 
