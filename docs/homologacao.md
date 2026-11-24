@@ -140,3 +140,7 @@ e o fluxo de atendimento; o teste Docker complementa a inicialização e restaur
 Antes de usar dados reais, concluir no domínio público: certificado válido,
 redirecionamento HTTPS, login/OAuth, acesso autorizado e bloqueio anônimo dos anexos,
 envio/recebimento de e-mail, recuperação de senha e restauração isolada de um backup.
+
+## Fluxo completo no navegador
+
+O [roteiro funcional da v1.17.2](homologacao-funcional.md) complementa o teste Docker com formulários reais em Chromium, sessões separadas, atendimento entre equipes, reabertura, conciliação de indicadores e download de Excel/CSV. Depois de restaurar um backup isolado, abre novamente a aplicação sobre a cópia e confere os dados e as permissões. As evidências usam somente dados fictícios.

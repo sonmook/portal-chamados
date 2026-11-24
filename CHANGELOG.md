@@ -1,5 +1,12 @@
 # Histórico de atualizações
 
+## Homologação funcional da v1.17.2
+
+- Novo `scripts/validar_fluxo_atendimento.py` executa 15 cenários pelo Chromium, com formulários reais, CSRF e sessões independentes. Usa banco, uploads e backup temporários próprios.
+- Confere permissões de chamado/anexos, nota interna, espera e retomada, transferência com acesso revogado, SLA preservado, duas resoluções no mesmo chamado, notificações, indicadores, CSV e Excel.
+- Compara todas as tabelas e arquivos privados após restaurar o backup e valida login, histórico, restrições de acesso e novo Excel na aplicação restaurada.
+- CI publica capturas, JSON e downloads, e verifica os dois arquivos Excel do navegador pelo Open XML SDK. Guias e README atualizados. Sem alteração de versão da aplicação, migração ou dependência de execução.
+
 ## v1.17.2 — Backup e validação no Windows
 
 - Fecha explicitamente o cursor de referências de anexos, inclusive quando a validação lança erro, para liberar o SQLite antes de remover uma cópia incompleta no Windows. Mantém a rejeição e a mensagem de anexo ausente ou referência inválida.

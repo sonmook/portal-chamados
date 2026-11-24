@@ -117,11 +117,26 @@ jobs:
       - name: Validar Nexaltri em desktop, tablet e celular
         if: steps.suporte.outputs.habilitado == 'true'
         run: python scripts/validar_visual.py
+      - name: Homologar atendimento e recuperação no navegador
+        if: steps.suporte.outputs.habilitado == 'true'
+        run: |
+          if [ -f scripts/validar_fluxo_atendimento.py ]; then
+            python scripts/validar_fluxo_atendimento.py
+          fi
+      - uses: actions/setup-dotnet@v4
+        if: steps.suporte.outputs.habilitado == 'true' && hashFiles('scripts/validar_fluxo_atendimento.py') != ''
+        with:
+          dotnet-version: '10.0.x'
+      - name: Validar os dois arquivos Excel baixados pelo navegador
+        if: steps.suporte.outputs.habilitado == 'true' && hashFiles('scripts/validar_fluxo_atendimento.py') != ''
+        run: dotnet run --project scripts/validar-openxml -- artifacts/homologacao-funcional/indicadores.xlsx artifacts/homologacao-funcional/indicadores-restaurado.xlsx
       - uses: actions/upload-artifact@v4
         if: always() && steps.suporte.outputs.habilitado == 'true'
         with:
           name: nexaltri-visual
-          path: artifacts/nexaltri-visual/
+          path: |
+            artifacts/nexaltri-visual/
+            artifacts/homologacao-funcional/
           retention-days: 14
 
   excel:
