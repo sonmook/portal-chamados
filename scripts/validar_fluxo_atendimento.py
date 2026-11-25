@@ -242,6 +242,9 @@ def main():
                     with etapa('HF-04', 'Resposta pública aparece ao solicitante e gera notificação'):
                         enviar(tecnico, PUBLICO)
                         cliente.reload(); expect(cliente.get_by_text(PUBLICO, exact=True)).to_be_visible()
+                        expect(cliente.get_by_text('Responsável pelo atendimento', exact=True)).to_be_visible()
+                        expect(cliente.get_by_text('Acesso Bloqueado', exact=True)).to_have_count(0)
+                        expect(cliente.get_by_text('Você pode responder pelo formulário abaixo.', exact=True)).to_be_visible()
                         assert ler(banco, "SELECT id FROM helpdesk_notificacao WHERE destinatario_id=? AND tipo='resposta'", (usuarios['cliente']['id'],))
                     with etapa('HF-05', 'Nota e anexo internos ficam restritos à TI sem notificar o solicitante'):
                         antes = len(ler(banco, 'SELECT id FROM helpdesk_notificacao WHERE destinatario_id=?', (usuarios['cliente']['id'],)))
@@ -325,6 +328,11 @@ def main():
                         assert len(linhas) == 2 and all(l['Equipe'] == destino_nome for l in linhas)
                         assert {l['Ciclo'] for l in linhas} == {'1', '2'}
                     with etapa('HF-13', 'Auditoria administrativa e ausência de erros JavaScript'):
+                        admin.goto(base+url)
+                        expect(admin.get_by_text('Responsável pelo atendimento', exact=True)).to_be_visible()
+                        expect(admin.get_by_text('Acesso Bloqueado', exact=True)).to_have_count(0)
+                        expect(admin.get_by_text('Você pode responder pelo formulário abaixo.', exact=True)).to_have_count(0)
+                        capturar(admin, '07-responsavel-administrador')
                         admin.goto(base+caminhos['listar_auditoria'])
                         expect(admin.get_by_role('heading', name='Auditoria', exact=True)).to_be_visible()
                         assert len(ler(banco, 'SELECT id FROM helpdesk_registroauditoria')) > 5
@@ -357,6 +365,9 @@ def main():
                         assert Path(default_storage.location) == media_restaurada
                         cliente_ctx, cliente = entrar(browser, base, 'cliente')
                         cliente.goto(base+url)
+                        expect(cliente.get_by_text('Responsável pelo atendimento', exact=True)).to_be_visible()
+                        expect(cliente.get_by_text('Acesso Bloqueado', exact=True)).to_have_count(0)
+                        expect(cliente.get_by_text('Você pode responder pelo formulário abaixo.', exact=True)).to_have_count(0)
                         for texto in SOLUCOES:
                             expect(cliente.get_by_text(texto, exact=True)).to_be_visible()
                         expect(cliente.get_by_text(PRIVADO, exact=True)).to_have_count(0)

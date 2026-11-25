@@ -2,7 +2,7 @@
 
 ![Marca Nexaltri](helpdesk/static/helpdesk/brand/logo.svg)
 
-**Versão do código: 1.17.2** · [Notas da versão](docs/releases/v1.17.2.md) · [Identidade visual](docs/identidade-visual.md) · [Evolução visual](docs/evolucao-visual.md) · [Releases oficiais](https://github.com/sonmook/portal-chamados/releases) · [Publicação de versões](docs/versionamento.md)
+**Versão do código: 1.17.3** · [Notas da versão](docs/releases/v1.17.3.md) · [Identidade visual](docs/identidade-visual.md) · [Evolução visual](docs/evolucao-visual.md) · [Releases oficiais](https://github.com/sonmook/portal-chamados/releases) · [Publicação de versões](docs/versionamento.md)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -16,6 +16,12 @@ As capturas das telas do portal mostram a **Nexaltri v1.15.0**; a prévia do rel
 ---
 
 ## Atualizações do projeto
+
+### v1.17.3 — Identificação clara do responsável pelo atendimento
+
+A tela do chamado substitui o aviso **“Acesso Bloqueado”** por **“Responsável pelo atendimento”**, com nome completo do técnico ou seu usuário quando não houver nome preenchido. O solicitante autorizado recebe a orientação **“Você pode responder pelo formulário abaixo”**; outros perfis com acesso de consulta recebem a indicação dos perfis que podem responder quando o chamado está ativo. Chamados concluídos mantêm a identificação sem sugerir uma resposta indisponível.
+
+A apresentação corrige a observação encontrada na homologação da v1.17.2. A validação cobre solicitante, responsável, outro técnico e administrador; o roteiro Chromium também confere a mensagem e a aplicação restaurada. Sem migração ou nova dependência. [Notas da v1.17.3](docs/releases/v1.17.3.md).
 
 ### Homologação funcional da v1.17.2
 
@@ -71,6 +77,7 @@ Agora o administrador pode baixar as resoluções do relatório para analisar no
 
 | Versão | Principais atualizações |
 | --- | --- |
+| [v1.17.3](docs/releases/v1.17.3.md) | Identifica o responsável e orienta a resposta conforme o perfil, corrigindo o aviso de bloqueio na tela do chamado. |
 | [v1.17.2](docs/releases/v1.17.2.md) | Libera recursos SQLite nos backups, trata privilégio de symlink nos testes e executa a suíte completa no Windows. |
 | [v1.17.1](docs/releases/v1.17.1.md) | Corrige margens duplicadas no Excel e adiciona validação do formato com Open XML SDK. |
 | [v1.17.0](docs/releases/v1.17.0.md) | Relatório Excel com identidade Nexaltri, resumo visual, gráficos, desempenho e ciclos detalhados. |

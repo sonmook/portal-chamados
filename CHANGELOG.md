@@ -1,5 +1,14 @@
 # Histórico de atualizações
 
+## v1.17.3 — Aviso do responsável pelo atendimento
+
+- Corrige a mensagem “Acesso Bloqueado” exibida para quem podia acompanhar ou responder ao chamado. O banner identifica o responsável pelo nome completo, com fallback para o usuário, e usa ícone informativo.
+- A orientação de resposta usa `pode_responder`, a mesma condição do formulário. Perfis somente de consulta não recebem convite para responder; chamados concluídos mantêm apenas a identificação do responsável.
+- Teste de regressão verifica a mensagem e as ações de solicitante, administrador, técnico responsável e outro técnico; POSTs sem permissão continuam retornando 403.
+- Roteiro Chromium confere a orientação do solicitante, a consulta administrativa e o chamado na cópia restaurada; inclui captura do perfil administrativo. Mantém os 15 cenários de atendimento e recuperação.
+- Corrige o relógio de um teste de reabertura: a consulta de Hoje usa o horário da resolução simulada, evitando falha quando uma hora adiante cai no dia seguinte. Os cálculos da aplicação não mudam.
+- README, histórico e notas da versão atualizados. Sem migração ou nova dependência; relatório e capturas da v1.17.2 preservados como evidência histórica.
+
 ## Homologação funcional da v1.17.2
 
 - Execução aprovada em 24/11/2026: 15 cenários Chromium, 568 testes Linux/Windows, 45 verificações visuais e Excel antes/depois da restauração sem erros Open XML. Relatório, JSON e seis capturas originais versionados; observação não bloqueante sobre o banner do solicitante registrada.

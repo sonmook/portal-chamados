@@ -89,10 +89,15 @@
                 
             {% else %}
                 <div class="alert alert-secondary border d-flex align-items-center shadow-sm">
-                    <i class="bi bi-lock-fill text-danger fs-3 me-3"></i>
+                    <i class="bi bi-person-badge text-primary fs-3 me-3" aria-hidden="true"></i>
                     <div>
-                        <h6 class="mb-0 text-danger fw-bold">Acesso Bloqueado</h6>
-                        <span class="small text-muted">Este chamado está sendo atendido por <strong>{{ chamado.tecnico.username }}</strong>. O solicitante e o responsável podem responder.</span>
+                        <h6 class="mb-0 fw-bold">Responsável pelo atendimento</h6>
+                        <span class="small text-muted">{{ chamado.tecnico.get_full_name|default:chamado.tecnico.username }}</span>
+                        {% if pode_responder %}
+                        <p class="small mb-0 mt-1">Você pode responder pelo formulário abaixo.</p>
+                        {% elif ativo %}
+                        <p class="small mb-0 mt-1">As respostas são permitidas ao solicitante e ao técnico responsável.</p>
+                        {% endif %}
                     </div>
                 </div>
             {% endif %}

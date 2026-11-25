@@ -324,7 +324,10 @@ class ReaberturaTests(TestCase):
         self.assertEqual(r.context['analistas'][0]['total'], 2)
         self.assertEqual(r.context['pagina'].paginator.count, 2)
         self.assertContains(r, f'href="{self.detalhes}"')
-        hoje = self.client.get(reverse('indicadores_administracao'), {'periodo': 'hoje'})
+        # A resolução foi simulada uma hora adiante; a consulta usa o mesmo relógio,
+        # inclusive se esse intervalo atravessar a meia-noite no fuso do portal.
+        with patch('django.utils.timezone.now', return_value=fim):
+            hoje = self.client.get(reverse('indicadores_administracao'), {'periodo': 'hoje'})
         self.assertEqual(hoje.context['resumo']['resolvidos'], 1)
 
     def test_mudar_equipe_nao_reescreve_desempenho_da_equipe_anterior(self):
