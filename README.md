@@ -17,6 +17,12 @@ As capturas das telas do portal mostram a **Nexaltri v1.15.0**; a prévia do rel
 
 ## Atualizações do projeto
 
+### Homologação funcional da v1.17.2
+
+Novo roteiro automatizado em **Chromium**, com sessões independentes de solicitante, técnicos e administrador. Executa os formulários reais de abertura com anexo, atribuição, resposta, nota interna, espera, transferência, resolução e reabertura; confere os indicadores e os downloads CSV/Excel. Depois, cria um backup, restaura em diretório isolado e repete a navegação na aplicação restaurada.
+
+**Execução de 24/11/2026 aprovada:** 15 cenários funcionais no Chromium, 568 testes em Linux e Windows, 45 verificações visuais e zero erros Open XML nos dois Excel baixados. Backup restaurado com tabelas e arquivos conferidos, seguido de nova navegação na cópia. A revisão visual registrou uma observação de texto no banner do solicitante, sem impedir a resposta. [Relatório com resultados e seis capturas](docs/relatorios/homologacao-v1.17.2-2026-11-24.md) · [Roteiro e limites](docs/homologacao-funcional.md).
+
 ### v1.17.2 — Validação de backups no Windows
 
 Corrige os erros **WinError 32** nos testes de backup ao liberar explicitamente conexões SQLite e o cursor de verificação de anexos antes da remoção de arquivos temporários. A rejeição de backup incompleto mantém a mensagem original e permite remover a cópia parcial.
