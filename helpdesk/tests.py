@@ -106,6 +106,34 @@ class AtendimentoTests(TestCase):
         self.assertEqual(self.client.post(self.url('detalhes_chamado'), {'texto': 'Mais detalhes'}).status_code, 302)
         self.assertTrue(self.chamado.comentarios.filter(autor=self.cliente).exists())
 
+    def test_aviso_de_responsavel_informa_acoes_sem_ampliar_permissoes(self):
+        self.atribuir()
+        self.tecnico.first_name = 'João'
+        self.tecnico.last_name = 'Suporte'
+        self.tecnico.save(update_fields=['first_name', 'last_name'])
+        admin = User.objects.create_superuser('admin-aviso', password=None)
+        for usuario, pode_responder in ((self.cliente, True), (admin, False), (self.outro_tecnico, False)):
+            with self.subTest(usuario=usuario.username):
+                self.client.force_login(usuario)
+                resposta = self.client.get(self.url('detalhes_chamado'))
+                self.assertContains(resposta, 'Responsável pelo atendimento')
+                self.assertContains(resposta, 'João Suporte')
+                self.assertNotContains(resposta, 'Acesso Bloqueado')
+                if pode_responder:
+                    self.assertContains(resposta, 'Você pode responder pelo formulário abaixo.')
+                    self.assertContains(resposta, 'id="formulario-comentario"')
+                else:
+                    self.assertNotContains(resposta, 'Você pode responder pelo formulário abaixo.')
+                    self.assertNotContains(resposta, 'id="formulario-comentario"')
+                self.assertEqual(self.client.post(self.url('detalhes_chamado'), {'texto': 'Resposta '+usuario.username}).status_code,
+                    302 if pode_responder else 403)
+        self.client.force_login(self.tecnico)
+        self.assertContains(self.client.get(self.url('detalhes_chamado')), 'Você é o responsável')
+        self.chamado.refresh_from_db()
+        self.assertEqual(self.chamado.tecnico_id, self.tecnico.pk)
+        self.assertEqual(self.chamado.comentarios.count(), 1)
+        self.assertEqual(self.chamado.comentarios.get().autor_id, self.cliente.pk)
+
     def test_encerramento_exige_solucao(self):
         self.atribuir()
         self.client.force_login(self.tecnico)

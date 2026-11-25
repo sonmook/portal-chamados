@@ -28,6 +28,10 @@ Todas as contas, chamados e arquivos são fictícios. Banco, uploads e backup s�
 
 O job também valida os **dois arquivos Excel baixados no navegador** com o Open XML SDK da Microsoft, além da checagem do modelo e de outra exportação no job `excel`.
 
+## Verificações adicionais da v1.17.3
+
+O roteiro confere a identificação do responsável e a orientação de resposta no perfil do solicitante, a ausência dessa orientação no perfil administrativo de consulta e no chamado concluído da aplicação restaurada. A captura `07-responsavel-administrador.png` documenta a consulta administrativa. As evidências originais da v1.17.2 permanecem no relatório histórico.
+
 ## Executar
 
 Com as dependências do projeto instaladas em ambiente de desenvolvimento:
